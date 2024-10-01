@@ -31,6 +31,14 @@ public class PotionBoard : MonoBehaviour
      //
     public static PotionBoard Instance;
 
+    //MOBILE INPUT
+    private Vector2 initialClickPosition;
+    private bool isDragging = false;
+    private float touchHoldDuration = 0.1f; // Duração para considerar um toque leve
+    private float touchTime = 0f; // Tempo do toque
+    private bool isTouching = false;
+
+   
 
     private void Awake() 
     {
@@ -40,25 +48,55 @@ public class PotionBoard : MonoBehaviour
     void Start()
     {
         InitializeBoard();
+        CheckBoard(true);
     }
 
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            initialClickPosition = Input.mousePosition;
+            Ray ray = Camera.main.ScreenPointToRay(initialClickPosition);
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
             if (hit.collider != null && hit.collider.gameObject.GetComponent<Potion>())
             {
                 if (isProcessingMove)
-                return;
+                    return;
 
                 Potion potion = hit.collider.gameObject.GetComponent<Potion>();
-                Debug.Log("A poção clicada é: " + potion.gameObject);
+                Debug.Log("Poção clicada: " + potion.gameObject);
 
-                SelectPotion(potion);   
+                SelectPotion(potion);
+                isDragging = true; // Começa o arrasto
             }
+        }
+
+        if (isDragging && Input.GetMouseButton(0))
+        {
+            //lógica para destacar a poção selecionada ou mostrar feedback visual
+        }
+
+        if (Input.GetMouseButtonUp(0) && isDragging)
+        {
+            Vector2 finalClickPosition = Input.mousePosition;
+            Ray ray = Camera.main.ScreenPointToRay(finalClickPosition);
+            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+
+            if (hit.collider != null && hit.collider.gameObject.GetComponent<Potion>())
+            {
+                Potion targetPotion = hit.collider.gameObject.GetComponent<Potion>();
+                Debug.Log("Poção alvo: " + targetPotion.gameObject);
+
+                // Verifica se as poções estão adjacentes e faz a troca
+                if (selectedPotion != null && IsAdjacent(selectedPotion, targetPotion))
+                {
+                    SwapPotion(selectedPotion, targetPotion);
+                }
+            }
+
+            isDragging = false; // Finaliza o arrasto
+            selectedPotion = null; // Reseta a poção selecionada
         }
     }
 
@@ -67,14 +105,16 @@ public class PotionBoard : MonoBehaviour
         DestroyPotions();
         potionBoard = new Node[width, height];
 
-        spacingX = (float)(width -1)/2;
-        spacingY = (float)(height -1)/2;
+        spacingX = (float)(width -1)/ 2;
+        spacingY = (float)(height - 1) / 2;
+        
 
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
                 Vector2 position = new Vector2(x - spacingX, y - spacingY);
+
                 if (arrayLayout.rows[y].row[x])
                 {
                     potionBoard[x,y] = new Node(false, null);
@@ -91,13 +131,13 @@ public class PotionBoard : MonoBehaviour
                 }
             }
         }
-       if(CheckBoard(false))
-       {
-        InitializeBoard();
-       }
-       else{
-        Debug.Log("Deu boa");
-       }
+       //if(CheckBoard(false))
+       //{
+       // InitializeBoard();
+       //}
+       //else{
+       // Debug.Log("Deu boa");
+       //}
     }
 
     public void DestroyPotions()
