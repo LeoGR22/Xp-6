@@ -38,7 +38,6 @@ public class PotionBoard : MonoBehaviour
     private float touchTime = 0f; // Tempo do toque
     private bool isTouching = false;
 
-   
 
     private void Awake() 
     {
