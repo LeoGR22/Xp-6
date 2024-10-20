@@ -284,7 +284,7 @@ public class PotionBoard : MonoBehaviour
     private void SpawnPotionAtTop(int x)
     {
         int index = FindIndexOfLowestNull(x);
-        int locationToMove = 8 - index;
+        int locationToMove = height - index;
         
         //get a random potion
         int randomIndex = Random.Range(0, potionPrefabs.Length);
@@ -300,7 +300,7 @@ public class PotionBoard : MonoBehaviour
     private int FindIndexOfLowestNull(int x)
     {
         int lowestNull = 99;
-        for (int y = 7; y >= 0; y--)
+        for (int y = height - 1; y >= 0; y--)
         {
             if (potionBoard[x,y].potion == null)
             {
