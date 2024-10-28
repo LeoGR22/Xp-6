@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: InDown
+  m_Name: InUp
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -23,7 +23,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -1800
+        value: 2600
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -33,11 +33,11 @@ AnimationClip:
       - serializedVersion: 3
         time: 0.33333334
         value: 0
-        inSlope: -72.65877
-        outSlope: -72.65877
+        inSlope: 1491.5776
+        outSlope: 1491.5776
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.08666566
+        inWeight: 0.055847526
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -92,7 +92,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -1800
+        value: 2600
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -102,11 +102,11 @@ AnimationClip:
       - serializedVersion: 3
         time: 0.33333334
         value: 0
-        inSlope: -72.65877
-        outSlope: -72.65877
+        inSlope: 1491.5776
+        outSlope: 1491.5776
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.08666566
+        inWeight: 0.055847526
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2

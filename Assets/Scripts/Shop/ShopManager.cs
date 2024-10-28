@@ -1,28 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ShopManager : MonoBehaviour
 {
-    public RectTransform content;
-    public List<GameObject> itemPrefabs;  
-    private List<GameObject> spawnedItems = new List<GameObject>();
-
+    // Start is called before the first frame update
     void Start()
     {
-        SpawnItems();
+        
     }
 
-    void SpawnItems()
+    // Update is called once per frame
+    void Update()
     {
-        HorizontalLayoutGroup layoutGroup = content.GetComponent<HorizontalLayoutGroup>();
-
-        for (int i = 0; i < itemPrefabs.Count; i++)
-        {
-            GameObject selectedPrefab = itemPrefabs[i];
-            GameObject newItem = Instantiate(selectedPrefab, content);
-            spawnedItems.Add(newItem);
-        }
+        
     }
 }

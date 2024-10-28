@@ -29,4 +29,9 @@ public class LevelManager : MonoBehaviour
             Instantiate(prefabs[0]);
         }
     }
+
+    public void setLevel(int value)
+    {
+        level = value;
+    }
 }
