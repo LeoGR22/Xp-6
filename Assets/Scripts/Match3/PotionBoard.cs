@@ -15,7 +15,7 @@ public class PotionBoard : MonoBehaviour
     //variaveis pra centralizar o tabuleiro de acordo com seu tamanho
     public float spacingX;
     public float spacingY;
-    //pega os prefabs desejados
+    //cria uma lista com os prefabs desejados
     public GameObject[] potionPrefabs;
     
     public List<GameObject> potionsToDestroy = new();
@@ -34,8 +34,8 @@ public class PotionBoard : MonoBehaviour
     //MOBILE INPUT
     private Vector2 initialClickPosition;
     private bool isDragging = false;
-    private float touchHoldDuration = 0.1f; // Duração para considerar um toque leve
-    private float touchTime = 0f; // Tempo do toque
+    private float touchHoldDuration = 0.1f; 
+    private float touchTime = 0f; 
     private bool isTouching = false;
 
 
@@ -73,7 +73,7 @@ public class PotionBoard : MonoBehaviour
 
         if (isDragging && Input.GetMouseButton(0))
         {
-            //lógica para destacar a poção selecionada ou mostrar feedback visual
+            // Lógica para destacar a poção selecionada ou mostrar feedback visual
         }
 
         if (Input.GetMouseButtonUp(0) && isDragging)
@@ -82,21 +82,59 @@ public class PotionBoard : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(finalClickPosition);
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
-            if (hit.collider != null && hit.collider.gameObject.GetComponent<Potion>())
+            if (hit.collider != null)
             {
-                Potion targetPotion = hit.collider.gameObject.GetComponent<Potion>();
-                Debug.Log("Poção alvo: " + targetPotion.gameObject);
+                // Verifica a posição do mouse/touch em relação à poção selecionada
+                Potion targetPotion = null;
+                Vector2 targetPosition = hit.collider.transform.position;
 
-                // Verifica se as poções estão adjacentes e faz a troca
-                if (selectedPotion != null && IsAdjacent(selectedPotion, targetPotion))
+                if (selectedPotion != null)
                 {
-                    SwapPotion(selectedPotion, targetPotion);
+                    if (targetPosition.x > selectedPotion.transform.position.x)
+                    {
+                        // Alvo à direita
+                        targetPotion = GetPotionAt(selectedPotion.xIndex + 1, selectedPotion.yIndex);
+                    }
+                    else if (targetPosition.x < selectedPotion.transform.position.x)
+                    {
+                        // Alvo à esquerda
+                        targetPotion = GetPotionAt(selectedPotion.xIndex - 1, selectedPotion.yIndex);
+                    }
+                    else if (targetPosition.y > selectedPotion.transform.position.y)
+                    {
+                        // Alvo acima
+                        targetPotion = GetPotionAt(selectedPotion.xIndex, selectedPotion.yIndex + 1);
+                    }
+                    else if (targetPosition.y < selectedPotion.transform.position.y)
+                    {
+                        // Alvo abaixo
+                        targetPotion = GetPotionAt(selectedPotion.xIndex, selectedPotion.yIndex - 1);
+                    }
+
+                    // Se um alvo válido for encontrado, realiza a troca
+                    if (targetPotion != null)
+                    {
+                        SwapPotion(selectedPotion, targetPotion);
+                    }
                 }
             }
 
             isDragging = false; // Finaliza o arrasto
             selectedPotion = null; // Reseta a poção selecionada
         }
+    }
+
+    // Método para obter a poção na posição especificada
+    private Potion GetPotionAt(int xIndex, int yIndex)
+    {
+        if (xIndex >= 0 && xIndex < width && yIndex >= 0 && yIndex < height)
+        {
+            if (potionBoard[xIndex, yIndex].potion != null)
+            {
+                return potionBoard[xIndex, yIndex].potion.GetComponent<Potion>();
+            }
+        }
+        return null; // Retorna nulo se a posição estiver fora dos limites ou não houver poção
     }
 
     void InitializeBoard()
