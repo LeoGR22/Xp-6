@@ -17,26 +17,28 @@ public class PotionBoard : MonoBehaviour
     public float spacingY;
     //cria uma lista com os prefabs desejados
     public GameObject[] potionPrefabs;
-    
+
     public List<GameObject> potionsToDestroy = new();
     public GameObject potionParent;
 
     [SerializeField] private Potion selectedPotion;
-    [SerializeField] private bool isProcessingMove; 
+    [SerializeField] private bool isProcessingMove;
 
     public Node[,] potionBoard;
     public GameObject potionBoardGO;
     //Cria um array da Classe ArrayLayout
     public ArrayLayout arrayLayout;
-     //
+    //
     public static PotionBoard Instance;
 
-    //MOBILE INPUT
+
     private Vector2 initialClickPosition;
     private bool isDragging = false;
-    private float touchHoldDuration = 0.1f; 
-    private float touchTime = 0f; 
-    private bool isTouching = false;
+
+    //variaveis para armazenar os potions coletados
+    private int violetPotionCount = 0;
+    private int greenPotionCount = 0;
+    private int redPotionCount = 0;
 
 
     private void Awake() 
@@ -51,6 +53,11 @@ public class PotionBoard : MonoBehaviour
     }
 
     private void Update()
+    {
+        CheckUserActions();
+    }
+
+    private void CheckUserActions()
     {
         if (Input.GetMouseButtonDown(0))
         {
@@ -243,6 +250,23 @@ public class PotionBoard : MonoBehaviour
             foreach (Potion potionToRemove in potionsToRemove)
             {
                 potionToRemove.isMatched = false;
+            }
+
+            //for para obter os objetos coletadas
+            foreach (Potion potionToRemove in potionsToRemove)
+            {
+                if (potionToRemove.potionType == PotionType.Violet)
+                {
+                    violetPotionCount++;
+                }
+                else if (potionToRemove.potionType == PotionType.Green)
+                {
+                    greenPotionCount++;
+                }
+                else if (potionToRemove.potionType == PotionType.Red)
+                {
+                    redPotionCount++;
+                }
             }
 
             RemoveAndRefill(potionsToRemove);
@@ -585,7 +609,7 @@ public class PotionBoard : MonoBehaviour
 
     private IEnumerator ProcessMatches(Potion _currentPotion, Potion _targetPotion)
     {
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.4f);
 
         bool hasMatch = CheckBoard(true);
 

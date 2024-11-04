@@ -6,9 +6,11 @@ public class LevelManager : MonoBehaviour
 {
     [SerializeField] private int level;
     [SerializeField] private List<GameObject> prefabs;
+    public LevelData levelData;
 
     void Start()
     {
+        level = levelData.level;
         spawnBoard(level);
     }
 
@@ -28,10 +30,5 @@ public class LevelManager : MonoBehaviour
         {
             Instantiate(prefabs[0]);
         }
-    }
-
-    public void setLevel(int value)
-    {
-        level = value;
     }
 }
