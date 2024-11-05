@@ -36,9 +36,9 @@ public class PotionBoard : MonoBehaviour
     private bool isDragging = false;
 
     //variaveis para armazenar os potions coletados
-    private int violetPotionCount = 0;
-    private int greenPotionCount = 0;
-    private int redPotionCount = 0;
+    public ObjectiveBoardData violetPotionCount;
+    public ObjectiveBoardData greenPotionCount;
+    public ObjectiveBoardData redPotionCount;
 
 
     private void Awake() 
@@ -257,15 +257,15 @@ public class PotionBoard : MonoBehaviour
             {
                 if (potionToRemove.potionType == PotionType.Violet)
                 {
-                    violetPotionCount++;
+                    violetPotionCount.count++;
                 }
                 else if (potionToRemove.potionType == PotionType.Green)
                 {
-                    greenPotionCount++;
+                    greenPotionCount.count++;
                 }
                 else if (potionToRemove.potionType == PotionType.Red)
                 {
-                    redPotionCount++;
+                    redPotionCount.count++;
                 }
             }
 
