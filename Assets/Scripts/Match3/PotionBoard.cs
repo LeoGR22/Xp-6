@@ -50,6 +50,10 @@ public class PotionBoard : MonoBehaviour
     {
         InitializeBoard();
         CheckBoard(true);
+
+        violetPotionCount.count = 0;
+        greenPotionCount.count = 0;
+        redPotionCount.count = 0;
     }
 
     private void Update()
