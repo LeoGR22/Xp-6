@@ -84,6 +84,7 @@ MonoBehaviour:
   - {fileID: 2274775717001111761, guid: 93f42c7f10e57c143a44471addf215a1, type: 3}
   - {fileID: 4229577481417212027, guid: 893104be94400fa4ba8e4326453dc53f, type: 3}
   - {fileID: 8534673003380625105, guid: b60f8f9d2d9c4414fa817c190e48507b, type: 3}
+  - {fileID: 8534673003380625105, guid: ca9ebc1ea2b14fe44ae6174f396d5e83, type: 3}
   potionsToDestroy: []
   potionParent: {fileID: 1403515373038798881}
   selectedPotion: {fileID: 0}
@@ -99,3 +100,6 @@ MonoBehaviour:
     - row: 000000000000
     - row: 000000000000
     - row: 000000000000
+  violetPotionCount: {fileID: 0}
+  greenPotionCount: {fileID: 0}
+  redPotionCount: {fileID: 0}

@@ -63,5 +63,6 @@ public enum PotionType
 {
     Green,
     Red,
-    Violet
+    Violet,
+    Orange
 }
