@@ -32,9 +32,6 @@ public class PotionBoard : MonoBehaviour
     public static PotionBoard Instance;
 
 
-    private Vector2 initialClickPosition;
-    private bool isDragging = false;
-
     //variaveis para armazenar os potions coletados
     public ObjectiveBoardData violetPotionCount;
     public ObjectiveBoardData greenPotionCount;
@@ -63,75 +60,36 @@ public class PotionBoard : MonoBehaviour
 
     private void CheckUserActions()
     {
-        if (Input.GetMouseButtonDown(0))
+        Potion selectedPotion = null;
+        Potion targetPotion = null;
+
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
-            initialClickPosition = Input.mousePosition;
-            Ray ray = Camera.main.ScreenPointToRay(initialClickPosition);
+            Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
             if (hit.collider != null && hit.collider.gameObject.GetComponent<Potion>())
             {
-                if (isProcessingMove)
-                    return;
+                if (isProcessingMove) return;
 
-                Potion potion = hit.collider.gameObject.GetComponent<Potion>();
-                Debug.Log("Poção clicada: " + potion.gameObject);
+                selectedPotion = hit.collider.gameObject.GetComponent<Potion>();
+                Debug.Log("Poção clicada: " + selectedPotion.gameObject);
 
-                SelectPotion(potion);
-                isDragging = true; // Começa o arrasto
+                SelectPotion(selectedPotion);
             }
         }
 
-        if (isDragging && Input.GetMouseButton(0))
+        else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
         {
-            // Lógica para destacar a poção selecionada ou mostrar feedback visual
-        }
+            Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+            RaycastHit2D hit = Physics2D.Raycast (ray.origin, ray.direction);
 
-        if (Input.GetMouseButtonUp(0) && isDragging)
-        {
-            Vector2 finalClickPosition = Input.mousePosition;
-            Ray ray = Camera.main.ScreenPointToRay(finalClickPosition);
-            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-
-            if (hit.collider != null)
+            if (hit.collider != null && hit.collider.gameObject.GetComponent<Potion>())
             {
-                // Verifica a posição do mouse/touch em relação à poção selecionada
-                Potion targetPotion = null;
-                Vector2 targetPosition = hit.collider.transform.position;
-
-                if (selectedPotion != null)
-                {
-                    if (targetPosition.x > selectedPotion.transform.position.x)
-                    {
-                        // Alvo à direita
-                        targetPotion = GetPotionAt(selectedPotion.xIndex + 1, selectedPotion.yIndex);
-                    }
-                    else if (targetPosition.x < selectedPotion.transform.position.x)
-                    {
-                        // Alvo à esquerda
-                        targetPotion = GetPotionAt(selectedPotion.xIndex - 1, selectedPotion.yIndex);
-                    }
-                    else if (targetPosition.y > selectedPotion.transform.position.y)
-                    {
-                        // Alvo acima
-                        targetPotion = GetPotionAt(selectedPotion.xIndex, selectedPotion.yIndex + 1);
-                    }
-                    else if (targetPosition.y < selectedPotion.transform.position.y)
-                    {
-                        // Alvo abaixo
-                        targetPotion = GetPotionAt(selectedPotion.xIndex, selectedPotion.yIndex - 1);
-                    }
-
-                    // Se um alvo válido for encontrado, realiza a troca
-                    if (targetPotion != null)
-                    {
-                        SwapPotion(selectedPotion, targetPotion);
-                    }
-                }
+                targetPotion =  hit.collider.gameObject.GetComponent<Potion>();
+                Debug.Log("A poção em que o dedo foi solto foi: " + targetPotion.gameObject);
+                SelectPotion(targetPotion);
             }
-
-            isDragging = false; // Finaliza o arrasto
-            selectedPotion = null; // Reseta a poção selecionada
         }
     }
 
