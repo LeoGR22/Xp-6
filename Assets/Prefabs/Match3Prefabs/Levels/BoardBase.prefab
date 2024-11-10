@@ -104,3 +104,6 @@ MonoBehaviour:
   violetPotionCount: {fileID: 11400000, guid: 84f971cc4ff223c4f9c411f7041a2540, type: 2}
   greenPotionCount: {fileID: 11400000, guid: ccc94e724ffb38041be1a75f6b122474, type: 2}
   redPotionCount: {fileID: 11400000, guid: 5b5f650ca1fead54987ede366fe41fca, type: 2}
+  orangePotionCount: {fileID: 11400000, guid: f6c09167b899c32448ed1227c34c3154, type: 2}
+  WinGame: {fileID: 11400000, guid: f46f0692262eb1e469e2897432e5195d, type: 2}
+  LoseGame: {fileID: 0}

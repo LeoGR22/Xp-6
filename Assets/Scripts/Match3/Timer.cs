@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
+using UnityEngine.Events;
 
 public class Timer : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class Timer : MonoBehaviour
     public FloatSO timeData;
     public TextMeshProUGUI timerText;
 
-
+    public UnityEvent loseGame;
 
     void Start()
     {
@@ -36,6 +37,6 @@ public class Timer : MonoBehaviour
 
     void Lose()
     {
-        return;
+        loseGame.Invoke();
     }
 }

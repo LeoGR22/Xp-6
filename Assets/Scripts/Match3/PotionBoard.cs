@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
 public class PotionBoard : MonoBehaviour
@@ -39,6 +40,11 @@ public class PotionBoard : MonoBehaviour
     public ObjectiveBoardData greenPotionCount;
     public ObjectiveBoardData redPotionCount;
 
+    public ObjectiveBoardData orangePotionCount;
+
+    public GameEvent WinGame;
+    public GameEvent LoseGame;
+
 
     private void Awake() 
     {
@@ -49,10 +55,6 @@ public class PotionBoard : MonoBehaviour
     {
         InitializeBoard();
         CheckBoard(true);
-
-        violetPotionCount.count = 0;
-        greenPotionCount.count = 0;
-        redPotionCount.count = 0;
     }
 
     private void Update()
@@ -242,19 +244,28 @@ public class PotionBoard : MonoBehaviour
             //for para obter os objetos coletadas
             foreach (Potion potionToRemove in potionsToRemove)
             {
-                if (potionToRemove.potionType == PotionType.Violet)
+                if (potionToRemove.potionType == PotionType.Violet && violetPotionCount != null)
                 {
-                    violetPotionCount.count++;
+                    if (violetPotionCount.count > 0){violetPotionCount.count--;}
                 }
-                else if (potionToRemove.potionType == PotionType.Green)
+                else if (potionToRemove.potionType == PotionType.Green && greenPotionCount != null)
                 {
-                    greenPotionCount.count++;
+                    if (greenPotionCount.count > 0){greenPotionCount.count--;}
                 }
-                else if (potionToRemove.potionType == PotionType.Red)
+                else if (potionToRemove.potionType == PotionType.Red && redPotionCount != null)
                 {
-                    redPotionCount.count++;
+                    if (redPotionCount.count > 0){redPotionCount.count--;}
+                }
+                else if (potionToRemove.potionType == PotionType.Orange && orangePotionCount!= null)
+                {
+                    if (orangePotionCount.count > 0){orangePotionCount.count--;}
                 }
             }
+            if (violetPotionCount.count + greenPotionCount.count + orangePotionCount.count + redPotionCount.count <= 0)
+            {
+                WinGame.Raise();
+            }
+
 
             RemoveAndRefill(potionsToRemove);
 
