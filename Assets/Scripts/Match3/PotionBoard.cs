@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEditor;
@@ -31,6 +32,11 @@ public class PotionBoard : MonoBehaviour
     //
     public static PotionBoard Instance;
 
+    //variaveis q armazenam o toque na tela mobile e definem as poções selecionadas
+    private Vector2 startTouchPosition; 
+    private Vector2 endTouchPosition;
+    Potion clickedPotion = null;
+    public Potion targetPotion = null; 
 
     //variaveis para armazenar os potions coletados
     public ObjectiveBoardData violetPotionCount;
@@ -60,11 +66,10 @@ public class PotionBoard : MonoBehaviour
 
     private void CheckUserActions()
     {
-        Potion selectedPotion = null;
-        Potion targetPotion = null;
-
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
+            startTouchPosition = Input.GetTouch(0).position;
+
             Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
@@ -72,23 +77,47 @@ public class PotionBoard : MonoBehaviour
             {
                 if (isProcessingMove) return;
 
-                selectedPotion = hit.collider.gameObject.GetComponent<Potion>();
-                Debug.Log("Poção clicada: " + selectedPotion.gameObject);
+                clickedPotion = hit.collider.gameObject.GetComponent<Potion>();
+                Debug.Log("Poção clicada: " + clickedPotion.gameObject);
 
-                SelectPotion(selectedPotion);
+                SelectPotion(clickedPotion);
             }
         }
 
         else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-            RaycastHit2D hit = Physics2D.Raycast (ray.origin, ray.direction);
+            endTouchPosition = Input.GetTouch(0).position;
 
-            if (hit.collider != null && hit.collider.gameObject.GetComponent<Potion>())
+            
+            if (Mathf.Abs(endTouchPosition.x - startTouchPosition.x) > Mathf.Abs(endTouchPosition.y - startTouchPosition.y))
             {
-                targetPotion =  hit.collider.gameObject.GetComponent<Potion>();
-                Debug.Log("A poção em que o dedo foi solto foi: " + targetPotion.gameObject);
-                SelectPotion(targetPotion);
+                if (endTouchPosition.x > startTouchPosition.x)
+                {
+                    targetPotion = GetPotionAt(clickedPotion.xIndex + 1, clickedPotion.yIndex);
+                    SelectPotion(targetPotion);
+                    Debug.Log("Swipe para direita");
+                }
+                else 
+                {
+                    targetPotion = GetPotionAt(clickedPotion.xIndex - 1, clickedPotion.yIndex);
+                    SelectPotion(targetPotion);
+                    Debug.Log("Swipe para esquerda");
+                }
+                }
+                else 
+                {
+                if (endTouchPosition.y > startTouchPosition.y)
+                {
+                    targetPotion = GetPotionAt(clickedPotion.xIndex, clickedPotion.yIndex + 1);
+                    SelectPotion(targetPotion);
+                    Debug.Log("Swipe para cima");
+                }
+                else 
+                {
+                    targetPotion = GetPotionAt(clickedPotion.xIndex, clickedPotion.yIndex - 1);
+                    SelectPotion(targetPotion);
+                    Debug.Log("Swipe para baixo");
+                }
             }
         }
     }
@@ -586,7 +615,14 @@ public class PotionBoard : MonoBehaviour
     //isAdjacent
     private bool IsAdjacent(Potion _currentPotion, Potion _targetPotion)
     {
-        return Math.Abs(_currentPotion.xIndex - _targetPotion.xIndex) + Math.Abs(_currentPotion.yIndex - _targetPotion.yIndex) == 1;
+        if (_targetPotion != null)
+        {
+            return Math.Abs(_currentPotion.xIndex - _targetPotion.xIndex) + Math.Abs(_currentPotion.yIndex - _targetPotion.yIndex) == 1;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     //ProcessMatches
