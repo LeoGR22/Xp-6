@@ -12,9 +12,11 @@ public class Timer : MonoBehaviour
     public TextMeshProUGUI timerText;
 
     public UnityEvent loseGame;
+    public BooleanSO canLose;
 
     void Start()
     {
+        canLose.value = true;
         time = timeData.value;
     }
 
@@ -29,7 +31,7 @@ public class Timer : MonoBehaviour
     {
         time -= 1f * Time.deltaTime;
 
-        if (time < 0f)
+        if (time < 0f && canLose.value == true) 
         {
             Lose();
         }

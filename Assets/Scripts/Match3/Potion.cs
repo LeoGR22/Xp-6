@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Potion : MonoBehaviour
 {
-    public PotionType potionType;
+    public ItemType potionType;
 
     public int xIndex;
     public int yIndex;
@@ -59,7 +59,7 @@ public class Potion : MonoBehaviour
 }
 
 
-public enum PotionType
+public enum ItemType
 {
     Green,
     Red,

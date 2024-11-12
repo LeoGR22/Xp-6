@@ -78,8 +78,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 4
   height: 4
-  spacingX: 0
-  spacingY: 0
   potionPrefabs:
   - {fileID: 2274775717001111761, guid: 93f42c7f10e57c143a44471addf215a1, type: 3}
   - {fileID: 4229577481417212027, guid: 893104be94400fa4ba8e4326453dc53f, type: 3}
@@ -107,3 +105,4 @@ MonoBehaviour:
   orangePotionCount: {fileID: 11400000, guid: f6c09167b899c32448ed1227c34c3154, type: 2}
   WinGame: {fileID: 11400000, guid: f46f0692262eb1e469e2897432e5195d, type: 2}
   LoseGame: {fileID: 0}
+  canLose: {fileID: 11400000, guid: 446c2009f1040a344b7e9b7006677d43, type: 2}

@@ -11,7 +11,7 @@ public class LevelManager : MonoBehaviour
     void Start()
     {
         level = levelData.level;
-        spawnBoard(level);
+        SpawnBoard(level);
     }
 
     
@@ -20,7 +20,7 @@ public class LevelManager : MonoBehaviour
         
     }
 
-    void spawnBoard(int level)
+    void SpawnBoard(int level)
     {
         if (level >= 0 && level < prefabs.Count)
         {

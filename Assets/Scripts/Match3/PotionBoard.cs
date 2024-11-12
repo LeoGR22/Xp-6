@@ -11,8 +11,8 @@ public class PotionBoard : MonoBehaviour
     public int width = 6;
     public int height = 8;
     //variaveis pra centralizar o tabuleiro de acordo com seu tamanho
-    public float spacingX;
-    public float spacingY;
+    private float spacingX;
+    private float spacingY;
     //cria uma lista com os prefabs desejados
     public GameObject[] potionPrefabs;
 
@@ -39,11 +39,11 @@ public class PotionBoard : MonoBehaviour
     public ObjectiveBoardData violetPotionCount;
     public ObjectiveBoardData greenPotionCount;
     public ObjectiveBoardData redPotionCount;
-
     public ObjectiveBoardData orangePotionCount;
 
     public GameEvent WinGame;
     public GameEvent LoseGame;
+    public BooleanSO canLose;
 
 
     private void Awake() 
@@ -244,25 +244,26 @@ public class PotionBoard : MonoBehaviour
             //for para obter os objetos coletadas
             foreach (Potion potionToRemove in potionsToRemove)
             {
-                if (potionToRemove.potionType == PotionType.Violet && violetPotionCount != null)
+                if (potionToRemove.potionType == ItemType.Violet && violetPotionCount != null)
                 {
                     if (violetPotionCount.count > 0){violetPotionCount.count--;}
                 }
-                else if (potionToRemove.potionType == PotionType.Green && greenPotionCount != null)
+                else if (potionToRemove.potionType == ItemType.Green && greenPotionCount != null)
                 {
                     if (greenPotionCount.count > 0){greenPotionCount.count--;}
                 }
-                else if (potionToRemove.potionType == PotionType.Red && redPotionCount != null)
+                else if (potionToRemove.potionType == ItemType.Red && redPotionCount != null)
                 {
                     if (redPotionCount.count > 0){redPotionCount.count--;}
                 }
-                else if (potionToRemove.potionType == PotionType.Orange && orangePotionCount!= null)
+                else if (potionToRemove.potionType == ItemType.Orange && orangePotionCount!= null)
                 {
                     if (orangePotionCount.count > 0){orangePotionCount.count--;}
                 }
             }
             if (violetPotionCount.count + greenPotionCount.count + orangePotionCount.count + redPotionCount.count <= 0)
             {
+                canLose.value = false;
                 WinGame.Raise();
             }
 
@@ -441,7 +442,7 @@ public class PotionBoard : MonoBehaviour
     MatchResult IsConnected(Potion potion)
     {
         List<Potion> connectedPotions = new();
-        PotionType potionType = potion.potionType;
+        ItemType potionType = potion.potionType;
 
         connectedPotions.Add(potion);
 
@@ -513,7 +514,7 @@ public class PotionBoard : MonoBehaviour
 
     void CheckDirection(Potion pot, Vector2Int direction, List<Potion> connectedPotions)
     {
-        PotionType potionType = pot.potionType;
+        ItemType potionType = pot.potionType;
         int x = pot.xIndex + direction.x;
         int y = pot.yIndex + direction.y;
 
