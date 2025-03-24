@@ -76,8 +76,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78492503599de9c42b487a5ac6d5c573, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 6
-  height: 8
+  widthData: {fileID: 11400000, guid: e44cdf145070f0f4cadeabf8239463bf, type: 2}
+  heightData: {fileID: 11400000, guid: 24ea6bb3b12404540a26c758f9c2b42b, type: 2}
   potionPrefabs:
   - {fileID: 2274775717001111761, guid: 93f42c7f10e57c143a44471addf215a1, type: 3}
   - {fileID: 4229577481417212027, guid: 893104be94400fa4ba8e4326453dc53f, type: 3}
@@ -90,14 +90,15 @@ MonoBehaviour:
   potionBoardGO: {fileID: 6534130176874080690}
   arrayLayout:
     rows:
-    - row: 000000000000
-    - row: 000000000000
-    - row: 000000000000
-    - row: 000000000000
-    - row: 000000000000
-    - row: 000000000000
-    - row: 000000000000
-    - row: 000000000000
+    - row: 000000000000000000
+    - row: 000000000000000000
+    - row: 000000000000000000
+    - row: 000000000000000000
+    - row: 000000000000000000
+    - row: 000000000000000000
+    - row: 000000000000000000
+    - row: 000000000000000000
+    - row: 000000000000000000
   targetPotion: {fileID: 0}
   violetPotionCount: {fileID: 11400000, guid: 84f971cc4ff223c4f9c411f7041a2540, type: 2}
   greenPotionCount: {fileID: 11400000, guid: ccc94e724ffb38041be1a75f6b122474, type: 2}

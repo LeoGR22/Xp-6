@@ -3,13 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using static UnityEngine.Rendering.DebugUI.Table;
 using Random = UnityEngine.Random;
 
 public class PotionBoard : MonoBehaviour
 {
     //tamanho do tabuleiro
-    public int width = 6;
-    public int height = 8;
+    private int width = 4;
+    private int height = 4;
+    public BoardSizeData widthData;
+    public BoardSizeData heightData;
+    //SetLevel
+    SetLevel level;
+    bool win;
     //variaveis pra centralizar o tabuleiro de acordo com seu tamanho
     private float spacingX;
     private float spacingY;
@@ -53,6 +59,11 @@ public class PotionBoard : MonoBehaviour
 
     void Start()
     {
+        win = false;
+        width = widthData.GetSize();
+        height = heightData.GetSize();
+        level = FindObjectOfType<SetLevel>();
+
         InitializeBoard();
         CheckBoard(true);
     }
@@ -134,13 +145,13 @@ public class PotionBoard : MonoBehaviour
     }
 
     void InitializeBoard()
-    {   
+    {
         DestroyPotions();
         potionBoard = new Node[width, height];
 
-        spacingX = (float)(width -1)/ 2;
+        spacingX = (float)(width - 1) / 2;
         spacingY = (float)(height - 1) / 2;
-        
+
 
         for (int y = 0; y < height; y++)
         {
@@ -150,28 +161,29 @@ public class PotionBoard : MonoBehaviour
 
                 if (arrayLayout.rows[y].row[x])
                 {
-                    potionBoard[x,y] = new Node(false, null);
+                    potionBoard[x, y] = new Node(false, null);
                 }
-                else 
+                else
                 {
-                int randomIndex = Random.Range(0, potionPrefabs.Length);
+                    int randomIndex = Random.Range(0, potionPrefabs.Length);
 
-                GameObject potion = Instantiate(potionPrefabs[randomIndex], position, Quaternion.identity);
-                potion.transform.SetParent(potionParent.transform);
-                potion.GetComponent<Potion>().SetIndicies(x, y);
-                potionBoard[x,y] = new Node(true, potion);
-                potionsToDestroy.Add(potion);
+                    GameObject potion = Instantiate(potionPrefabs[randomIndex], position, Quaternion.identity);
+                    potion.transform.SetParent(potionParent.transform);
+                    potion.GetComponent<Potion>().SetIndicies(x, y);
+                    potionBoard[x, y] = new Node(true, potion);
+                    potionsToDestroy.Add(potion);
                 }
             }
         }
-       //if(CheckBoard(false))
-       //{
-       // InitializeBoard();
-       //}
-       //else{
-       // Debug.Log("Deu boa");
-       //}
+        //if(CheckBoard(false))
+        //{
+        // InitializeBoard();
+        //}
+        //else{
+        // Debug.Log("Deu boa");
+        //}
     }
+
 
     public void DestroyPotions()
     {
@@ -263,6 +275,11 @@ public class PotionBoard : MonoBehaviour
             }
             if (violetPotionCount.count + greenPotionCount.count + orangePotionCount.count + redPotionCount.count <= 0)
             {
+                if (!win)
+                {
+                    win = true;
+                    level.PassLevel();
+                }
                 canLose.value = false;
                 WinGame.Raise();
             }

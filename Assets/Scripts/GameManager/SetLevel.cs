@@ -6,7 +6,18 @@ public class SetLevel : MonoBehaviour
 {
    public LevelData levelData;
 
-    public void PassLevel(int level)
+    public void PassLevel()
+    {
+        Debug.Log("PassLevel chamado!");
+        levelData.level += 1;
+    }
+
+    public int GetLevel()
+    {
+        return levelData.level;
+    }
+
+    public void SetterLevel(int level)
     {
         levelData.level = level;
     }

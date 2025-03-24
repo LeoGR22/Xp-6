@@ -14,19 +14,9 @@ public class LevelManager : MonoBehaviour
         SpawnBoard(level);
     }
 
-    
-    void Update()
-    {
-        
-    }
-
     void SpawnBoard(int level)
     {
-        if (level >= 0 && level < prefabs.Count)
-        {
-            Instantiate(prefabs[level]);
-        }
-        else
+        if (prefabs != null)
         {
             Instantiate(prefabs[0]);
         }

@@ -271,7 +271,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LevelLoader: {fileID: 177747267}
-  sceneIndex: 4
+  sceneIndex: 1
 --- !u!1 &536635971
 GameObject:
   m_ObjectHideFlags: 0
