@@ -2,21 +2,36 @@ using UnityEngine;
 
 public class ClickEffectSpawner : MonoBehaviour
 {
-    public GameObject clickEffectPrefab; // O efeito que será instanciado
+    public GameObject clickEffectPrefab; 
+    public RectTransform canvasTransform; 
+    public Camera uiCamera; 
 
     void Update()
     {
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
-            Vector3 spawnPosition = GetWorldPosition(Input.GetTouch(0).position);
-            Instantiate(clickEffectPrefab, spawnPosition, Quaternion.identity);
+            SpawnEffect(Input.GetTouch(0).position);
         }
     }
 
-    Vector3 GetWorldPosition(Vector2 screenPosition)
+    void SpawnEffect(Vector2 screenPosition)
     {
-        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, 10f));
-        worldPosition.z = -1f; // Mantém o Z fixo para aparecer na frente
-        return worldPosition;
+        Vector2 localPoint;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasTransform,
+            screenPosition,
+            uiCamera,
+            out localPoint
+        );
+
+        GameObject effect = Instantiate(clickEffectPrefab, canvasTransform);
+        RectTransform effectTransform = effect.GetComponent<RectTransform>();
+
+        if (effectTransform != null)
+        {
+            effectTransform.anchoredPosition3D = new Vector3(localPoint.x, localPoint.y, -10f); 
+            effectTransform.localScale = Vector3.one; 
+            effectTransform.SetAsLastSibling();
+        }
     }
 }

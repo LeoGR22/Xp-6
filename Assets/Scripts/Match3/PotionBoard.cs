@@ -146,44 +146,43 @@ public class PotionBoard : MonoBehaviour
 
     void InitializeBoard()
     {
-        DestroyPotions();
-        potionBoard = new Node[width, height];
+        bool validBoard = false;
 
-        spacingX = (float)(width - 1) / 2;
-        spacingY = (float)(height - 1) / 2;
-
-
-        for (int y = 0; y < height; y++)
+        while (!validBoard)
         {
-            for (int x = 0; x < width; x++)
+            DestroyPotions();
+            potionBoard = new Node[width, height];
+
+            spacingX = (float)(width - 1) / 2;
+            spacingY = (float)(height - 1) / 2;
+
+            for (int y = 0; y < height; y++)
             {
-                Vector2 position = new Vector2(x - spacingX, y - spacingY);
-
-                if (arrayLayout.rows[y].row[x])
+                for (int x = 0; x < width; x++)
                 {
-                    potionBoard[x, y] = new Node(false, null);
-                }
-                else
-                {
-                    int randomIndex = Random.Range(0, potionPrefabs.Length);
+                    Vector2 position = new Vector2(x - spacingX, y - spacingY);
 
-                    GameObject potion = Instantiate(potionPrefabs[randomIndex], position, Quaternion.identity);
-                    potion.transform.SetParent(potionParent.transform);
-                    potion.GetComponent<Potion>().SetIndicies(x, y);
-                    potionBoard[x, y] = new Node(true, potion);
-                    potionsToDestroy.Add(potion);
+                    if (arrayLayout.rows[y].row[x])
+                    {
+                        potionBoard[x, y] = new Node(false, null);
+                    }
+                    else
+                    {
+                        int randomIndex = Random.Range(0, potionPrefabs.Length);
+
+                        GameObject potion = Instantiate(potionPrefabs[randomIndex], position, Quaternion.identity);
+                        potion.transform.SetParent(potionParent.transform);
+                        potion.GetComponent<Potion>().SetIndicies(x, y);
+                        potionBoard[x, y] = new Node(true, potion);
+                        potionsToDestroy.Add(potion);
+                    }
                 }
             }
-        }
-        //if(CheckBoard(false))
-        //{
-        // InitializeBoard();
-        //}
-        //else{
-        // Debug.Log("Deu boa");
-        //}
-    }
 
+            // Verifica se há combinações iniciais; se houver, refaz o tabuleiro
+            validBoard = !CheckBoard(false);
+        }
+    }
 
     public void DestroyPotions()
     {
