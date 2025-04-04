@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 3520886483019028127}
   - component: {fileID: 2580009359385325105}
   - component: {fileID: 2481997882392994498}
+  - component: {fileID: 8918084205416082212}
   m_Layer: 5
-  m_Name: Monitor
+  m_Name: Monitor 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58,7 +59,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 9ec6bd4eded926445a47b66ffcdebdbf, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -66,7 +67,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 43f599f8e0a522844b55c22c50a40052, type: 3}
+  m_Sprite: {fileID: 657121951, guid: f563b2c4c3ec4384a903517ca9bdee48, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -119,4 +120,28 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2580009359385325105}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8918084205416082212}
+        m_TargetAssemblyTypeName: ItensManager, Assembly-CSharp
+        m_MethodName: SelectObject
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Monitor
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &8918084205416082212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2785516706051049297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2559130290345a84d959fb4aeebba354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
