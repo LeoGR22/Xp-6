@@ -56,4 +56,9 @@ public class Timer : MonoBehaviour
     {
         loseGame.Invoke();
     }
+
+    public float GetMovesLeft()
+    {
+        return time;
+    }
 }

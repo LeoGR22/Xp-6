@@ -1,23 +1,22 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.U2D;
 using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviour
 {
     public PlayerItensSO playerItemSO;
     public PlayerMoneySO playerMoneySO;
-
     public ItensSO itensSO;
 
     public TMP_Text coinText;
 
     private void Start()
     {
-        ApplyMonitorTextureToMaterial();
-        coinText.text = playerMoneySO.GetMoney().ToString(); 
+        ApplyAllTextures();
+
+        if (coinText != null)
+            coinText.text = playerMoneySO.GetMoney().ToString();
     }
 
     public void VerifyItem(string name, Sprite sprite)
@@ -25,18 +24,20 @@ public class PlayerManager : MonoBehaviour
         if (playerItemSO.IsSpriteInCategory(name, sprite))
         {
             playerItemSO.SetCurrentSprite(name, sprite);
-            ApplyMonitorTextureToMaterial();
+            ApplyAllTextures();
         }
         else
         {
-            if(playerMoneySO.GetMoney() >= itensSO.GetPriceFromSprite(sprite))
+            int price = itensSO.GetPriceFromSprite(sprite);
+            if (playerMoneySO.GetMoney() >= price)
             {
-                playerMoneySO.ChangeMoney(-itensSO.GetPriceFromSprite(sprite));
-                coinText.text = playerMoneySO.GetMoney().ToString();
+                playerMoneySO.ChangeMoney(-price);
+                if (coinText != null)
+                    coinText.text = playerMoneySO.GetMoney().ToString();
 
                 playerItemSO.AddPlayerItemTexture(name, sprite);
                 playerItemSO.SetCurrentSprite(name, sprite);
-                ApplyMonitorTextureToMaterial();
+                ApplyAllTextures();
             }
         }
     }
@@ -44,6 +45,8 @@ public class PlayerManager : MonoBehaviour
     public void AddMoney(int num)
     {
         playerMoneySO.ChangeMoney(num);
+        if (coinText != null)
+            coinText.text = playerMoneySO.GetMoney().ToString();
     }
 
     public void ChangeCurrentSprite(string name, Sprite sprite)
@@ -51,20 +54,30 @@ public class PlayerManager : MonoBehaviour
         playerItemSO.SetCurrentSprite(name, sprite);
     }
 
-    public void ApplyMonitorTextureToMaterial()
+    // Aplica textura ao monitor, teclado e mouse
+    public void ApplyAllTextures()
     {
-        GameObject monitorObj = GameObject.FindGameObjectWithTag("Monitor");
+        ApplyTextureToTaggedObject("Monitor", playerItemSO.ReturnMonitorTexture());
+        ApplyTextureToTaggedObject("Keyboard", playerItemSO.ReturnKeyboardTexture());
+        ApplyTextureToTaggedObject("Mouse", playerItemSO.ReturnMouseTexture());
+    }
 
-        Image monitorImage = monitorObj.GetComponent<Image>();
+    // Função reutilizável para aplicar textura via Sprite
+    private void ApplyTextureToTaggedObject(string tag, Sprite sprite)
+    {
+        GameObject obj = GameObject.FindGameObjectWithTag(tag);
 
-        Sprite monitorSprite = playerItemSO.ReturnMonitorTexture();
+        if (obj != null)
+        {
+            Image img = obj.GetComponent<Image>();
+            if (img != null && sprite != null)
+            {
+                Material instancedMaterial = new Material(img.material);
+                instancedMaterial.SetTexture("_Texture2D", sprite.texture);
+                img.material = instancedMaterial;
 
-        Material instancedMaterial = new Material(monitorImage.material);
-
-        instancedMaterial.SetTexture("_Texture2D", monitorSprite.texture);
-
-        monitorImage.material = instancedMaterial;
-
-        Debug.Log("Textura do monitor aplicada com sucesso ao material!");
+                Debug.Log($"Textura de {tag} aplicada com sucesso ao material!");
+            }
+        }
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlayerItensSO
   m_EditorClassIdentifier: 
   playerMonitorSprites: []
-  currentMonitor: {fileID: 21300000, guid: 43f599f8e0a522844b55c22c50a40052, type: 3}
+  currentMonitor: {fileID: 0}
   playerKeyboardSprites: []
   currentKeyboard: {fileID: 0}
   playerMouseSprites: []

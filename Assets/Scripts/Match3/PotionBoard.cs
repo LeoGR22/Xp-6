@@ -283,6 +283,11 @@ public class PotionBoard : MonoBehaviour
                 if (!win)
                 {
                     win = true;
+
+                    GameObject targetPlayer = GameObject.FindWithTag("Player");
+                    PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
+                    playerManager.AddMoney((int)timer.GetMovesLeft() * 5);
+
                     level.PassLevel();
                 }
                 canLose.value = false;

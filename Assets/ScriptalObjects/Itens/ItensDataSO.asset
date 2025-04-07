@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: ItensDataSO
   m_EditorClassIdentifier: 
   monitors:
-  - itemSprite: {fileID: 1266865215, guid: 5408f37edacc47f41af47d44cd2892db, type: 3}
-    priceSprite: 5
-  - itemSprite: {fileID: 657121951, guid: f563b2c4c3ec4384a903517ca9bdee48, type: 3}
-    priceSprite: 10
   - itemSprite: {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
-    priceSprite: 10
-  keyboards: []
-  mouses: []
+    priceSprite: 25
+  keyboards:
+  - itemSprite: {fileID: 21300000, guid: 0d9dffdd52aab2d47bc2667ae9f95d0b, type: 3}
+    priceSprite: 25
+  mouses:
+  - itemSprite: {fileID: 21300000, guid: 8c4dc95df9d42384ebee4dc111fbfce6, type: 3}
+    priceSprite: 25
