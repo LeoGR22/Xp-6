@@ -17,5 +17,7 @@ MonoBehaviour:
     priceSprite: 5
   - itemSprite: {fileID: 657121951, guid: f563b2c4c3ec4384a903517ca9bdee48, type: 3}
     priceSprite: 10
+  - itemSprite: {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
+    priceSprite: 10
   keyboards: []
   mouses: []

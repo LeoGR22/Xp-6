@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2481997882392994498}
   - component: {fileID: 8918084205416082212}
   m_Layer: 5
-  m_Name: Monitor 2
+  m_Name: Monitor 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67,7 +67,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 657121951, guid: f563b2c4c3ec4384a903517ca9bdee48, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
