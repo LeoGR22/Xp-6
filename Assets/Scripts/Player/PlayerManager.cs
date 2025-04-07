@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.U2D;
 using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviour
@@ -10,9 +12,12 @@ public class PlayerManager : MonoBehaviour
 
     public ItensSO itensSO;
 
+    public TMP_Text coinText;
+
     private void Start()
     {
         ApplyMonitorTextureToMaterial();
+        coinText.text = playerMoneySO.GetMoney().ToString(); 
     }
 
     public void VerifyItem(string name, Sprite sprite)
@@ -26,11 +31,19 @@ public class PlayerManager : MonoBehaviour
         {
             if(playerMoneySO.GetMoney() >= itensSO.GetPriceFromSprite(sprite))
             {
+                playerMoneySO.ChangeMoney(-itensSO.GetPriceFromSprite(sprite));
+                coinText.text = playerMoneySO.GetMoney().ToString();
+
                 playerItemSO.AddPlayerItemTexture(name, sprite);
                 playerItemSO.SetCurrentSprite(name, sprite);
                 ApplyMonitorTextureToMaterial();
             }
         }
+    }
+
+    public void AddMoney(int num)
+    {
+        playerMoneySO.ChangeMoney(num);
     }
 
     public void ChangeCurrentSprite(string name, Sprite sprite)
