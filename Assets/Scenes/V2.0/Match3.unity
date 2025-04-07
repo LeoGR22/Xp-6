@@ -254,7 +254,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: b8c532aef54102344a0554c1d43a00f6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f3c50bcc85a68014291a235a65d0381b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -566,6 +566,7 @@ MonoBehaviour:
   time: 0
   timeData: {fileID: 11400000, guid: 5a6960d2003dd0847be2cd03c1b3ced2, type: 2}
   timerText: {fileID: 621864735}
+  timerBool: {fileID: 11400000, guid: ac74b4126b689d44c8f58023570a9f34, type: 2}
   loseGame:
     m_PersistentCalls:
       m_Calls:
@@ -794,8 +795,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1013b08468429c9488d10ce0496466de, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 409b48c26e27603459ee7faa9de01648, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -869,8 +870,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: bb84f2f2673ff6448a5924543a732794, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: edd272243135b5e49be7bd0d6e5f8f64, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1713,8 +1714,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 130500bd6498ffa44b3b890e04a6e732, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 9f65bcd73a977294d8f97828be5ee08f, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4

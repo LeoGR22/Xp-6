@@ -39,7 +39,9 @@ public class PotionBoard : MonoBehaviour
     private Vector2 startTouchPosition; 
     private Vector2 endTouchPosition;
     Potion clickedPotion = null;
-    public Potion targetPotion = null; 
+    public Potion targetPotion = null;
+
+    private bool playerMadeAMove = false;
 
     //variaveis para armazenar os potions coletados
     public ObjectiveBoardData violetPotionCount;
@@ -51,6 +53,8 @@ public class PotionBoard : MonoBehaviour
     public GameEvent LoseGame;
     public BooleanSO canLose;
 
+    //define qual tipo de condição de derrota
+    private Timer timer;
 
     private void Awake() 
     {
@@ -63,6 +67,7 @@ public class PotionBoard : MonoBehaviour
         width = widthData.GetSize();
         height = heightData.GetSize();
         level = FindObjectOfType<SetLevel>();
+        timer = FindObjectOfType<Timer>();
 
         InitializeBoard();
         CheckBoard(true);
@@ -103,12 +108,14 @@ public class PotionBoard : MonoBehaviour
                 if (endTouchPosition.x > startTouchPosition.x)
                 {
                     targetPotion = GetPotionAt(clickedPotion.xIndex + 1, clickedPotion.yIndex);
+                    playerMadeAMove = true;
                     SelectPotion(targetPotion);
                     Debug.Log("Swipe para direita");
                 }
                 else 
                 {
                     targetPotion = GetPotionAt(clickedPotion.xIndex - 1, clickedPotion.yIndex);
+                    playerMadeAMove = true;
                     SelectPotion(targetPotion);
                     Debug.Log("Swipe para esquerda");
                 }
@@ -118,12 +125,14 @@ public class PotionBoard : MonoBehaviour
                 if (endTouchPosition.y > startTouchPosition.y)
                 {
                     targetPotion = GetPotionAt(clickedPotion.xIndex, clickedPotion.yIndex + 1);
+                    playerMadeAMove = true;
                     SelectPotion(targetPotion);
                     Debug.Log("Swipe para cima");
                 }
                 else 
                 {
                     targetPotion = GetPotionAt(clickedPotion.xIndex, clickedPotion.yIndex - 1);
+                    playerMadeAMove = true;
                     SelectPotion(targetPotion);
                     Debug.Log("Swipe para baixo");
                 }
@@ -283,6 +292,14 @@ public class PotionBoard : MonoBehaviour
                 WinGame.Raise();
             }
 
+            if (hasMatched) 
+            {
+                if (playerMadeAMove)
+                {
+                    playerMadeAMove = false;
+                    timer.DecreaseMove();
+                }
+            }
 
             RemoveAndRefill(potionsToRemove);
 

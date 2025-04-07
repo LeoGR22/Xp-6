@@ -11,6 +11,8 @@ public class Timer : MonoBehaviour
     public FloatSO timeData;
     public TextMeshProUGUI timerText;
 
+    public TimerBooleanSO timerBool;
+
     public UnityEvent loseGame;
     public BooleanSO canLose;
 
@@ -23,7 +25,10 @@ public class Timer : MonoBehaviour
     void Update()
     {
         timerText.text = time.ToString("F0");
-        DecrementTimer();
+        if (timerBool.value == true)
+        {
+            DecrementTimer();
+        }
     }
 
 
@@ -32,6 +37,16 @@ public class Timer : MonoBehaviour
         time -= 1f * Time.deltaTime;
 
         if (time < 0f && canLose.value == true) 
+        {
+            Lose();
+        }
+    }
+
+    public void DecreaseMove()
+    {
+        time -= 1f;
+
+        if (time <= 0f && canLose.value == true)
         {
             Lose();
         }
