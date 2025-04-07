@@ -307,6 +307,8 @@ public class PotionBoard : MonoBehaviour
             {
                 CheckBoard(true);
             }
+
+            TryShuffleBoardIfNoMoves();
         }
 
         return hasMatched;
@@ -388,6 +390,165 @@ public class PotionBoard : MonoBehaviour
         potionBoard[x, index] = new Node(true, newPotion);
         Vector3 targetPosition = new Vector3(newPotion.transform.position.x, newPotion.transform.position.y - locationToMove, newPotion.transform.position.z);
         newPotion.GetComponent<Potion>().MoveToTarget(targetPosition);
+    }
+
+    public bool HasPossibleMoves()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (potionBoard[x, y].isUsable && potionBoard[x, y].potion != null)
+                {
+                    Potion currentPotion = potionBoard[x, y].potion.GetComponent<Potion>();
+                    ItemType potionType = currentPotion.potionType;
+
+                    // Verifica padrões ao redor da poção atual
+                    // Exemplo: duas poções iguais ao lado de uma terceira que pode ser movida
+                    if (CheckPotentialMatch(x, y, potionType))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false; // Nenhum movimento possível encontrado
+    }
+    private void TryShuffleBoardIfNoMoves()
+    {
+        if (!HasPossibleMoves())
+        {
+            int maxAttempts = 100;
+            int attempts = 0;
+
+            do
+            {
+                ShuffleBoard();
+                attempts++;
+            } while (!HasPossibleMoves() && attempts < maxAttempts);
+
+            if (attempts >= maxAttempts)
+            {
+                Debug.LogWarning("Não foi possível gerar um tabuleiro com jogadas possíveis após várias tentativas.");
+            }
+        }
+    }
+
+    // Verifica se há um padrão que pode levar a uma combinação
+    private bool CheckPotentialMatch(int x, int y, ItemType potionType)
+    {
+        // Verifica padrões horizontais
+        if (x + 1 < width && potionBoard[x + 1, y].isUsable && potionBoard[x + 1, y].potion != null)
+        {
+            if (potionBoard[x + 1, y].potion.GetComponent<Potion>().potionType == potionType)
+            {
+                // Duas poções iguais lado a lado, verifica se há uma terceira nas proximidades
+                if (x + 2 < width && potionBoard[x + 2, y].isUsable && potionBoard[x + 2, y].potion != null &&
+                    potionBoard[x + 2, y].potion.GetComponent<Potion>().potionType == potionType)
+                    return true;
+                if (x - 1 >= 0 && potionBoard[x - 1, y].isUsable && potionBoard[x - 1, y].potion != null &&
+                    potionBoard[x - 1, y].potion.GetComponent<Potion>().potionType == potionType)
+                    return true;
+                if (y + 1 < height && potionBoard[x, y + 1].isUsable && potionBoard[x, y + 1].potion != null &&
+                    potionBoard[x, y + 1].potion.GetComponent<Potion>().potionType == potionType)
+                    return true;
+                if (y - 1 >= 0 && potionBoard[x, y - 1].isUsable && potionBoard[x, y - 1].potion != null &&
+                    potionBoard[x, y - 1].potion.GetComponent<Potion>().potionType == potionType)
+                    return true;
+            }
+        }
+
+        // Verifica padrões verticais
+        if (y + 1 < height && potionBoard[x, y + 1].isUsable && potionBoard[x, y + 1].potion != null)
+        {
+            if (potionBoard[x, y + 1].potion.GetComponent<Potion>().potionType == potionType)
+            {
+                if (y + 2 < height && potionBoard[x, y + 2].isUsable && potionBoard[x, y + 2].potion != null &&
+                    potionBoard[x, y + 2].potion.GetComponent<Potion>().potionType == potionType)
+                    return true;
+                if (y - 1 >= 0 && potionBoard[x, y - 1].isUsable && potionBoard[x, y - 1].potion != null &&
+                    potionBoard[x, y - 1].potion.GetComponent<Potion>().potionType == potionType)
+                    return true;
+                if (x + 1 < width && potionBoard[x + 1, y].isUsable && potionBoard[x + 1, y].potion != null &&
+                    potionBoard[x + 1, y].potion.GetComponent<Potion>().potionType == potionType)
+                    return true;
+                if (x - 1 >= 0 && potionBoard[x - 1, y].isUsable && potionBoard[x - 1, y].potion != null &&
+                    potionBoard[x - 1, y].potion.GetComponent<Potion>().potionType == potionType)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Embaralha o tabuleiro de forma controlada
+    public void ShuffleBoard()
+    {
+        Debug.Log("Nenhum movimento possível. Embaralhando o tabuleiro...");
+
+        // 1. Coletar todas as poções existentes
+        List<Potion> allPotions = new List<Potion>();
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (potionBoard[x, y].isUsable && potionBoard[x, y].potion != null)
+                {
+                    allPotions.Add(potionBoard[x, y].potion.GetComponent<Potion>());
+                }
+            }
+        }
+
+        // 2. Limpar o tabuleiro sem destruir as poções
+        potionBoard = new Node[width, height];
+        List<Vector2> availablePositions = new List<Vector2>();
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (!arrayLayout.rows[y].row[x]) // Posições usáveis
+                {
+                    availablePositions.Add(new Vector2(x, y));
+                    potionBoard[x, y] = new Node(true, null); // Prepara o node como vazio
+                }
+                else
+                {
+                    potionBoard[x, y] = new Node(false, null); // Posições bloqueadas
+                }
+            }
+        }
+
+        // 3. Redistribuir as poções existentes
+        foreach (Potion potion in allPotions)
+        {
+            if (availablePositions.Count > 0)
+            {
+                int randomIndex = Random.Range(0, availablePositions.Count);
+                Vector2 pos = availablePositions[randomIndex];
+                int x = (int)pos.x;
+                int y = (int)pos.y;
+
+                // Atribuir a poção à nova posição
+                potionBoard[x, y] = new Node(true, potion.gameObject);
+                potion.SetIndicies(x, y);
+                Vector3 targetPos = new Vector3(x - spacingX, y - spacingY, potion.transform.position.z);
+                potion.MoveToTarget(targetPos);
+
+                // Remover a posição da lista de disponíveis
+                availablePositions.RemoveAt(randomIndex);
+            }
+        }
+
+        // 4. Validar o novo tabuleiro
+        if (!HasPossibleMoves() || CheckBoard(false))
+        {
+            Debug.Log("Embaralhamento resultou em estado inválido. Tentando novamente...");
+            ShuffleBoard(); // Recursivo até encontrar um estado válido
+        }
+        else
+        {
+            Debug.Log("Tabuleiro embaralhado com sucesso!");
+        }
     }
 
     private int FindIndexOfLowestNull(int x)

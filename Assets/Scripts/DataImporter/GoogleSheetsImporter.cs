@@ -8,7 +8,7 @@ public class GoogleSheetsImporter : MonoBehaviour
 {
     private string sheetID = "1fdBGsJ__-eEnmXuChiOZY1I7QIFapqmR2mPxwKnWiA4";
     private string sheetURL => $"https://docs.google.com/spreadsheets/d/{sheetID}/gviz/tq?tqx=out:json";
-    private string savePath => Path.Combine(Application.dataPath, "FasesDados/fases.json");
+    private string savePath => Path.Combine(Application.dataPath, "StreamingAssets/fases.json");
 
     public void DownloadData()
     {
@@ -75,7 +75,7 @@ public class GoogleSheetsImporter : MonoBehaviour
 
     private void SaveJsonToFile(string json)
     {
-        string folderPath = Path.Combine(Application.dataPath, "FasesDados");
+        string folderPath = Path.Combine(Application.dataPath, "StreamingAssets");
         if (!Directory.Exists(folderPath))
         {
             Directory.CreateDirectory(folderPath);

@@ -1,73 +1,81 @@
 using UnityEngine;
 using System.IO;
+using UnityEngine.Networking;
+using System.Collections;
 
 public class LoadLevelData : MonoBehaviour
 {
-    // Referências para os ScriptableObjects
-    public SetTime timerData;       // ScriptableObject que armazena o tempo
-    public SetBoardSize widthData;     // ScriptableObject que armazena a altura
-    public SetBoardSize heightData;       // ScriptableObject que armazena a largura
+    public SetTime timerData;
+    public SetBoardSize widthData;
+    public SetBoardSize heightData;
     public SetObjectives redObjective;
     public SetObjectives orangeObjective;
     public SetObjectives greenObjective;
     public SetObjectives violetObjective;
     public SetLevel setLevel;
-    // O nível atual que o jogador está (você pode pegar do seu código)
+
     public int levelInt;
 
-    // Caminho do arquivo JSON
-    private string jsonFilePath = "Assets/FasesDados/fases.json";  // Coloque o caminho correto do seu arquivo JSON
+    private string jsonFileName = "fases.json";
 
-    // Método chamado pelo botão na Unity
     public void LoadData()
     {
         levelInt = setLevel.GetLevel();
-
-        // Chama a função para carregar os dados do JSON
-        LoadLevelDataFromJson();
+        StartCoroutine(LoadLevelDataFromJson());
     }
 
-    void LoadLevelDataFromJson()
+    IEnumerator LoadLevelDataFromJson()
     {
-        // Verifica se o arquivo JSON existe
-        if (File.Exists(jsonFilePath))
+        string filePath = Path.Combine(Application.streamingAssetsPath, jsonFileName);
+        string jsonString = "";
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        UnityWebRequest www = UnityWebRequest.Get(filePath);
+        yield return www.SendWebRequest();
+
+        if (www.result == UnityWebRequest.Result.Success)
         {
-            // Lê o conteúdo do arquivo JSON
-            string jsonString = File.ReadAllText(jsonFilePath);
-
-            // Converte o JSON para a classe LevelList
-            LevelList levelList = JsonUtility.FromJson<LevelList>(jsonString);
-
-            // Busca o nível baseado no levelInt (o nível atual do jogador)
-            LevelInfo level = System.Array.Find(levelList.levels, l => l.Level == levelInt);
-
-            if (level != null)
-            {
-                // Atualiza os ScriptableObjects com os dados do nível encontrado
-                timerData.SetterTime(level.Timer);
-                heightData.SetHeigth(level.Altura);
-                widthData.SetWidth(level.Largura);
-                greenObjective.SetGreen(level.Green);
-                orangeObjective.SetOrange(level.Orange);
-                redObjective.SetRed(level.Red);
-                violetObjective.SetViolet(level.Violet);
-
-                // Exibe uma mensagem no console para confirmar que os dados foram carregados
-                Debug.Log("Dados do nível " + levelInt + " carregados com sucesso!");
-            }
-            else
-            {
-                // Se não encontrar o nível, exibe uma mensagem de erro
-                Debug.LogError("Nível " + levelInt + " não encontrado no JSON!");
-            }
+            jsonString = www.downloadHandler.text;
         }
         else
         {
-            // Se o arquivo JSON não for encontrado, exibe um erro
-            Debug.LogError("Arquivo JSON não encontrado!");
+            Debug.LogError("Erro ao carregar JSON no Android: " + www.error);
+            yield break;
+        }
+#else
+        if (File.Exists(filePath))
+        {
+            jsonString = File.ReadAllText(filePath);
+        }
+        else
+        {
+            Debug.LogError("Arquivo JSON não encontrado no path: " + filePath);
+            yield break;
+        }
+#endif
+
+        LevelList levelList = JsonUtility.FromJson<LevelList>(jsonString);
+        LevelInfo level = System.Array.Find(levelList.levels, l => l.Level == levelInt);
+
+        if (level != null)
+        {
+            timerData.SetterTime(level.Timer);
+            heightData.SetHeigth(level.Altura);
+            widthData.SetWidth(level.Largura);
+            greenObjective.SetGreen(level.Green);
+            orangeObjective.SetOrange(level.Orange);
+            redObjective.SetRed(level.Red);
+            violetObjective.SetViolet(level.Violet);
+
+            Debug.Log("Dados do nível " + levelInt + " carregados com sucesso!");
+        }
+        else
+        {
+            Debug.LogWarning("Nível " + levelInt + " não encontrado no JSON!");
         }
     }
 }
+
 
 [System.Serializable]
 public class LevelInfo

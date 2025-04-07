@@ -26,6 +26,7 @@ public class PlayerManager : MonoBehaviour
         {
             if(playerMoneySO.GetMoney() >= itensSO.GetPriceFromSprite(sprite))
             {
+                playerItemSO.AddPlayerItemTexture(name, sprite);
                 playerItemSO.SetCurrentSprite(name, sprite);
                 ApplyMonitorTextureToMaterial();
             }

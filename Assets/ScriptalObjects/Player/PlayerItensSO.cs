@@ -23,11 +23,41 @@ public class PlayerItensSO : ScriptableObject
     [Header("Empty")]
     public Sprite empty;
 
-    public void AddPlayerMonitorTexture(Sprite newTexture)
+    public void AddPlayerItemTexture(string itemType, Sprite newTexture)
     {
-        List<Sprite> tempList = new List<Sprite>(playerMonitorSprites);
-        tempList.Add(newTexture);
-        playerMonitorSprites = tempList.ToArray();
+        switch (itemType)
+        {
+            case "Monitor":
+                if (!new List<Sprite>(playerMonitorSprites).Contains(newTexture))
+                {
+                    List<Sprite> tempMonitorList = new List<Sprite>(playerMonitorSprites);
+                    tempMonitorList.Add(newTexture);
+                    playerMonitorSprites = tempMonitorList.ToArray();
+                }
+                break;
+
+            case "Keyboard":
+                if (!new List<Sprite>(playerKeyboardSprites).Contains(newTexture))
+                {
+                    List<Sprite> tempKeyboardList = new List<Sprite>(playerKeyboardSprites);
+                    tempKeyboardList.Add(newTexture);
+                    playerKeyboardSprites = tempKeyboardList.ToArray();
+                }
+                break;
+
+            case "Mouse":
+                if (!new List<Sprite>(playerMouseSprites).Contains(newTexture))
+                {
+                    List<Sprite> tempMouseList = new List<Sprite>(playerMouseSprites);
+                    tempMouseList.Add(newTexture);
+                    playerMouseSprites = tempMouseList.ToArray();
+                }
+                break;
+
+            default:
+                Debug.LogWarning("Tipo de item inválido: " + itemType);
+                break;
+        }
     }
 
     public void SetCurrentSprite(string name, Sprite sprite)
