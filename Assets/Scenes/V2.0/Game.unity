@@ -3595,9 +3595,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1440626228}
+  - component: {fileID: 1440626229}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3617,6 +3618,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1440626229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1440626227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b209b067b0bd2134991d8d9b4362b70f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerItemSO: {fileID: 11400000, guid: f251e94affbf3c54a81ee84eea37b3c8, type: 2}
+  playerMoneySO: {fileID: 11400000, guid: 8a1ca5e4935e22b458740d488e8574e2, type: 2}
+  itensSO: {fileID: 11400000, guid: bf1a459da58d1ae43b0a29274619389e, type: 2}
 --- !u!1 &1462783368
 GameObject:
   m_ObjectHideFlags: 0
@@ -3986,7 +4002,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 9ec6bd4eded926445a47b66ffcdebdbf, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}

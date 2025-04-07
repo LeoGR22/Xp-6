@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f233bed3d377314fa145530bf3b2da3, type: 3}
+  m_Name: ItensDataSO
+  m_EditorClassIdentifier: 
+  monitors:
+  - itemSprite: {fileID: 1266865215, guid: 5408f37edacc47f41af47d44cd2892db, type: 3}
+    priceSprite: 5
+  - itemSprite: {fileID: 657121951, guid: f563b2c4c3ec4384a903517ca9bdee48, type: 3}
+    priceSprite: 10
+  keyboards: []
+  mouses: []

@@ -9,6 +9,7 @@ public class ItensManager : MonoBehaviour
     {
         // Encontra o objeto alvo pela tag
         GameObject targetObject = GameObject.FindWithTag(tagName);
+        GameObject targetPlayer = GameObject.FindWithTag("Player");
 
         if (targetObject == null)
         {
@@ -16,8 +17,9 @@ public class ItensManager : MonoBehaviour
             return;
         }
 
-        // Obtém a Image do objeto alvo
+        // Obtém a Image do objeto alvo e a Textura
         Image targetImage = targetObject.GetComponent<Image>();
+        PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
 
         if (targetImage == null)
         {
@@ -42,8 +44,13 @@ public class ItensManager : MonoBehaviour
             return;
         }
 
+        playerManager.VerifyItem(tagName, buttonImage.sprite);
+
+        //playerManager.ChangeCurrentSprite(tagName, buttonImage.sprite);
+        //playerManager.ApplyMonitorTextureToMaterial();
+
         // Copia a imagem do botão para o objeto alvo
-        targetImage.sprite = buttonImage.sprite;
-        Debug.Log("Imagem do botão copiada para: " + tagName);
+        //targetImage.sprite = buttonImage.sprite;
+        //Debug.Log("Imagem do botão copiada para: " + tagName);
     }
 }
