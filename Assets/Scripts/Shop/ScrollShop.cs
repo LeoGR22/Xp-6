@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ScrollShop : MonoBehaviour
 {
     public RectTransform content;
-    public List<GameObject> itemPrefabs;  
+    public List<GameObject> itemPrefabs;
     private List<GameObject> spawnedItems = new List<GameObject>();
 
     void Start()
@@ -23,6 +23,13 @@ public class ScrollShop : MonoBehaviour
             GameObject selectedPrefab = itemPrefabs[i];
             GameObject newItem = Instantiate(selectedPrefab, content);
             spawnedItems.Add(newItem);
+
+            // Força o material padrão compatível com UI
+            Image image = newItem.GetComponent<Image>();
+            if (image != null)
+            {
+                image.material = new Material(Shader.Find("UI/Default"));
+            }
         }
     }
 }
