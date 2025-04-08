@@ -4,12 +4,15 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
+using System.Diagnostics;
 
 public class PlayerManager : MonoBehaviour
 {
     public PlayerItensSO playerItemSO;
     public PlayerMoneySO playerMoneySO;
     public ItensSO itensSO;
+
+    public GameObject buyConfirmationUI;
 
     public TMP_Text coinText;
 
@@ -25,6 +28,9 @@ public class PlayerManager : MonoBehaviour
             coinText.text = playerMoneySO.GetMoney().ToString();
     }
 
+    private string lastName;
+    private Sprite lastSprite;
+
     public void VerifyItem(string name, Sprite sprite)
     {
         if (playerItemSO.IsSpriteInCategory(name, sprite))
@@ -37,15 +43,38 @@ public class PlayerManager : MonoBehaviour
             int price = itensSO.GetPriceFromSprite(sprite);
             if (playerMoneySO.GetMoney() >= price)
             {
-                playerMoneySO.ChangeMoney(-price);
-                if (coinText != null)
-                    coinText.text = playerMoneySO.GetMoney().ToString();
+                lastName = name;
+                lastSprite = sprite;
 
-                playerItemSO.AddPlayerItemTexture(name, sprite);
-                playerItemSO.SetCurrentSprite(name, sprite);
-                ApplyAllTextures();
+                buyConfirmationUI.SetActive(true);
             }
         }
+    }
+
+    public void ChooseOption(string option)
+    {
+        if(option == "Yes")
+        {
+            BuyItem(lastName, lastSprite);
+            buyConfirmationUI.SetActive(false);
+        }
+        else
+        {
+            buyConfirmationUI.SetActive(false);
+        }
+    }
+
+    public void BuyItem(string name, Sprite sprite)
+    {
+        int price = itensSO.GetPriceFromSprite(sprite);
+
+        playerMoneySO.ChangeMoney(-price);
+        if (coinText != null)
+            coinText.text = playerMoneySO.GetMoney().ToString();
+
+        playerItemSO.AddPlayerItemTexture(name, sprite);
+        playerItemSO.SetCurrentSprite(name, sprite);
+        ApplyAllTextures();
     }
 
     public void AddMoney(int num)
@@ -82,12 +111,13 @@ public class PlayerManager : MonoBehaviour
                 instancedMaterial.SetTexture("_Texture2D", sprite.texture);
                 img.material = instancedMaterial;
 
-                Debug.Log($"Textura de {tag} aplicada com sucesso ao material!");
+                UnityEngine.Debug.Log($"Textura de {tag} aplicada com sucesso ao material!");
             }
         }
     }
 
     //FrameRate
+    /*
     void Awake()
     {
         QualitySettings.vSyncCount = 0;
@@ -109,5 +139,6 @@ public class PlayerManager : MonoBehaviour
                 t = Time.realtimeSinceStartup;
         }
     }
+    */
 
 }

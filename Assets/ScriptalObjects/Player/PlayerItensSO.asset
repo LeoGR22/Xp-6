@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20973514d6b046d46aecf54c1f321c72, type: 3}
   m_Name: PlayerItensSO
   m_EditorClassIdentifier: 
-  playerMonitorSprites: []
-  currentMonitor: {fileID: 0}
-  playerKeyboardSprites: []
-  currentKeyboard: {fileID: 0}
+  playerMonitorSprites:
+  - {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
+  currentMonitor: {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
+  playerKeyboardSprites:
+  - {fileID: 21300000, guid: 0d9dffdd52aab2d47bc2667ae9f95d0b, type: 3}
+  currentKeyboard: {fileID: 21300000, guid: 0d9dffdd52aab2d47bc2667ae9f95d0b, type: 3}
   playerMouseSprites: []
   currentMouse: {fileID: 0}
   empty: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
