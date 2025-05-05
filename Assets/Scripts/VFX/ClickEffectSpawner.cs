@@ -29,7 +29,7 @@ public class ClickEffectSpawner : MonoBehaviour
 
         if (effectTransform != null)
         {
-            effectTransform.anchoredPosition3D = new Vector3(localPoint.x, localPoint.y, -10f); 
+            effectTransform.anchoredPosition3D = new Vector3(localPoint.x, localPoint.y, -31f); 
             effectTransform.localScale = Vector3.one; 
             effectTransform.SetAsLastSibling();
         }

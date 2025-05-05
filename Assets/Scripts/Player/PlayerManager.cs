@@ -26,6 +26,9 @@ public class PlayerManager : MonoBehaviour
 
         if (coinText != null)
             coinText.text = playerMoneySO.GetMoney().ToString();
+
+        if(buyConfirmationUI != null)
+            buyConfirmationUI.SetActive(false);
     }
 
     private string lastName;
