@@ -28,6 +28,18 @@ public class PotionBoard : MonoBehaviour
     public List<GameObject> potionsToDestroy = new();
     public GameObject potionParent;
 
+    // Prefab do VFX de explosão (branco)
+    public GameObject explosionVFXPrefab;
+
+    // Mapeamento de cores por ItemType
+    private Dictionary<ItemType, Color> potionColors = new Dictionary<ItemType, Color>
+    {
+        { ItemType.Violet, new Color(0.67f, 0.39f, 0.86f) }, 
+        { ItemType.Green, new Color(0.39f, 0.78f, 0.39f) },  
+        { ItemType.Red, new Color(0.86f, 0.39f, 0.39f) },    
+        { ItemType.Orange, new Color(0.94f, 0.63f, 0.31f) }  
+    };
+
     [SerializeField] private Potion selectedPotion;
     [SerializeField] private bool isProcessingMove;
 
@@ -199,7 +211,10 @@ public class PotionBoard : MonoBehaviour
         {
             foreach (GameObject potion in potionsToDestroy)
             {
-                Destroy(potion);
+                if (potion != null)
+                {
+                    Destroy(potion);
+                }
             }
             potionsToDestroy.Clear();
         }
@@ -254,26 +269,32 @@ public class PotionBoard : MonoBehaviour
         {
             foreach (Potion potionToRemove in potionsToRemove)
             {
-                potionToRemove.isMatched = false;
+                if (potionToRemove != null)
+                {
+                    potionToRemove.isMatched = false;
+                }
             }
 
             foreach (Potion potionToRemove in potionsToRemove)
             {
-                if (potionToRemove.potionType == ItemType.Violet && violetPotionCount != null)
+                if (potionToRemove != null)
                 {
-                    if (violetPotionCount.count > 0) { violetPotionCount.count--; }
-                }
-                else if (potionToRemove.potionType == ItemType.Green && greenPotionCount != null)
-                {
-                    if (greenPotionCount.count > 0) { greenPotionCount.count--; }
-                }
-                else if (potionToRemove.potionType == ItemType.Red && redPotionCount != null)
-                {
-                    if (redPotionCount.count > 0) { redPotionCount.count--; }
-                }
-                else if (potionToRemove.potionType == ItemType.Orange && orangePotionCount != null)
-                {
-                    if (orangePotionCount.count > 0) { orangePotionCount.count--; }
+                    if (potionToRemove.potionType == ItemType.Violet && violetPotionCount != null)
+                    {
+                        if (violetPotionCount.count > 0) { violetPotionCount.count--; }
+                    }
+                    else if (potionToRemove.potionType == ItemType.Green && greenPotionCount != null)
+                    {
+                        if (greenPotionCount.count > 0) { greenPotionCount.count--; }
+                    }
+                    else if (potionToRemove.potionType == ItemType.Red && redPotionCount != null)
+                    {
+                        if (redPotionCount.count > 0) { redPotionCount.count--; }
+                    }
+                    else if (potionToRemove.potionType == ItemType.Orange && orangePotionCount != null)
+                    {
+                        if (orangePotionCount.count > 0) { orangePotionCount.count--; }
+                    }
                 }
             }
 
@@ -307,17 +328,85 @@ public class PotionBoard : MonoBehaviour
 
     private void RemoveAndRefill(List<Potion> _potionsToRemove)
     {
-        // Destroi as poções marcadas para remoção
+        // Inicia a coroutine para animar e destruir as poções
+        StartCoroutine(AnimateAndRemovePotions(_potionsToRemove));
+    }
+
+    private IEnumerator AnimateAndRemovePotions(List<Potion> _potionsToRemove)
+    {
+        // Calcula o ponto central do grupo de poções
+        Vector3 centerPoint = Vector3.zero;
+        int validPotionCount = 0;
+        Potion firstValidPotion = null;
+
         foreach (Potion potion in _potionsToRemove)
         {
-            int _xIndex = potion.xIndex;
-            int _yIndex = potion.yIndex;
-            Destroy(potion.gameObject);
-            potionBoard[_xIndex, _yIndex] = new Node(true, null);
+            if (potion != null && potion.gameObject != null)
+            {
+                centerPoint += potion.transform.position;
+                validPotionCount++;
+                if (firstValidPotion == null)
+                {
+                    firstValidPotion = potion; // Guarda a primeira poção válida
+                }
+            }
+        }
+
+        // Evita divisão por zero
+        if (validPotionCount > 0)
+        {
+            centerPoint /= validPotionCount;
+        }
+        else
+        {
+            // Se não houver poções válidas, prossegue sem animação
+            yield return StartCoroutine(RefillBoardSimultaneously());
+            yield break;
+        }
+
+        // Anima todas as poções para o centro
+        float animationDuration = 0.2f; // Duração do efeito (ajustável)
+        foreach (Potion potion in _potionsToRemove)
+        {
+            if (potion != null && potion.gameObject != null)
+            {
+                potion.MoveToTarget(centerPoint, animationDuration);
+            }
+        }
+
+        // Aguarda até que todas as poções terminem de se mover
+        yield return new WaitUntil(() => AreAllPotionsSettled());
+
+        // Instancia o VFX de explosão no ponto central com a cor correspondente
+        if (explosionVFXPrefab != null && validPotionCount > 0 && firstValidPotion != null)
+        {
+            GameObject vfx = Instantiate(explosionVFXPrefab, centerPoint, Quaternion.identity);
+            ParticleSystem particleSystem = vfx.GetComponent<ParticleSystem>();
+            if (particleSystem != null)
+            {
+                var main = particleSystem.main;
+                main.startColor = potionColors[firstValidPotion.potionType];
+            }
+        }
+
+        // Destroi as poções marcadas para remoção e limpa o tabuleiro
+        foreach (Potion potion in _potionsToRemove)
+        {
+            if (potion != null && potion.gameObject != null)
+            {
+                int _xIndex = potion.xIndex;
+                int _yIndex = potion.yIndex;
+                // Limpa a referência no tabuleiro antes de destruir
+                if (_xIndex >= 0 && _xIndex < width && _yIndex >= 0 && _yIndex < height)
+                {
+                    potionBoard[_xIndex, _yIndex] = new Node(true, null);
+                }
+                Destroy(potion.gameObject);
+            }
         }
 
         // Inicia a coroutine para preencher simultaneamente
-        StartCoroutine(RefillBoardSimultaneously());
+        yield return StartCoroutine(RefillBoardSimultaneously());
     }
 
     private IEnumerator RefillBoardSimultaneously()
@@ -726,6 +815,25 @@ public class PotionBoard : MonoBehaviour
         }
     }
 
+    private bool AreAllPotionsSettled()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (potionBoard[x, y].potion != null)
+                {
+                    Potion potion = potionBoard[x, y].potion.GetComponent<Potion>();
+                    if (potion != null && potion.isMoving)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     #region Swapping Potions
 
     // Select potion
@@ -858,19 +966,6 @@ public class PotionBoard : MonoBehaviour
         {
             Debug.Log("Moves available; no shuffle needed.");
         }
-    }
-
-    private bool AreAllPotionsSettled()
-    {
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                if (potionBoard[x, y].potion != null && potionBoard[x, y].potion.GetComponent<Potion>().isMoving)
-                    return false;
-            }
-        }
-        return true;
     }
 
     // IsAdjacent

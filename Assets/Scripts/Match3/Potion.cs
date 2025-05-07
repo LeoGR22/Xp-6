@@ -15,7 +15,6 @@ public class Potion : MonoBehaviour
 
     public bool isMoving;
 
-
     public Potion(int _x, int _y)
     {
         xIndex = _x;
@@ -28,28 +27,26 @@ public class Potion : MonoBehaviour
         yIndex = _y;
     }
 
-    //MoveToTarget
-    public void MoveToTarget(Vector2 _targetPos)
+    // MoveToTarget
+    public void MoveToTarget(Vector2 _targetPos, float duration = 0.15f)
     {
-        StartCoroutine(MoveCoroutine(_targetPos));
+        StartCoroutine(MoveCoroutine(_targetPos, duration));
     }
-    //MoveCoroutine
-    private IEnumerator MoveCoroutine(Vector2 _targetPos)
+
+    // MoveCoroutine
+    private IEnumerator MoveCoroutine(Vector2 _targetPos, float duration)
     {
         isMoving = true;
-        float duration = 0.15f;
 
         Vector2 startPosition = transform.position;
-        float elaspedTime = 0f;
+        float elapsedTime = 0f;
 
-        while (elaspedTime < duration)
+        while (elapsedTime < duration)
         {
-            float t = elaspedTime / duration;
-
+            float t = elapsedTime / duration;
             transform.position = Vector2.Lerp(startPosition, _targetPos, t);
 
-            elaspedTime += Time.deltaTime;
-
+            elapsedTime += Time.deltaTime;
             yield return null;
         }
 
@@ -57,7 +54,6 @@ public class Potion : MonoBehaviour
         isMoving = false;
     }
 }
-
 
 public enum ItemType
 {

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: PlayerItensSO
   m_EditorClassIdentifier: 
   playerMonitorSprites:
-  - {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
-  currentMonitor: {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
+  - {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
+  currentMonitor: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
   playerKeyboardSprites: []
   currentKeyboard: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
   playerMouseSprites: []

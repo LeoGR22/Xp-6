@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 2481997882392994498}
   - component: {fileID: 8918084205416082212}
   m_Layer: 5
-  m_Name: Mouse
+  m_Name: Template
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 94ac322529ed80744b50c202c49bb190, type: 2}
+  m_Material: {fileID: 2100000, guid: 9ec6bd4eded926445a47b66ffcdebdbf, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8c4dc95df9d42384ebee4dc111fbfce6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -207,7 +207,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: Mouse
+          m_StringArgument: Monitor
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &8918084205416082212
@@ -287,7 +287,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8c4dc95df9d42384ebee4dc111fbfce6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
