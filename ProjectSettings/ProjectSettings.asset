@@ -163,7 +163,7 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.match3
     Standalone: com.DefaultCompany.2DProject
-    iPhone: default-Company
+    iPhone: com.sourPatch.workSpace
   buildNumber:
     Standalone: 0
     VisionOS: 0
@@ -907,11 +907,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: 
+  cloudProjectId: 4ed69a23-9430-4b41-adb9-bd2ffab5c73c
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: Xp-6
+  organizationId: matchajun
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
