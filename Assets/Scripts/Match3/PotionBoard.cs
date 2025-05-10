@@ -36,7 +36,7 @@ public class PotionBoard : MonoBehaviour
 
 {
     { ItemType.Violet, new Color(0.67f, 0.39f, 0.86f) }, // Roxo meio-termo
-    { ItemType.Green, new Color(0.39f, 0.78f, 0.39f) },  // Verde meio-termo
+    { ItemType.Green, new Color(0.82f, 0.71f, 0.55f) },  // Verde meio-termo
     { ItemType.Red, new Color(0.86f, 0.39f, 0.39f) },    // Vermelho meio-termo
     { ItemType.Orange, new Color(0.94f, 0.63f, 0.31f) }  // Laranja meio-termo
 };

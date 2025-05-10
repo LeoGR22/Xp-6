@@ -1814,11 +1814,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 200
+      value: 116.85
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 200
+      value: 116.85
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1850,11 +1850,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -335
+      value: -441
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 953
+      value: 1086
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2606,6 +2606,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3448689763442159923, guid: 2fe55f87864e1df4c84d7f3bfe2d98b1, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: a6d19def9fb1bbc4bba32f3fa320baeb, type: 3}
     - target: {fileID: 3474582564266905046, guid: 2fe55f87864e1df4c84d7f3bfe2d98b1, type: 3}
       propertyPath: m_Name
       value: GreenCount
@@ -2623,6 +2627,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1279233375}
     m_Modifications:
+    - target: {fileID: 1608850631194163638, guid: 61297fd39603efe42938712aafb428bd, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b622bbd1e6370884ca94cce27f94a50c, type: 3}
     - target: {fileID: 8476203835732299399, guid: 61297fd39603efe42938712aafb428bd, type: 3}
       propertyPath: m_Name
       value: VioletCount
@@ -2720,6 +2728,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1279233375}
     m_Modifications:
+    - target: {fileID: 521340220940682754, guid: ff2d569da87146443afbbb2650a5d4f1, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 8da5a8fa2da61154abd98e06266c17d4, type: 3}
     - target: {fileID: 4733679417991201441, guid: ff2d569da87146443afbbb2650a5d4f1, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2817,6 +2829,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1279233375}
     m_Modifications:
+    - target: {fileID: 734062718036724723, guid: 1fbd57c7d711a41458d527c2334fa4d9, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 27ace606590d5cf4189340fd7c42e3a4, type: 3}
     - target: {fileID: 2892508757122905548, guid: 1fbd57c7d711a41458d527c2334fa4d9, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

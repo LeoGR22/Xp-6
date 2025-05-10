@@ -15,6 +15,11 @@ public class Potion : MonoBehaviour
 
     public bool isMoving;
 
+    // Parâmetros para o efeito de compressão (ajustáveis no Inspector)
+    [SerializeField] private float squashAmountY = 0.8f; // Escala Y mínima durante compressão
+    [SerializeField] private float stretchAmountX = 1.2f; // Escala X máxima durante compressão
+    [SerializeField] private float squashDuration = 0.2f; // Duração total do efeito de compressão
+
     public Potion(int _x, int _y)
     {
         xIndex = _x;
@@ -50,8 +55,47 @@ public class Potion : MonoBehaviour
             yield return null;
         }
 
+        // Garante que a poção esteja na posição final
         transform.position = _targetPos;
+
+        // Marca a poção como não mais em movimento
         isMoving = false;
+
+        // Inicia a animação de compressão sem aguardá-la
+        StartCoroutine(SquashEffect());
+    }
+
+    // Coroutine para o efeito de compressão
+    private IEnumerator SquashEffect()
+    {
+        Vector3 originalScale = Vector3.one; // Escala normal (1, 1, 1)
+        Vector3 squashedScale = new Vector3(stretchAmountX, squashAmountY, 1f); // Escala comprimida
+
+        // Fase 1: Comprimir (squash) rapidamente
+        float compressTime = squashDuration * 0.4f; // 40% do tempo para compressão
+        float elapsed = 0f;
+
+        while (elapsed < compressTime)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / compressTime;
+            transform.localScale = Vector3.Lerp(originalScale, squashedScale, t);
+            yield return null;
+        }
+        transform.localScale = squashedScale;
+
+        // Fase 2: Voltar ao normal suavemente
+        float returnTime = squashDuration * 0.6f; // 60% do tempo para voltar
+        elapsed = 0f;
+
+        while (elapsed < returnTime)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / returnTime;
+            transform.localScale = Vector3.Lerp(squashedScale, originalScale, t);
+            yield return null;
+        }
+        transform.localScale = originalScale;
     }
 }
 
