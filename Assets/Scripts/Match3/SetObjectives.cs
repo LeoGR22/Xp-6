@@ -8,8 +8,9 @@ public class SetObjectives : MonoBehaviour
    public ObjectiveBoardData orangeObjective;
    public ObjectiveBoardData greenObjective;
    public ObjectiveBoardData violetObjective;
+   public ObjectiveBoardData blueObjective;
 
-   public void SetRed(int count)
+    public void SetRed(int count)
    {
         redObjective.count = count;
    }
@@ -24,5 +25,10 @@ public class SetObjectives : MonoBehaviour
     public void SetViolet(int count)
     {
         violetObjective.count = count;
+    }
+
+    public void SetBlue(int count)
+    {
+        blueObjective.count = count;
     }
 }

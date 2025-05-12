@@ -20,6 +20,26 @@ public class PlayerItensSO : ScriptableObject
     public Sprite currentMouse;
 
     [Space(10)]
+    [Header("Mousepads")]
+    public Sprite[] playerMousepadSprites;
+    public Sprite currentMousepad;
+
+    [Space(10)]
+    [Header("Cups")]
+    public Sprite[] playerCupSprites;
+    public Sprite currentCup;
+
+    [Space(10)]
+    [Header("Candles")]
+    public Sprite[] playerCandleSprites;
+    public Sprite currentCandle;
+
+    [Space(10)]
+    [Header("WallDecors")]
+    public Sprite[] playerWallDecorSprites;
+    public Sprite currentWallDecor;
+
+    [Space(10)]
     [Header("Empty")]
     public Sprite empty;
 
@@ -53,6 +73,38 @@ public class PlayerItensSO : ScriptableObject
                     playerMouseSprites = tempMouseList.ToArray();
                 }
                 break;
+            case "Mousepad":
+                if (!new List<Sprite>(playerMousepadSprites).Contains(newTexture))
+                {
+                    List<Sprite> tempMouseList = new List<Sprite>(playerMousepadSprites);
+                    tempMouseList.Add(newTexture);
+                    playerMousepadSprites = tempMouseList.ToArray();
+                }
+                break;
+            case "Cup":
+                if (!new List<Sprite>(playerCupSprites).Contains(newTexture))
+                {
+                    List<Sprite> tempMouseList = new List<Sprite>(playerCupSprites);
+                    tempMouseList.Add(newTexture);
+                    playerCupSprites = tempMouseList.ToArray();
+                }
+                break;
+            case "Candle":
+                if (!new List<Sprite>(playerCandleSprites).Contains(newTexture))
+                {
+                    List<Sprite> tempMouseList = new List<Sprite>(playerCandleSprites);
+                    tempMouseList.Add(newTexture);
+                    playerCandleSprites = tempMouseList.ToArray();
+                }
+                break;
+            case "WallDecor":
+                if (!new List<Sprite>(playerWallDecorSprites).Contains(newTexture))
+                {
+                    List<Sprite> tempMouseList = new List<Sprite>(playerWallDecorSprites);
+                    tempMouseList.Add(newTexture);
+                    playerWallDecorSprites = tempMouseList.ToArray();
+                }
+                break;
 
             default:
                 Debug.LogWarning("Tipo de item inválido: " + itemType);
@@ -71,6 +123,20 @@ public class PlayerItensSO : ScriptableObject
         }else if(name == "Mouse")
         {
             currentMouse = sprite;
+        }else if (name == "Mousepad")
+        {
+            currentMousepad = sprite;
+        }else if (name == "Cup")
+        {
+            currentCup = sprite;
+        }
+        else if (name == "Candle")
+        {
+            currentCandle = sprite;
+        }
+        else if (name == "WallDecor")
+        {
+            currentWallDecor = sprite;
         }
     }
     public bool IsSpriteInCategory(string name, Sprite sprite)
@@ -99,6 +165,38 @@ public class PlayerItensSO : ScriptableObject
                     return true;
             }
         }
+        else if (name == "Mousepad")
+        {
+            foreach (var s in playerMousepadSprites)
+            {
+                if (s == sprite)
+                    return true;
+            }
+        }
+        else if (name == "Cup")
+        {
+            foreach (var s in playerCupSprites)
+            {
+                if (s == sprite)
+                    return true;
+            }
+        }
+        else if (name == "Candle")
+        {
+            foreach (var s in playerCupSprites)
+            {
+                if (s == sprite)
+                    return true;
+            }
+        }
+        else if (name == "WallDecor")
+        {
+            foreach (var s in playerCupSprites)
+            {
+                if (s == sprite)
+                    return true;
+            }
+        }
 
         return false;
     }
@@ -119,6 +217,31 @@ public class PlayerItensSO : ScriptableObject
     {
         if (currentMouse != null)
             return currentMouse;
+        else return empty;
+    }
+    public Sprite ReturnMousepadTexture()
+    {
+        if (currentMousepad != null)
+            return currentMousepad;
+        else return empty;
+    }
+
+    public Sprite ReturnCupTexture()
+    {
+        if (currentCup != null)
+            return currentCup;
+        else return empty;
+    }
+    public Sprite ReturnCandleTexture()
+    {
+        if (currentCandle != null)
+            return currentCandle;
+        else return empty;
+    }
+    public Sprite ReturnWallDecorTexture()
+    {
+        if (currentWallDecor != null)
+            return currentWallDecor;
         else return empty;
     }
 }

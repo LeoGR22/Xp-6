@@ -14,6 +14,12 @@ public class ItensSO : ScriptableObject
     [Header("Mouses")]
     public List<ItemData> mouses;
 
+    [Header("Decor")]
+    public List<ItemData> mousepads;
+    public List<ItemData> cups;
+    public List<ItemData> candles;
+    public List<ItemData> wallDecors;
+
     public int GetPriceFromSprite(Sprite targetSprite)
     {
         // Verifica nos monitores
@@ -37,6 +43,29 @@ public class ItensSO : ScriptableObject
                 return item.priceSprite;
         }
 
+        foreach (ItemData item in mousepads)
+        {
+            if (item.itemSprite == targetSprite)
+                return item.priceSprite;
+        }
+
+        foreach (ItemData item in cups)
+        {
+            if (item.itemSprite == targetSprite)
+                return item.priceSprite;
+        }
+
+        foreach (ItemData item in candles)
+        {
+            if (item.itemSprite == targetSprite)
+                return item.priceSprite;
+        }
+
+        foreach (ItemData item in wallDecors)
+        {
+            if (item.itemSprite == targetSprite)
+                return item.priceSprite;
+        }
         return 0;
     }
 }

@@ -12,6 +12,7 @@ public class LoadLevelData : MonoBehaviour
     public SetObjectives orangeObjective;
     public SetObjectives greenObjective;
     public SetObjectives violetObjective;
+    public SetObjectives blueObjective;
     public SetLevel setLevel;
 
     public int levelInt;
@@ -66,6 +67,7 @@ public class LoadLevelData : MonoBehaviour
             orangeObjective.SetOrange(level.Orange);
             redObjective.SetRed(level.Red);
             violetObjective.SetViolet(level.Violet);
+            blueObjective.SetBlue(level.Blue);
 
             Debug.Log("Dados do nível " + levelInt + " carregados com sucesso!");
         }
@@ -80,7 +82,7 @@ public class LoadLevelData : MonoBehaviour
 [System.Serializable]
 public class LevelInfo
 {
-    public int Level;  // Corrigir para 'Level' (com L maiúsculo)
+    public int Level;  
     public float Timer;
     public int Altura;
     public int Largura;
@@ -88,6 +90,7 @@ public class LevelInfo
     public int Orange;
     public int Red;
     public int Violet;
+    public int Blue;
 }
 
 // Classe para armazenar a lista de níveis

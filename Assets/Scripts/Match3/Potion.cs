@@ -15,7 +15,6 @@ public class Potion : MonoBehaviour
 
     public bool isMoving;
 
-    // Parâmetros para o efeito de compressão (ajustáveis no Inspector)
     [SerializeField] private float squashAmountY = 0.8f; // Escala Y mínima durante compressão
     [SerializeField] private float stretchAmountX = 1.2f; // Escala X máxima durante compressão
     [SerializeField] private float squashDuration = 0.2f; // Duração total do efeito de compressão
@@ -65,7 +64,6 @@ public class Potion : MonoBehaviour
         StartCoroutine(SquashEffect());
     }
 
-    // Coroutine para o efeito de compressão
     private IEnumerator SquashEffect()
     {
         Vector3 originalScale = Vector3.one; // Escala normal (1, 1, 1)
@@ -104,5 +102,6 @@ public enum ItemType
     Green,
     Red,
     Violet,
-    Orange
+    Orange,
+    Blue
 }
