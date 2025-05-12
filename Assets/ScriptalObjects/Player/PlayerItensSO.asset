@@ -19,10 +19,12 @@ MonoBehaviour:
   currentKeyboard: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
   playerMouseSprites: []
   currentMouse: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
-  playerMousepadSprites:
-  - {fileID: 245754006, guid: 2cde76829bb3aaf46aefd1761f6a3f5b, type: 3}
-  currentMousepad: {fileID: 245754006, guid: 2cde76829bb3aaf46aefd1761f6a3f5b, type: 3}
-  playerCupSprites:
-  - {fileID: 1442025916, guid: 612cffde792c31f4b8376647c250262d, type: 3}
-  currentCup: {fileID: 1442025916, guid: 612cffde792c31f4b8376647c250262d, type: 3}
+  playerMousepadSprites: []
+  currentMousepad: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
+  playerCupSprites: []
+  currentCup: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
+  playerCandleSprites: []
+  currentCandle: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
+  playerWallDecorSprites: []
+  currentWallDecor: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
   empty: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
