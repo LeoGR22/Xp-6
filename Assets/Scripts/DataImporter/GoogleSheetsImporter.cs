@@ -60,7 +60,8 @@ public class GoogleSheetsImporter : MonoBehaviour
                 ["Green"] = cells[5]?["v"] ?? 0,
                 ["Orange"] = cells[6]?["v"] ?? 0,
                 ["Red"] = cells[7]?["v"] ?? 0,
-                ["Violet"] = cells[8]?["v"] ?? 0
+                ["Violet"] = cells[8]?["v"] ?? 0,
+                ["Blue"] = cells[9]?["v"] ?? 0
             };
 
             cleanData.Add(levelData);

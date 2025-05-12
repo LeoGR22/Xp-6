@@ -7,6 +7,10 @@ TagManager:
   - Monitor
   - Keyboard
   - Mouse
+  - Mousepad
+  - Cup
+  - Candle
+  - WallDecor
   layers:
   - Default
   - TransparentFX

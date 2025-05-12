@@ -27,7 +27,7 @@ public class PlayerManager : MonoBehaviour
         if (coinText != null)
             coinText.text = playerMoneySO.GetMoney().ToString();
 
-        if(buyConfirmationUI != null)
+        if (buyConfirmationUI != null)
             buyConfirmationUI.SetActive(false);
     }
 
@@ -49,14 +49,16 @@ public class PlayerManager : MonoBehaviour
                 lastName = name;
                 lastSprite = sprite;
 
+                buyConfirmationUI.GetComponent<BuyConfirmation>().SetSprite(sprite);
                 buyConfirmationUI.SetActive(true);
+                AudioManager.Instance.PlaySFX("Click2");
             }
         }
     }
 
     public void ChooseOption(string option)
     {
-        if(option == "Yes")
+        if (option == "Yes")
         {
             BuyItem(lastName, lastSprite);
             buyConfirmationUI.SetActive(false);
@@ -98,9 +100,13 @@ public class PlayerManager : MonoBehaviour
         ApplyTextureToTaggedObject("Monitor", playerItemSO.ReturnMonitorTexture());
         ApplyTextureToTaggedObject("Keyboard", playerItemSO.ReturnKeyboardTexture());
         ApplyTextureToTaggedObject("Mouse", playerItemSO.ReturnMouseTexture());
+        ApplyTextureToTaggedObject("Mousepad", playerItemSO.ReturnMousepadTexture());
+        ApplyTextureToTaggedObject("Cup", playerItemSO.ReturnCupTexture());
+        ApplyTextureToTaggedObject("Candle", playerItemSO.ReturnCandleTexture());
+        ApplyTextureToTaggedObject("WallDecor", playerItemSO.ReturnWallDecorTexture());
     }
 
-    // Função reutilizável para aplicar textura via Sprite
+    // Função reutilizável para aplicar sprite diretamente no componente Image
     private void ApplyTextureToTaggedObject(string tag, Sprite sprite)
     {
         GameObject obj = GameObject.FindGameObjectWithTag(tag);
@@ -110,16 +116,21 @@ public class PlayerManager : MonoBehaviour
             Image img = obj.GetComponent<Image>();
             if (img != null && sprite != null)
             {
-                Material instancedMaterial = new Material(img.material);
-                instancedMaterial.SetTexture("_Texture2D", sprite.texture);
-                img.material = instancedMaterial;
-
-                UnityEngine.Debug.Log($"Textura de {tag} aplicada com sucesso ao material!");
+                img.sprite = sprite; // Atualiza apenas o sprite
+                UnityEngine.Debug.Log($"Sprite de {tag} aplicado com sucesso!");
             }
+            else
+            {
+                UnityEngine.Debug.LogWarning($"Image ou sprite não encontrado para o objeto com tag {tag}.");
+            }
+        }
+        else
+        {
+            UnityEngine.Debug.LogWarning($"Objeto com tag {tag} não encontrado.");
         }
     }
 
-    //FrameRate
+    // FrameRate 
     /*
     void Awake()
     {
@@ -143,5 +154,4 @@ public class PlayerManager : MonoBehaviour
         }
     }
     */
-
 }

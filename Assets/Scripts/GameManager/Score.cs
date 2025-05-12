@@ -10,12 +10,14 @@ public class Score : MonoBehaviour
     public ObjectiveBoardData greenCountData;
     public ObjectiveBoardData redCountData;
     public ObjectiveBoardData orangeData;
+    public ObjectiveBoardData blueData;
 
-    [SerializeField] private TextMeshProUGUI violetCount;
-    [SerializeField] private TextMeshProUGUI greenCount;
-    [SerializeField] private TextMeshProUGUI redCount;
-    [SerializeField] private TextMeshProUGUI orangeCount;
-  
+    [SerializeField] private TextMeshPro violetCount;
+    [SerializeField] private TextMeshPro greenCount;
+    [SerializeField] private TextMeshPro redCount;
+    [SerializeField] private TextMeshPro orangeCount;
+    [SerializeField] private TextMeshPro blueCount;
+
 
     void Update()
     {
@@ -23,5 +25,6 @@ public class Score : MonoBehaviour
         greenCount.text = "x " + greenCountData.count.ToString();
         redCount.text = "x " + redCountData.count.ToString();
         orangeCount.text = "x " + orangeData.count.ToString();
+        blueCount.text = "x " + blueData.count.ToString();
     }
 }

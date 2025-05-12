@@ -17,7 +17,6 @@ public class ItensManager : MonoBehaviour
             return;
         }
 
-        // Obtém a Image do objeto alvo e a Textura
         Image targetImage = targetObject.GetComponent<Image>();
         PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
 
@@ -27,30 +26,24 @@ public class ItensManager : MonoBehaviour
             return;
         }
 
-        // Obtém a Image do botão que chamou a função
-        Button button = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
+        // Busca o objeto "icon" que é filho deste objeto (pai do botão e do icon)
+        Transform iconTransform = transform.Find("Icon");
 
-        if (button == null)
+        if (iconTransform == null)
         {
-            Debug.LogWarning("O botão não foi encontrado.");
+            Debug.LogWarning("Não foi encontrado um objeto 'icon' como filho deste objeto.");
             return;
         }
 
-        Image buttonImage = button.GetComponent<Image>();
+        Image iconImage = iconTransform.GetComponent<Image>();
 
-        if (buttonImage == null)
+        if (iconImage == null)
         {
-            Debug.LogWarning("O botão não possui um componente Image.");
+            Debug.LogWarning("O objeto 'icon' não possui um componente Image.");
             return;
         }
 
-        playerManager.VerifyItem(tagName, buttonImage.sprite);
-
-        //playerManager.ChangeCurrentSprite(tagName, buttonImage.sprite);
-        //playerManager.ApplyMonitorTextureToMaterial();
-
-        // Copia a imagem do botão para o objeto alvo
-        //targetImage.sprite = buttonImage.sprite;
-        //Debug.Log("Imagem do botão copiada para: " + tagName);
+        // Usa a imagem do ícone para chamar o método
+        playerManager.VerifyItem(tagName, iconImage.sprite);
     }
 }

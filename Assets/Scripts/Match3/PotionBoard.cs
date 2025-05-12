@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using static UnityEngine.Rendering.DebugUI.Table;
 using Random = UnityEngine.Random;
+using CandyCoded.HapticFeedback;
 public class PotionBoard : MonoBehaviour
 {
     // Tamanho do tabuleiro
@@ -33,12 +34,12 @@ public class PotionBoard : MonoBehaviour
 
     // Mapeamento de cores por ItemType (meio-termo entre vibrante e pastel)
     private Dictionary<ItemType, Color> potionColors = new Dictionary<ItemType, Color>
-
 {
     { ItemType.Violet, new Color(0.67f, 0.39f, 0.86f) }, // Roxo meio-termo
     { ItemType.Green, new Color(0.82f, 0.71f, 0.55f) },  // Verde meio-termo
     { ItemType.Red, new Color(0.86f, 0.39f, 0.39f) },    // Vermelho meio-termo
-    { ItemType.Orange, new Color(0.94f, 0.63f, 0.31f) }  // Laranja meio-termo
+    { ItemType.Orange, new Color(0.94f, 0.63f, 0.31f) }, // Laranja meio-termo
+    { ItemType.Blue, new Color(0.39f, 0.58f, 0.93f) }    // Azul meio-termo (NOVA ENTRADA)
 };
 
     [SerializeField] private Potion selectedPotion;
@@ -65,12 +66,14 @@ public class PotionBoard : MonoBehaviour
     public ObjectiveBoardData greenPotionCount;
     public ObjectiveBoardData redPotionCount;
     public ObjectiveBoardData orangePotionCount;
+    public ObjectiveBoardData bluePotionCount;
 
     // Referências aos GameObjects da UI que mostram as contagens
-    public GameObject violetCountUI; // Atribua no Inspector o GameObject da UI para Violet
-    public GameObject greenCountUI;  // Atribua no Inspector o GameObject da UI para Green
-    public GameObject redCountUI;    // Atribua no Inspector o GameObject da UI para Red
-    public GameObject orangeCountUI; // Atribua no Inspector o GameObject da UI para Orange
+    public GameObject violetCountUI;
+    public GameObject greenCountUI;
+    public GameObject redCountUI;
+    public GameObject orangeCountUI;
+    public GameObject blueCountUI;
 
     public GameEvent WinGame;
     public GameEvent LoseGame;
@@ -93,6 +96,7 @@ public class PotionBoard : MonoBehaviour
         timer = FindObjectOfType<Timer>();
 
         InitializeBoard();
+        AssignCountUIs();
         CheckBoard(true);
     }
 
@@ -184,7 +188,7 @@ public class PotionBoard : MonoBehaviour
             potionBoard = new Node[width, height];
 
             spacingX = (float)(width - 1) / 2;
-            spacingY = (float)(height - 1) / 2;
+            spacingY = (float)((height - 1) / 2) + .75f;
 
             for (int y = 0; y < height; y++)
             {
@@ -210,6 +214,45 @@ public class PotionBoard : MonoBehaviour
             // Ensure no initial matches and at least one move exists
             validBoard = !CheckBoard(false) && HasPossibleMoves();
         }
+    }
+
+    private void AssignCountUIs()
+    {
+        // Busca todos os objetos com o componente CountLabel
+        CountLabel[] countLabels = FindObjectsOfType<CountLabel>();
+
+        foreach (CountLabel countLabel in countLabels)
+        {
+            string labelName = countLabel.GetName();
+            switch (labelName)
+            {
+                case "Violet":
+                    violetCountUI = countLabel.gameObject;
+                    break;
+                case "Green":
+                    greenCountUI = countLabel.gameObject;
+                    break;
+                case "Red":
+                    redCountUI = countLabel.gameObject;
+                    break;
+                case "Orange":
+                    orangeCountUI = countLabel.gameObject;
+                    break;
+                case "Blue":
+                    blueCountUI = countLabel.gameObject;
+                    break;
+                default:
+                    Debug.LogWarning($"CountLabel com nome desconhecido: {labelName}");
+                    break;
+            }
+        }
+
+        // Verifica se todos os GameObjects foram atribuídos
+        if (violetCountUI == null) Debug.LogError("violetCountUI não foi atribuído!");
+        if (greenCountUI == null) Debug.LogError("greenCountUI não foi atribuído!");
+        if (redCountUI == null) Debug.LogError("redCountUI não foi atribuído!");
+        if (orangeCountUI == null) Debug.LogError("orangeCountUI não foi atribuído!");
+        if (blueCountUI == null) Debug.LogError("blueCountUI não foi atribuído!");
     }
 
     public void DestroyPotions()
@@ -305,6 +348,9 @@ public class PotionBoard : MonoBehaviour
                 List<Potion> potionsOfType = kvp.Value;
                 int matchSize = potionsOfType.Count; // Tamanho do match para esse tipo
 
+                AudioManager.Instance.PlaySFX("Match");
+                HapticFeedback.LightFeedback();
+
                 // Log para depuração
                 Debug.Log($"Processing match of {matchSize} potions of type {type}");
 
@@ -348,6 +394,15 @@ public class PotionBoard : MonoBehaviour
                             isRelevantForObjective = true;
                         }
                         break;
+                    case ItemType.Blue: // ALTERAÇÃO: Adicionado suporte para poção azul
+                        if (bluePotionCount != null && bluePotionCount.count > 0)
+                        {
+                            int previousCount = bluePotionCount.count;
+                            bluePotionCount.count = Mathf.Max(0, bluePotionCount.count - matchSize);
+                            Debug.Log($"Blue count: {previousCount} -> {bluePotionCount.count} (reduced by {matchSize})");
+                            isRelevantForObjective = true;
+                        }
+                        break;
                 }
 
                 // Adiciona as poções do match à lista de animação SOMENTE se for relevante
@@ -370,8 +425,8 @@ public class PotionBoard : MonoBehaviour
                 StartCoroutine(AnimatePotionToUI(potionsToAnimate));
             }
 
-            // Verifica condição de vitória
-            if (violetPotionCount.count + greenPotionCount.count + orangePotionCount.count + redPotionCount.count <= 0)
+            // Verifica condição de vitória (ALTERAÇÃO: Inclui bluePotionCount)
+            if (violetPotionCount.count + greenPotionCount.count + orangePotionCount.count + redPotionCount.count + bluePotionCount.count <= 0)
             {
                 if (!win)
                 {
@@ -954,6 +1009,8 @@ public class PotionBoard : MonoBehaviour
             return;
         }
 
+        AudioManager.Instance.PlaySFX("Swipe");
+
         DoSwap(_currentPotion, _targetPotion);
         StartCoroutine(ProcessMatches(_currentPotion, _targetPotion));
     }
@@ -1116,7 +1173,7 @@ public class PotionBoard : MonoBehaviour
                 continue; // Pula se não houver poções válidas
             }
 
-            // Determina a posição do marcador da UI com base no tipo
+            // Determina a posição do marcador da UI com base no tipo (ALTERAÇÃO: Adicionado ItemType.Blue)
             GameObject targetUI = null;
             switch (type)
             {
@@ -1131,6 +1188,9 @@ public class PotionBoard : MonoBehaviour
                     break;
                 case ItemType.Orange:
                     targetUI = orangeCountUI;
+                    break;
+                case ItemType.Blue:
+                    targetUI = blueCountUI;
                     break;
             }
 
@@ -1214,6 +1274,7 @@ public class PotionBoard : MonoBehaviour
             // Anima cada clone em parábola com um delay mínimo
             float duration = 0.8f; // Duração da animação
             float height = 2f;     // Altura máxima da parábola
+
             float delayBetweenPotions = 0.08f; // Delay mínimo para as poções "seguirem" uma à outra
 
             // Lista para rastrear as coroutines de animação
