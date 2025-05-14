@@ -1,44 +1,56 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
-using System.Diagnostics;
-
 public class PlayerManager : MonoBehaviour
 {
-    public PlayerItensSO playerItemSO;
-    public PlayerMoneySO playerMoneySO;
-    public ItensSO itensSO;
+    [Header("Scriptable Objects")]
+    [SerializeField] private PlayerItensSO playerItemSO;
+    [SerializeField] private PlayerMoneySO playerMoneySO;
+    [SerializeField] private ItensSO itensSO;
 
-    public GameObject buyConfirmationUI;
+    [Header("UI Elements")]
+    [SerializeField] private GameObject buyConfirmationUI;
+    [SerializeField] private TMP_Text coinText;
 
-    public TMP_Text coinText;
+    [Header("Animation Settings")]
+    [SerializeField] private GameObject effectPrefab;
+    [SerializeField] private Animator gameAnimator;
 
-    int MaxRate = 9999;
-    public float TargetFrameRate = 60.0f;
-    float currentFrameTime;
+    [Header("Frame Rate Settings")]
+    [SerializeField] private float targetFrameRate = 60f;
+    private const int MaxFrameRate = 9999;
+
+    private string lastSelectedItemName;
+    private Sprite lastSelectedSprite;
+
+    private readonly Dictionary<string, System.Action<Sprite>> textureApplicators = new Dictionary<string, System.Action<Sprite>>();
+
+    private void Awake()
+    {
+        // Inicializa o dicionário de aplicadores de textura
+        textureApplicators.Add("Monitor", sprite => ApplyTextureToTaggedObject("Monitor", sprite));
+        textureApplicators.Add("Keyboard", sprite => ApplyTextureToTaggedObject("Keyboard", sprite));
+        textureApplicators.Add("Mouse", sprite => ApplyTextureToTaggedObject("Mouse", sprite));
+        textureApplicators.Add("Mousepad", sprite => ApplyTextureToTaggedObject("Mousepad", sprite));
+        textureApplicators.Add("Cup", sprite => ApplyTextureToTaggedObject("Cup", sprite));
+        textureApplicators.Add("Candle", sprite => ApplyTextureToTaggedObject("Candle", sprite));
+        textureApplicators.Add("WallDecor", sprite => ApplyTextureToTaggedObject("WallDecor", sprite));
+    }
 
     private void Start()
     {
         ApplyAllTextures();
-
-        if (coinText != null)
-            coinText.text = playerMoneySO.GetMoney().ToString();
-
-        if (buyConfirmationUI != null)
-            buyConfirmationUI.SetActive(false);
+        UpdateCoinText();
+        SetBuyConfirmationActive(false);
     }
 
-    private string lastName;
-    private Sprite lastSprite;
-
-    public void VerifyItem(string name, Sprite sprite)
+    public void VerifyItem(string itemName, Sprite sprite)
     {
-        if (playerItemSO.IsSpriteInCategory(name, sprite))
+        if (playerItemSO.IsSpriteInCategory(itemName, sprite))
         {
-            playerItemSO.SetCurrentSprite(name, sprite);
+            playerItemSO.SetCurrentSprite(itemName, sprite);
             ApplyAllTextures();
         }
         else
@@ -46,12 +58,15 @@ public class PlayerManager : MonoBehaviour
             int price = itensSO.GetPriceFromSprite(sprite);
             if (playerMoneySO.GetMoney() >= price)
             {
-                lastName = name;
-                lastSprite = sprite;
+                lastSelectedItemName = itemName;
+                lastSelectedSprite = sprite;
 
-                buyConfirmationUI.GetComponent<BuyConfirmation>().SetSprite(sprite);
-                buyConfirmationUI.SetActive(true);
-                AudioManager.Instance.PlaySFX("Click2");
+                if (buyConfirmationUI != null)
+                {
+                    buyConfirmationUI.GetComponent<BuyConfirmation>().SetSprite(sprite);
+                    SetBuyConfirmationActive(true);
+                    AudioManager.Instance.PlaySFX("Click2");
+                }
             }
         }
     }
@@ -60,93 +75,246 @@ public class PlayerManager : MonoBehaviour
     {
         if (option == "Yes")
         {
-            BuyItem(lastName, lastSprite);
-            buyConfirmationUI.SetActive(false);
+            StartCoroutine(OpenBoxCoroutine());
         }
-        else
-        {
-            buyConfirmationUI.SetActive(false);
-        }
+        SetBuyConfirmationActive(false);
     }
 
-    public void BuyItem(string name, Sprite sprite)
+    private IEnumerator OpenBoxCoroutine()
+    {
+        yield return new WaitForSeconds(0.5f);
+        StartCoroutine(AnimateBoxImage(lastSelectedItemName)); // Inicia a animação da caixa
+        yield return new WaitForSeconds(2f);
+        BuyItem(lastSelectedItemName, lastSelectedSprite);
+    }
+
+    public void BuyItem(string itemName, Sprite sprite)
     {
         int price = itensSO.GetPriceFromSprite(sprite);
-
         playerMoneySO.ChangeMoney(-price);
-        if (coinText != null)
-            coinText.text = playerMoneySO.GetMoney().ToString();
+        UpdateCoinText();
 
-        playerItemSO.AddPlayerItemTexture(name, sprite);
-        playerItemSO.SetCurrentSprite(name, sprite);
+        playerItemSO.AddPlayerItemTexture(itemName, sprite);
+        playerItemSO.SetCurrentSprite(itemName, sprite);
         ApplyAllTextures();
     }
 
-    public void AddMoney(int num)
+    public void AddMoney(int amount)
     {
-        playerMoneySO.ChangeMoney(num);
-        if (coinText != null)
-            coinText.text = playerMoneySO.GetMoney().ToString();
+        playerMoneySO.ChangeMoney(amount);
+        UpdateCoinText();
     }
 
-    public void ChangeCurrentSprite(string name, Sprite sprite)
+    public void ChangeCurrentSprite(string itemName, Sprite sprite)
     {
-        playerItemSO.SetCurrentSprite(name, sprite);
+        playerItemSO.SetCurrentSprite(itemName, sprite);
     }
 
-    // Aplica textura ao monitor, teclado e mouse
-    public void ApplyAllTextures()
+    private void ApplyAllTextures()
     {
-        ApplyTextureToTaggedObject("Monitor", playerItemSO.ReturnMonitorTexture());
-        ApplyTextureToTaggedObject("Keyboard", playerItemSO.ReturnKeyboardTexture());
-        ApplyTextureToTaggedObject("Mouse", playerItemSO.ReturnMouseTexture());
-        ApplyTextureToTaggedObject("Mousepad", playerItemSO.ReturnMousepadTexture());
-        ApplyTextureToTaggedObject("Cup", playerItemSO.ReturnCupTexture());
-        ApplyTextureToTaggedObject("Candle", playerItemSO.ReturnCandleTexture());
-        ApplyTextureToTaggedObject("WallDecor", playerItemSO.ReturnWallDecorTexture());
+        textureApplicators["Monitor"](playerItemSO.ReturnMonitorTexture());
+        textureApplicators["Keyboard"](playerItemSO.ReturnKeyboardTexture());
+        textureApplicators["Mouse"](playerItemSO.ReturnMouseTexture());
+        textureApplicators["Mousepad"](playerItemSO.ReturnMousepadTexture());
+        textureApplicators["Cup"](playerItemSO.ReturnCupTexture());
+        textureApplicators["Candle"](playerItemSO.ReturnCandleTexture());
+        textureApplicators["WallDecor"](playerItemSO.ReturnWallDecorTexture());
     }
 
-    // Função reutilizável para aplicar sprite diretamente no componente Image
     private void ApplyTextureToTaggedObject(string tag, Sprite sprite)
     {
-        GameObject obj = GameObject.FindGameObjectWithTag(tag);
+        if (sprite == null) return;
 
-        if (obj != null)
+        GameObject obj = GameObject.FindGameObjectWithTag(tag);
+        if (obj == null)
         {
-            Image img = obj.GetComponent<Image>();
-            if (img != null && sprite != null)
+            Debug.LogWarning($"Objeto com tag {tag} não encontrado.");
+            return;
+        }
+
+        Image img = obj.GetComponent<Image>();
+        if (img == null)
+        {
+            Debug.LogWarning($"Componente Image não encontrado para o objeto com tag {tag}.");
+            return;
+        }
+
+        img.sprite = sprite;
+        Debug.Log($"Sprite de {tag} aplicado com sucesso!");
+    }
+
+    private IEnumerator AnimateBoxImage(string tag)
+    {
+        GameObject obj = GameObject.FindGameObjectWithTag(tag);
+        if (obj == null)
+        {
+            Debug.LogWarning($"Objeto com tag {tag} não encontrado para animar a imagem da caixa.");
+            yield break;
+        }
+
+        if (obj.transform.childCount != 1)
+        {
+            Debug.LogWarning($"O objeto com tag {tag} não tem exatamente um filho (esperado: 1, encontrado: {obj.transform.childCount}).");
+            yield break;
+        }
+
+        Transform boxTransform = obj.transform.GetChild(0);
+        if (boxTransform == null)
+        {
+            Debug.LogWarning($"Filho do objeto com tag {tag} não encontrado.");
+            yield break;
+        }
+
+        GameObject box = boxTransform.gameObject;
+        box.SetActive(true);
+
+        Canvas boxCanvas = box.GetComponent<Canvas>();
+        if (boxCanvas == null)
+        {
+            boxCanvas = box.AddComponent<Canvas>();
+            boxCanvas.overrideSorting = true;
+        }
+        int originalSortingOrder = boxCanvas.sortingOrder;
+        boxCanvas.sortingOrder = 100;
+
+        boxTransform.localScale = new Vector3(0.2f, 0.2f, 1f);
+        boxTransform.localRotation = Quaternion.identity;
+
+        float initialGrowTime = 0.5f;
+        float elapsed = 0f;
+        Vector3 targetScale = Vector3.one;
+        while (elapsed < initialGrowTime)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / initialGrowTime;
+
+            float baseScale = Mathf.Lerp(0.2f, 1f, t);
+
+            float squish = Mathf.Sin(t * Mathf.PI) * 0.05f;
+            float scaleX = baseScale * (1f + squish);
+            float scaleY = baseScale * (1f - squish);
+            boxTransform.localScale = new Vector3(scaleX, scaleY, 1f);
+
+            float swayAngle = Mathf.Sin(t * Mathf.PI * 2f) * 3f;
+            boxTransform.localRotation = Quaternion.Euler(0f, 0f, swayAngle);
+
+            yield return null;
+        }
+        boxTransform.localScale = Vector3.one;
+        boxTransform.localRotation = Quaternion.identity;
+
+        for (int i = 0; i < 2; i++)
+        {
+            float cycleTime = 0.4f;
+            float maxScale = 1.05f + (i * 0.05f);
+
+            elapsed = 0f;
+            while (elapsed < cycleTime / 2)
             {
-                img.sprite = sprite; // Atualiza apenas o sprite
-                UnityEngine.Debug.Log($"Sprite de {tag} aplicado com sucesso!");
+                elapsed += Time.deltaTime;
+                float t = elapsed / (cycleTime / 2);
+                float baseScale = Mathf.Lerp(1f, maxScale, t);
+
+                float squish = Mathf.Sin(t * Mathf.PI) * 0.03f;
+                float scaleX = baseScale * (1f - squish);
+                float scaleY = baseScale * (1f + squish);
+                boxTransform.localScale = new Vector3(scaleX, scaleY, 1f);
+
+                float swayAngle = Mathf.Sin(t * Mathf.PI * 2f) * 3f;
+                boxTransform.localRotation = Quaternion.Euler(0f, 0f, swayAngle);
+
+                yield return null;
             }
-            else
+
+            elapsed = 0f;
+            while (elapsed < cycleTime / 2)
             {
-                UnityEngine.Debug.LogWarning($"Image ou sprite não encontrado para o objeto com tag {tag}.");
+                elapsed += Time.deltaTime;
+                float t = elapsed / (cycleTime / 2);
+                float baseScale = Mathf.Lerp(maxScale, 1f, t);
+
+                float squish = Mathf.Sin(t * Mathf.PI) * 0.03f;
+                float scaleX = baseScale * (1f + squish);
+                float scaleY = baseScale * (1f - squish);
+                boxTransform.localScale = new Vector3(scaleX, scaleY, 1f);
+
+                float swayAngle = Mathf.Sin(t * Mathf.PI * 2f) * 3f;
+                boxTransform.localRotation = Quaternion.Euler(0f, 0f, swayAngle);
+
+                yield return null;
             }
+            boxTransform.localScale = Vector3.one;
+            boxTransform.localRotation = Quaternion.identity;
+        }
+
+        float finalGrowTime = 0.8f;
+        elapsed = 0f;
+        float finalMaxScale = 1.3f;
+        while (elapsed < finalGrowTime)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / finalGrowTime;
+            float easedT = t * t * t;
+            float baseScale = Mathf.Lerp(1f, finalMaxScale, easedT);
+
+            float squish = easedT * 0.05f;
+            float scaleX = baseScale * (1f - squish);
+            float scaleY = baseScale * (1f + squish);
+            boxTransform.localScale = new Vector3(scaleX, scaleY, 1f);
+
+            float swayAngle = Mathf.Sin(t * Mathf.PI * 2f) * 7f;
+            boxTransform.localRotation = Quaternion.Euler(0f, 0f, swayAngle);
+
+            yield return null;
+        }
+
+        if (effectPrefab != null)
+        {
+            Instantiate(effectPrefab, boxTransform.position, Quaternion.identity);
         }
         else
         {
-            UnityEngine.Debug.LogWarning($"Objeto com tag {tag} não encontrado.");
+            Debug.LogWarning("Prefab de efeito não atribuído no PlayerManager.");
+        }
+
+        boxCanvas.sortingOrder = originalSortingOrder;
+        box.SetActive(false);
+    }
+
+    private void UpdateCoinText()
+    {
+        if (coinText != null)
+        {
+            coinText.text = playerMoneySO.GetMoney().ToString();
         }
     }
 
-    // FrameRate 
+    private void SetBuyConfirmationActive(bool isActive)
+    {
+        if (buyConfirmationUI != null)
+        {
+            buyConfirmationUI.SetActive(isActive);
+        }
+    }
+
+    // Código de controle de framerate comentado no original, mantido como referência
     /*
-    void Awake()
+    private void Awake()
     {
         QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = MaxRate;
+        Application.targetFrameRate = MaxFrameRate;
         currentFrameTime = Time.realtimeSinceStartup;
         StartCoroutine(WaitForNextFrame());
     }
-    IEnumerator WaitForNextFrame()
+
+    private IEnumerator WaitForNextFrame()
     {
         while (true)
         {
             yield return new WaitForEndOfFrame();
-            currentFrameTime += 1.0f / TargetFrameRate;
-            var t = Time.realtimeSinceStartup;
-            var sleepTime = currentFrameTime - t - 0.01f;
+            currentFrameTime += 1.0f / targetFrameRate;
+            float t = Time.realtimeSinceStartup;
+            float sleepTime = currentFrameTime - t - 0.01f;
             if (sleepTime > 0)
                 Thread.Sleep((int)(sleepTime * 1000));
             while (t < currentFrameTime)
@@ -154,4 +322,6 @@ public class PlayerManager : MonoBehaviour
         }
     }
     */
+
 }
+

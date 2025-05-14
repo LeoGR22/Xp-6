@@ -115,3 +115,4 @@ MonoBehaviour:
   WinGame: {fileID: 11400000, guid: f46f0692262eb1e469e2897432e5195d, type: 2}
   LoseGame: {fileID: 0}
   canLose: {fileID: 11400000, guid: 446c2009f1040a344b7e9b7006677d43, type: 2}
+  glowVFXPrefab: {fileID: 6937530239127161567, guid: ac4775c1d8cee3047919727409c55d1c, type: 3}

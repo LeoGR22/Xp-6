@@ -7,4 +7,11 @@ using UnityEngine;
 public class LevelData : ScriptableObject
 {
     public int level;
+
+    public float GetLevel()
+    {
+        return level;
+    }
 }
+
+
