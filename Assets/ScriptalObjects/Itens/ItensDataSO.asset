@@ -13,31 +13,63 @@ MonoBehaviour:
   m_Name: ItensDataSO
   m_EditorClassIdentifier: 
   monitors:
-  - itemSprite: {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
-    priceSprite: 75
-  - itemSprite: {fileID: -820468762, guid: b661ce650dec2c34e822705b9805bee6, type: 3}
-    priceSprite: 75
+  - variants:
+    - sprite: {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
+      colorName: White
+    price: 75
+  - variants:
+    - sprite: {fileID: -820468762, guid: b661ce650dec2c34e822705b9805bee6, type: 3}
+      colorName: White
+    - sprite: {fileID: 1733424781, guid: 0a9c379ba2e7ab748ac3bedc0b65dea2, type: 3}
+      colorName: Black
+    price: 75
   keyboards:
-  - itemSprite: {fileID: 21300000, guid: 0d9dffdd52aab2d47bc2667ae9f95d0b, type: 3}
-    priceSprite: 50
-  - itemSprite: {fileID: 379342947, guid: ae6ef482dc9ed2b4aaf5ca26c4852442, type: 3}
-    priceSprite: 35
+  - variants:
+    - sprite: {fileID: 21300000, guid: 0d9dffdd52aab2d47bc2667ae9f95d0b, type: 3}
+      colorName: White
+    - sprite: {fileID: 379342947, guid: ae6ef482dc9ed2b4aaf5ca26c4852442, type: 3}
+      colorName: Black
+    price: 35
   mouses:
-  - itemSprite: {fileID: 21300000, guid: 8c4dc95df9d42384ebee4dc111fbfce6, type: 3}
-    priceSprite: 25
+  - variants:
+    - sprite: {fileID: 21300000, guid: 8c4dc95df9d42384ebee4dc111fbfce6, type: 3}
+      colorName: White
+    price: 25
   mousepads:
-  - itemSprite: {fileID: 245754006, guid: 2cde76829bb3aaf46aefd1761f6a3f5b, type: 3}
-    priceSprite: 15
+  - variants:
+    - sprite: {fileID: 245754006, guid: 2cde76829bb3aaf46aefd1761f6a3f5b, type: 3}
+      colorName: Yellow
+    - sprite: {fileID: -1845546816, guid: c18e47539853688438c31230cb9ecdeb, type: 3}
+      colorName: Blue
+    - sprite: {fileID: -1836599618, guid: 096ba3095936df44692874db99d536db, type: 3}
+      colorName: Green
+    - sprite: {fileID: -1822715541, guid: 925dd4944a463c145ba0ab3bd21d43af, type: 3}
+      colorName: Pink
+    price: 20
+  - variants:
+    - sprite: {fileID: -1424492827, guid: 7d549772beceb8c4285ea9c4f521bc37, type: 3}
+      colorName: Yellow
+    - sprite: {fileID: -1412744152, guid: a904e2fe07cb666459e4ebbcc7d73a25, type: 3}
+      colorName: Green
+    - sprite: {fileID: 1236606761, guid: 4043e2b8f014dc946842a1ece7174e2b, type: 3}
+      colorName: Blue
+    - sprite: {fileID: 3592096, guid: 50ef7a2cc7fbb514ba93589f30ac357b, type: 3}
+      colorName: Pink
+    price: 20
   cups:
-  - itemSprite: {fileID: 1442025916, guid: 612cffde792c31f4b8376647c250262d, type: 3}
-    priceSprite: 10
-  - itemSprite: {fileID: -1425995213, guid: 612cffde792c31f4b8376647c250262d, type: 3}
-    priceSprite: 10
-  - itemSprite: {fileID: 1405994431, guid: 148872bb9f3b62547bdc61d12b888526, type: 3}
-    priceSprite: 10
+  - variants:
+    - sprite: {fileID: 1442025916, guid: 612cffde792c31f4b8376647c250262d, type: 3}
+      colorName: Yellow
+    - sprite: {fileID: -1425995213, guid: 612cffde792c31f4b8376647c250262d, type: 3}
+      colorName: Pink
+    price: 10
   candles:
-  - itemSprite: {fileID: 907267700, guid: 9bba2770141e35848a8387fdb94f5736, type: 3}
-    priceSprite: 15
+  - variants:
+    - sprite: {fileID: 907267700, guid: 9bba2770141e35848a8387fdb94f5736, type: 3}
+      colorName: Yellow
+    price: 15
   wallDecors:
-  - itemSprite: {fileID: 742581112, guid: da4885ce514953f46897cd7df9d93467, type: 3}
-    priceSprite: 25
+  - variants:
+    - sprite: {fileID: 742581112, guid: da4885ce514953f46897cd7df9d93467, type: 3}
+      colorName: Brown
+    price: 25

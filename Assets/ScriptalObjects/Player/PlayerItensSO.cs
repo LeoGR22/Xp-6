@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,40 +6,33 @@ using UnityEngine;
 public class PlayerItensSO : ScriptableObject
 {
     [Header("Monitores")]
-    public Sprite[] playerMonitorSprites;
+    public Sprite[] playerMonitorSprites; // Sprites de monitores possuídos
     public Sprite currentMonitor;
 
-    [Space(10)]
     [Header("Teclados")]
     public Sprite[] playerKeyboardSprites;
     public Sprite currentKeyboard;
 
-    [Space(10)]
     [Header("Mouses")]
     public Sprite[] playerMouseSprites;
     public Sprite currentMouse;
 
-    [Space(10)]
     [Header("Mousepads")]
     public Sprite[] playerMousepadSprites;
     public Sprite currentMousepad;
 
-    [Space(10)]
     [Header("Cups")]
     public Sprite[] playerCupSprites;
     public Sprite currentCup;
 
-    [Space(10)]
     [Header("Candles")]
     public Sprite[] playerCandleSprites;
     public Sprite currentCandle;
 
-    [Space(10)]
     [Header("WallDecors")]
     public Sprite[] playerWallDecorSprites;
     public Sprite currentWallDecor;
 
-    [Space(10)]
     [Header("Empty")]
     public Sprite empty;
 
@@ -55,7 +47,6 @@ public class PlayerItensSO : ScriptableObject
                     playerMonitorSprites[playerMonitorSprites.Length - 1] = newTexture;
                 }
                 break;
-
             case "Keyboard":
                 if (!new List<Sprite>(playerKeyboardSprites).Contains(newTexture))
                 {
@@ -63,7 +54,6 @@ public class PlayerItensSO : ScriptableObject
                     playerKeyboardSprites[playerKeyboardSprites.Length - 1] = newTexture;
                 }
                 break;
-
             case "Mouse":
                 if (!new List<Sprite>(playerMouseSprites).Contains(newTexture))
                 {
@@ -71,7 +61,6 @@ public class PlayerItensSO : ScriptableObject
                     playerMouseSprites[playerMouseSprites.Length - 1] = newTexture;
                 }
                 break;
-
             case "Mousepad":
                 if (!new List<Sprite>(playerMousepadSprites).Contains(newTexture))
                 {
@@ -79,7 +68,6 @@ public class PlayerItensSO : ScriptableObject
                     playerMousepadSprites[playerMousepadSprites.Length - 1] = newTexture;
                 }
                 break;
-
             case "Cup":
                 if (!new List<Sprite>(playerCupSprites).Contains(newTexture))
                 {
@@ -87,7 +75,6 @@ public class PlayerItensSO : ScriptableObject
                     playerCupSprites[playerCupSprites.Length - 1] = newTexture;
                 }
                 break;
-
             case "Candle":
                 if (!new List<Sprite>(playerCandleSprites).Contains(newTexture))
                 {
@@ -95,7 +82,6 @@ public class PlayerItensSO : ScriptableObject
                     playerCandleSprites[playerCandleSprites.Length - 1] = newTexture;
                 }
                 break;
-
             case "WallDecor":
                 if (!new List<Sprite>(playerWallDecorSprites).Contains(newTexture))
                 {
@@ -103,7 +89,6 @@ public class PlayerItensSO : ScriptableObject
                     playerWallDecorSprites[playerWallDecorSprites.Length - 1] = newTexture;
                 }
                 break;
-
             default:
                 Debug.LogWarning("Tipo de item inválido: " + itemType);
                 break;
@@ -136,12 +121,6 @@ public class PlayerItensSO : ScriptableObject
                 currentWallDecor = sprite;
                 break;
         }
-
-        // Opcional: Salvamento (descomente se quiser usar)
-        /*
-        PlayerPrefs.SetString($"Current{name}", sprite ? sprite.name : "");
-        PlayerPrefs.Save();
-        */
     }
 
     public bool IsSpriteInCategory(string name, Sprite sprite)
@@ -149,137 +128,30 @@ public class PlayerItensSO : ScriptableObject
         switch (name)
         {
             case "Monitor":
-                foreach (var s in playerMonitorSprites)
-                {
-                    if (s == sprite)
-                        return true;
-                }
-                break;
+                return new List<Sprite>(playerMonitorSprites).Contains(sprite);
             case "Keyboard":
-                foreach (var s in playerKeyboardSprites)
-                {
-                    if (s == sprite)
-                        return true;
-                }
-                break;
+                return new List<Sprite>(playerKeyboardSprites).Contains(sprite);
             case "Mouse":
-                foreach (var s in playerMouseSprites)
-                {
-                    if (s == sprite)
-                        return true;
-                }
-                break;
+                return new List<Sprite>(playerMouseSprites).Contains(sprite);
             case "Mousepad":
-                foreach (var s in playerMousepadSprites)
-                {
-                    if (s == sprite)
-                        return true;
-                }
-                break;
+                return new List<Sprite>(playerMousepadSprites).Contains(sprite);
             case "Cup":
-                foreach (var s in playerCupSprites)
-                {
-                    if (s == sprite)
-                        return true;
-                }
-                break;
+                return new List<Sprite>(playerCupSprites).Contains(sprite);
             case "Candle":
-                foreach (var s in playerCandleSprites) 
-                {
-                    if (s == sprite)
-                        return true;
-                }
-                break;
+                return new List<Sprite>(playerCandleSprites).Contains(sprite);
             case "WallDecor":
-                foreach (var s in playerWallDecorSprites) 
-                {
-                    if (s == sprite)
-                        return true;
-                }
-                break;
-        }
-        return false;
-    }
-
-    public Sprite ReturnMonitorTexture()
-    {
-        return currentMonitor != null ? currentMonitor : empty;
-    }
-
-    public Sprite ReturnKeyboardTexture()
-    {
-        return currentKeyboard != null ? currentKeyboard : empty;
-    }
-
-    public Sprite ReturnMouseTexture()
-    {
-        return currentMouse != null ? currentMouse : empty;
-    }
-
-    public Sprite ReturnMousepadTexture()
-    {
-        return currentMousepad != null ? currentMousepad : empty;
-    }
-
-    public Sprite ReturnCupTexture()
-    {
-        return currentCup != null ? currentCup : empty;
-    }
-
-    public Sprite ReturnCandleTexture()
-    {
-        return currentCandle != null ? currentCandle : empty;
-    }
-
-    public Sprite ReturnWallDecorTexture()
-    {
-        return currentWallDecor != null ? currentWallDecor : empty;
-    }
-
-    // Opcional: Carregamento (descomente se quiser usar)
-    /*
-    public void LoadPlayerItems()
-    {
-        string[] categories = { "Monitor", "Keyboard", "Mouse", "Mousepad", "Cup", "Candle", "WallDecor" };
-        foreach (var category in categories)
-        {
-            string spriteName = PlayerPrefs.GetString($"Current{category}", "");
-            if (!string.IsNullOrEmpty(spriteName))
-            {
-                Sprite sprite = null;
-                switch (category)
-                {
-                    case "Monitor":
-                        sprite = playerMonitorSprites.FirstOrDefault(s => s.name == spriteName);
-                        currentMonitor = sprite;
-                        break;
-                    case "Keyboard":
-                        sprite = playerKeyboardSprites.FirstOrDefault(s => s.name == spriteName);
-                        currentKeyboard = sprite;
-                        break;
-                    case "Mouse":
-                        sprite = playerMouseSprites.FirstOrDefault(s => s.name == spriteName);
-                        currentMouse = sprite;
-                        break;
-                    case "Mousepad":
-                        sprite = playerMousepadSprites.FirstOrDefault(s => s.name == spriteName);
-                        currentMousepad = sprite;
-                        break;
-                    case "Cup":
-                        sprite = playerCupSprites.FirstOrDefault(s => s.name == spriteName);
-                        currentCup = sprite;
-                        break;
-                    case "Candle":
-                        sprite = playerCandleSprites.FirstOrDefault(s => s.name == spriteName);
-                        currentCandle = sprite;
-                        break;
-                    case "WallDecor":
-                        sprite = playerWallDecorSprites.FirstOrDefault(s => s.name == spriteName);
-                        currentWallDecor = sprite;
-                        break;
-                }
-            }
+                return new List<Sprite>(playerWallDecorSprites).Contains(sprite);
+            default:
+                Debug.LogWarning("Categoria inválida: " + name);
+                return false;
         }
     }
-    */
+
+    public Sprite ReturnMonitorTexture() => currentMonitor != null ? currentMonitor : empty;
+    public Sprite ReturnKeyboardTexture() => currentKeyboard != null ? currentKeyboard : empty;
+    public Sprite ReturnMouseTexture() => currentMouse != null ? currentMouse : empty;
+    public Sprite ReturnMousepadTexture() => currentMousepad != null ? currentMousepad : empty;
+    public Sprite ReturnCupTexture() => currentCup != null ? currentCup : empty;
+    public Sprite ReturnCandleTexture() => currentCandle != null ? currentCandle : empty;
+    public Sprite ReturnWallDecorTexture() => currentWallDecor != null ? currentWallDecor : empty;
 }

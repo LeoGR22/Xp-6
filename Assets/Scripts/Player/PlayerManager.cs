@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
 public class PlayerManager : MonoBehaviour
 {
     [Header("Scriptable Objects")]
@@ -13,6 +14,7 @@ public class PlayerManager : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private GameObject buyConfirmationUI;
     [SerializeField] private TMP_Text coinText;
+    [SerializeField] private ColorPickerUI colorPickerUI; // UI de seleção de cores
 
     [Header("Animation Settings")]
     [SerializeField] private GameObject effectPrefab;
@@ -29,7 +31,6 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
-        // Inicializa o dicionário de aplicadores de textura
         textureApplicators.Add("Monitor", sprite => ApplyTextureToTaggedObject("Monitor", sprite));
         textureApplicators.Add("Keyboard", sprite => ApplyTextureToTaggedObject("Keyboard", sprite));
         textureApplicators.Add("Mouse", sprite => ApplyTextureToTaggedObject("Mouse", sprite));
@@ -44,6 +45,8 @@ public class PlayerManager : MonoBehaviour
         ApplyAllTextures();
         UpdateCoinText();
         SetBuyConfirmationActive(false);
+        if (colorPickerUI != null)
+            colorPickerUI.gameObject.SetActive(false);
     }
 
     public void VerifyItem(string itemName, Sprite sprite)
@@ -83,7 +86,7 @@ public class PlayerManager : MonoBehaviour
     private IEnumerator OpenBoxCoroutine()
     {
         yield return new WaitForSeconds(0.5f);
-        StartCoroutine(AnimateBoxImage(lastSelectedItemName)); // Inicia a animação da caixa
+        StartCoroutine(AnimateBoxImage(lastSelectedItemName));
         yield return new WaitForSeconds(2f);
         BuyItem(lastSelectedItemName, lastSelectedSprite);
     }
@@ -94,7 +97,15 @@ public class PlayerManager : MonoBehaviour
         playerMoneySO.ChangeMoney(-price);
         UpdateCoinText();
 
-        playerItemSO.AddPlayerItemTexture(itemName, sprite);
+        // Adiciona todas as variações do item comprado
+        var itemData = itensSO.GetItemDataFromSprite(sprite);
+        if (itemData != null)
+        {
+            foreach (var variant in itemData.variants)
+            {
+                playerItemSO.AddPlayerItemTexture(itemName, variant.sprite);
+            }
+        }
         playerItemSO.SetCurrentSprite(itemName, sprite);
         ApplyAllTextures();
     }
@@ -110,7 +121,7 @@ public class PlayerManager : MonoBehaviour
         playerItemSO.SetCurrentSprite(itemName, sprite);
     }
 
-    private void ApplyAllTextures()
+    public void ApplyAllTextures()
     {
         textureApplicators["Monitor"](playerItemSO.ReturnMonitorTexture());
         textureApplicators["Keyboard"](playerItemSO.ReturnKeyboardTexture());
@@ -296,32 +307,4 @@ public class PlayerManager : MonoBehaviour
             buyConfirmationUI.SetActive(isActive);
         }
     }
-
-    // Código de controle de framerate comentado no original, mantido como referência
-    /*
-    private void Awake()
-    {
-        QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = MaxFrameRate;
-        currentFrameTime = Time.realtimeSinceStartup;
-        StartCoroutine(WaitForNextFrame());
-    }
-
-    private IEnumerator WaitForNextFrame()
-    {
-        while (true)
-        {
-            yield return new WaitForEndOfFrame();
-            currentFrameTime += 1.0f / targetFrameRate;
-            float t = Time.realtimeSinceStartup;
-            float sleepTime = currentFrameTime - t - 0.01f;
-            if (sleepTime > 0)
-                Thread.Sleep((int)(sleepTime * 1000));
-            while (t < currentFrameTime)
-                t = Time.realtimeSinceStartup;
-        }
-    }
-    */
-
 }
-

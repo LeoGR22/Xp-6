@@ -5,10 +5,17 @@ using UnityEngine;
 public class ItensSO : ScriptableObject
 {
     [System.Serializable]
+    public class ItemVariant
+    {
+        public Sprite sprite; // Sprite da variação de cor
+        public string colorName; // Nome da cor (ex.: "Red", "Blue")
+    }
+
+    [System.Serializable]
     public class ItemData
     {
-        public Sprite itemSprite;
-        public int priceSprite;
+        public ItemVariant[] variants; // Variações de cor do item
+        public int price; // Preço para comprar o item (inclui todas as variações)
     }
 
     [Header("Item Categories")]
@@ -22,12 +29,13 @@ public class ItensSO : ScriptableObject
 
     private readonly List<List<ItemData>> itemCategories = new List<List<ItemData>>();
     private readonly Dictionary<Sprite, int> priceCache = new Dictionary<Sprite, int>();
+    private readonly Dictionary<Sprite, ItemData> itemDataCache = new Dictionary<Sprite, ItemData>();
 
     private void OnEnable()
     {
-        // Inicializa a lista de categorias e o cache de preços
         itemCategories.Clear();
         priceCache.Clear();
+        itemDataCache.Clear();
 
         itemCategories.Add(monitors);
         itemCategories.Add(keyboards);
@@ -43,9 +51,16 @@ public class ItensSO : ScriptableObject
             {
                 foreach (var item in category)
                 {
-                    if (item != null && item.itemSprite != null && !priceCache.ContainsKey(item.itemSprite))
+                    if (item != null && item.variants != null)
                     {
-                        priceCache[item.itemSprite] = item.priceSprite;
+                        foreach (var variant in item.variants)
+                        {
+                            if (variant.sprite != null)
+                            {
+                                priceCache[variant.sprite] = item.price;
+                                itemDataCache[variant.sprite] = item;
+                            }
+                        }
                     }
                 }
             }
@@ -63,5 +78,24 @@ public class ItensSO : ScriptableObject
 
         Debug.LogWarning($"Sprite {targetSprite.name} não encontrado em nenhuma categoria.");
         return 0;
+    }
+
+    public ItemData GetItemDataFromSprite(Sprite targetSprite)
+    {
+        if (targetSprite == null) return null;
+
+        if (itemDataCache.TryGetValue(targetSprite, out ItemData itemData))
+        {
+            return itemData;
+        }
+
+        Debug.LogWarning($"Sprite {targetSprite.name} não encontrado em nenhuma categoria.");
+        return null;
+    }
+
+    public ItemVariant[] GetVariantsFromSprite(Sprite targetSprite)
+    {
+        ItemData itemData = GetItemDataFromSprite(targetSprite);
+        return itemData?.variants ?? new ItemVariant[0];
     }
 }
