@@ -54,23 +54,19 @@ public class Potion : MonoBehaviour
             yield return null;
         }
 
-        // Garante que a poção esteja na posição final
         transform.position = _targetPos;
 
-        // Marca a poção como não mais em movimento
         isMoving = false;
 
-        // Inicia a animação de compressão sem aguardá-la
         StartCoroutine(SquashEffect());
     }
 
     private IEnumerator SquashEffect()
     {
-        Vector3 originalScale = Vector3.one; // Escala normal (1, 1, 1)
-        Vector3 squashedScale = new Vector3(stretchAmountX, squashAmountY, 1f); // Escala comprimida
+        Vector3 originalScale = new Vector3(0.8f, 0.8f, 0.8f); 
+        Vector3 squashedScale = new Vector3(stretchAmountX * 0.8f, squashAmountY * 0.8f, 0.8f); 
 
-        // Fase 1: Comprimir (squash) rapidamente
-        float compressTime = squashDuration * 0.4f; // 40% do tempo para compressão
+        float compressTime = squashDuration * 0.4f; 
         float elapsed = 0f;
 
         while (elapsed < compressTime)
@@ -82,8 +78,7 @@ public class Potion : MonoBehaviour
         }
         transform.localScale = squashedScale;
 
-        // Fase 2: Voltar ao normal suavemente
-        float returnTime = squashDuration * 0.6f; // 60% do tempo para voltar
+        float returnTime = squashDuration * 0.6f; 
         elapsed = 0f;
 
         while (elapsed < returnTime)
