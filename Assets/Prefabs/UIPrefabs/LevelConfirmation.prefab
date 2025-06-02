@@ -134,6 +134,41 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &2148131743390525561
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1912906903074768858}
+  m_Layer: 5
+  m_Name: Target
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1912906903074768858
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2148131743390525561}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8109569056582610688}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 119, y: -40}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2525560999919262842
 GameObject:
   m_ObjectHideFlags: 0
@@ -421,6 +456,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2883444634683651602}
+  - component: {fileID: 7494180220092888318}
   m_Layer: 5
   m_Name: LevelConfirmation
   m_TagString: Untagged
@@ -435,7 +471,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2986914452917981974}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.1543674, y: 1.1543674, z: 1.1543674}
   m_ConstrainProportionsScale: 0
@@ -449,6 +485,33 @@ RectTransform:
   m_AnchoredPosition: {x: 0.50733, y: -0.9258}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &7494180220092888318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2986914452917981974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a077943b0168eb14ba5427d5f8122b34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  violetCountUIPrefab: {fileID: 3474582564266905046, guid: 6e9621bbfbbe532479575837f94785f7, type: 3}
+  greenCountUIPrefab: {fileID: 3474582564266905046, guid: 4fd669c030550d045a910569e98e422b, type: 3}
+  redCountUIPrefab: {fileID: 3474582564266905046, guid: b0c84b74724bb8148a113136b3820ee9, type: 3}
+  orangeCountUIPrefab: {fileID: 3474582564266905046, guid: 2284a9356f669fd4e91ef6c211192e69, type: 3}
+  blueCountUIPrefab: {fileID: 3474582564266905046, guid: 14fffdec6ce39ce418aa9765ac115a9b, type: 3}
+  violetPotionCount: {fileID: 11400000, guid: 84f971cc4ff223c4f9c411f7041a2540, type: 2}
+  greenPotionCount: {fileID: 11400000, guid: ccc94e724ffb38041be1a75f6b122474, type: 2}
+  redPotionCount: {fileID: 11400000, guid: 5b5f650ca1fead54987ede366fe41fca, type: 2}
+  orangePotionCount: {fileID: 11400000, guid: f6c09167b899c32448ed1227c34c3154, type: 2}
+  bluePotionCount: {fileID: 11400000, guid: 4163e0545bac8a742a42e0fc0621bcac, type: 2}
+  centerObject: {fileID: 2148131743390525561}
+  uiSpacing: 170
+  verticalSpacing: 100
+  canvasParent: {fileID: 2148131743390525561}
+  loadLevel: {fileID: 0}
 --- !u!1 &3372275177204849388
 GameObject:
   m_ObjectHideFlags: 0
@@ -663,6 +726,7 @@ RectTransform:
   m_Children:
   - {fileID: 8474978670791406169}
   - {fileID: 4462807985077961170}
+  - {fileID: 1912906903074768858}
   - {fileID: 4508859183508248774}
   m_Father: {fileID: 2883444634683651602}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using TMPro; // Para TextMeshProUGUI
-using DG.Tweening; // Para animação com DOTween (opcional)
+using TMPro;
+using DG.Tweening;
 
 public class LevelConfirmationTarget : MonoBehaviour
 {
@@ -23,8 +23,8 @@ public class LevelConfirmationTarget : MonoBehaviour
 
     [Header("Alignment Settings")]
     [SerializeField] private GameObject centerObject;
-    [SerializeField] private float uiSpacing = 50f; 
-    [SerializeField] private float verticalSpacing = 50f; 
+    [SerializeField] private float uiSpacing = 50f;
+    [SerializeField] private float verticalSpacing = 50f;
     [SerializeField] private GameObject canvasParent;
 
     public LoadLevelData loadLevel;
@@ -69,15 +69,40 @@ public class LevelConfirmationTarget : MonoBehaviour
             return;
         }
 
-        // Converte a posição do centerObject para o espaço local do canvas
-        Vector3 centerWorldPos = centerObject.transform.position;
-        Vector2 centerCanvasPos = RectTransformUtility.WorldToScreenPoint(Camera.main, centerWorldPos);
+        // Verifica se os componentes necessários estão configurados
+        if (canvasParent == null || canvasParent.GetComponent<RectTransform>() == null)
+        {
+            Debug.LogError("canvasParent não está atribuído ou não tem RectTransform!");
+            return;
+        }
+
+        if (centerObject == null)
+        {
+            Debug.LogWarning("centerObject não atribuído. Usando centro do canvas como fallback.");
+            centerObject = canvasParent; // Fallback para o próprio canvas
+        }
+
         RectTransform canvasRect = canvasParent.GetComponent<RectTransform>();
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, centerCanvasPos, null, out Vector2 localCenterPos);
+        Vector2 localCenterPos = Vector2.zero;
+
+        // Converte a posição do centerObject para o espaço local do canvas
+        if (Camera.main != null)
+        {
+            Vector3 centerWorldPos = centerObject.transform.position;
+            Debug.Log($"centerObject posição no mundo: {centerWorldPos}");
+            Vector2 centerCanvasPos = RectTransformUtility.WorldToScreenPoint(Camera.main, centerWorldPos);
+            Debug.Log($"centerObject posição na tela: {centerCanvasPos}");
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, centerCanvasPos, Camera.main, out localCenterPos);
+            Debug.Log($"centerObject posição local no canvas: {localCenterPos}");
+        }
+        else
+        {
+            Debug.LogWarning("Camera.main não encontrada. Usando centro do canvas (0,0).");
+            localCenterPos = Vector2.zero; // Fallback para o centro do canvas
+        }
 
         if (activeTypes.Count <= 2)
         {
-            // Alinhamento em uma única linha horizontal
             float uiTotalWidth = (activeTypes.Count - 1) * uiSpacing;
             float uiStartX = localCenterPos.x - (uiTotalWidth / 2f);
 
@@ -90,12 +115,11 @@ public class LevelConfirmationTarget : MonoBehaviour
                     RectTransform uiRect = countUI.GetComponent<RectTransform>();
                     if (uiRect != null)
                     {
-                        float currentY = uiRect.anchoredPosition.y;
                         float newX = uiStartX + (i * uiSpacing);
-                        Vector2 newCanvasPos = new Vector2(newX, currentY);
+                        Vector2 newCanvasPos = new Vector2(newX, localCenterPos.y);
                         uiRect.anchoredPosition = newCanvasPos;
+                        Debug.Log($"Instanciando {countUI.name} na posição local: {newCanvasPos}");
 
-                        // Atualiza o texto do TextMeshProUGUI
                         TextMeshProUGUI textComponent = countUI.GetComponent<TextMeshProUGUI>();
                         if (textComponent != null)
                         {
@@ -106,27 +130,24 @@ public class LevelConfirmationTarget : MonoBehaviour
                             Debug.LogWarning($"TextMeshProUGUI não encontrado em {countUI.name}.");
                         }
 
-                        // Aplica animação com DOTween (opcional)
                         uiRect.localScale = Vector3.zero;
                         uiRect.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
 
                         instantiatedCountUIs.Add(countUI);
-                        //Debug.Log($"Instanciado e posicionado contador {type} no Canvas em anchoredPosition: {newCanvasPos} com valor {potionCounts[type].count}");
                     }
                     else
                     {
                         Debug.LogWarning($"RectTransform não encontrado em {countUI.name}.");
+                        Destroy(countUI);
                     }
                 }
             }
         }
         else
         {
-            // Alinhamento em duas linhas: 2 em cima, restantes em baixo
             List<ItemType> topRow = activeTypes.Take(2).ToList();
             List<ItemType> bottomRow = activeTypes.Skip(2).ToList();
 
-            // Linha superior (até 2 contadores)
             float topRowWidth = (topRow.Count - 1) * uiSpacing;
             float topRowStartX = localCenterPos.x - (topRowWidth / 2f);
             float topRowY = localCenterPos.y + (verticalSpacing / 2f);
@@ -143,8 +164,8 @@ public class LevelConfirmationTarget : MonoBehaviour
                         float newX = topRowStartX + (i * uiSpacing);
                         Vector2 newCanvasPos = new Vector2(newX, topRowY);
                         uiRect.anchoredPosition = newCanvasPos;
+                        Debug.Log($"Instanciando {countUI.name} na posição local: {newCanvasPos}");
 
-                        // Atualiza o texto do TextMeshProUGUI
                         TextMeshProUGUI textComponent = countUI.GetComponent<TextMeshProUGUI>();
                         if (textComponent != null)
                         {
@@ -155,21 +176,19 @@ public class LevelConfirmationTarget : MonoBehaviour
                             Debug.LogWarning($"TextMeshProUGUI não encontrado em {countUI.name}.");
                         }
 
-                        // Aplica animação com DOTween (opcional)
                         uiRect.localScale = Vector3.zero;
                         uiRect.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
 
                         instantiatedCountUIs.Add(countUI);
-                        //Debug.Log($"Instanciado e posicionado contador {type} na linha superior em anchoredPosition: {newCanvasPos} com valor {potionCounts[type].count}");
                     }
                     else
                     {
                         Debug.LogWarning($"RectTransform não encontrado em {countUI.name}.");
+                        Destroy(countUI);
                     }
                 }
             }
 
-            // Linha inferior (restantes)
             float bottomRowWidth = (bottomRow.Count - 1) * uiSpacing;
             float bottomRowStartX = localCenterPos.x - (bottomRowWidth / 2f);
             float bottomRowY = localCenterPos.y - (verticalSpacing / 2f);
@@ -186,8 +205,8 @@ public class LevelConfirmationTarget : MonoBehaviour
                         float newX = bottomRowStartX + (i * uiSpacing);
                         Vector2 newCanvasPos = new Vector2(newX, bottomRowY);
                         uiRect.anchoredPosition = newCanvasPos;
+                        Debug.Log($"Instanciando {countUI.name} na posição local: {newCanvasPos}");
 
-                        // Atualiza o texto do TextMeshProUGUI
                         TextMeshProUGUI textComponent = countUI.GetComponent<TextMeshProUGUI>();
                         if (textComponent != null)
                         {
@@ -198,16 +217,15 @@ public class LevelConfirmationTarget : MonoBehaviour
                             Debug.LogWarning($"TextMeshProUGUI não encontrado em {countUI.name}.");
                         }
 
-                        // Aplica animação com DOTween (opcional)
                         uiRect.localScale = Vector3.zero;
                         uiRect.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
 
                         instantiatedCountUIs.Add(countUI);
-                        //Debug.Log($"Instanciado e posicionado contador {type} na linha inferior em anchoredPosition: {newCanvasPos} com valor {potionCounts[type].count}");
                     }
                     else
                     {
                         Debug.LogWarning($"RectTransform não encontrado em {countUI.name}.");
+                        Destroy(countUI);
                     }
                 }
             }

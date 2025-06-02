@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 1215586055483931203}
   m_Layer: 0
   m_Name: Board
-  m_TagString: Untagged
+  m_TagString: Board
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -117,11 +117,6 @@ MonoBehaviour:
   uiSpacing: 140
   worldCenterX: 1.5
   uiCenterX: 35
-  violetSymbolGO: {fileID: 0}
-  greenSymbolGO: {fileID: 0}
-  redSymbolGO: {fileID: 0}
-  orangeSymbolGO: {fileID: 0}
-  blueSymbolGO: {fileID: 0}
   violetCountUI: {fileID: 9220764076523847263, guid: 023570402ad989045be3871e0af46b87, type: 3}
   greenCountUI: {fileID: 7438254133324051163, guid: a9d3256c15478954faafd3ad75e95437, type: 3}
   redCountUI: {fileID: 3449776491320037323, guid: b8cadff88130ab84aaca565695f16852, type: 3}

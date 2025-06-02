@@ -5141,33 +5141,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2883444634683651602, guid: 15674cc4a860155449ece74ade84c9ff, type: 3}
   m_PrefabInstance: {fileID: 3940743169642547830}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &37937406
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 37937403}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a077943b0168eb14ba5427d5f8122b34, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  violetCountUIPrefab: {fileID: 3474582564266905046, guid: 6e9621bbfbbe532479575837f94785f7, type: 3}
-  greenCountUIPrefab: {fileID: 3474582564266905046, guid: 4fd669c030550d045a910569e98e422b, type: 3}
-  redCountUIPrefab: {fileID: 3474582564266905046, guid: b0c84b74724bb8148a113136b3820ee9, type: 3}
-  orangeCountUIPrefab: {fileID: 3474582564266905046, guid: 2284a9356f669fd4e91ef6c211192e69, type: 3}
-  blueCountUIPrefab: {fileID: 3474582564266905046, guid: 14fffdec6ce39ce418aa9765ac115a9b, type: 3}
-  violetPotionCount: {fileID: 11400000, guid: 84f971cc4ff223c4f9c411f7041a2540, type: 2}
-  greenPotionCount: {fileID: 11400000, guid: ccc94e724ffb38041be1a75f6b122474, type: 2}
-  redPotionCount: {fileID: 11400000, guid: 5b5f650ca1fead54987ede366fe41fca, type: 2}
-  orangePotionCount: {fileID: 11400000, guid: f6c09167b899c32448ed1227c34c3154, type: 2}
-  bluePotionCount: {fileID: 11400000, guid: 4163e0545bac8a742a42e0fc0621bcac, type: 2}
-  centerObject: {fileID: 1704230593}
-  uiSpacing: 170
-  verticalSpacing: 100
-  canvasParent: {fileID: 1704230593}
-  loadLevel: {fileID: 0}
 --- !u!1 &40194122
 GameObject:
   m_ObjectHideFlags: 0
@@ -11371,11 +11344,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
   m_PrefabInstance: {fileID: 1643082008}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &987133979 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8109569056582610688, guid: 15674cc4a860155449ece74ade84c9ff, type: 3}
-  m_PrefabInstance: {fileID: 3940743169642547830}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &993551345
 GameObject:
   m_ObjectHideFlags: 0
@@ -15508,41 +15476,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1688544271}
   m_CullTransparentMesh: 1
---- !u!1 &1704230593
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1704230594}
-  m_Layer: 5
-  m_Name: Target
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1704230594
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1704230593}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 987133979}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 119, y: -40}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1726529361
 GameObject:
   m_ObjectHideFlags: 0
@@ -19482,16 +19415,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
       objectReference: {fileID: 2732068426155340683}
+    - target: {fileID: 7494180220092888318, guid: 15674cc4a860155449ece74ade84c9ff, type: 3}
+      propertyPath: loadLevel
+      value: 
+      objectReference: {fileID: 803693924}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 8109569056582610688, guid: 15674cc4a860155449ece74ade84c9ff, type: 3}
-      insertIndex: 2
-      addedObject: {fileID: 1704230594}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2986914452917981974, guid: 15674cc4a860155449ece74ade84c9ff, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 37937406}
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 15674cc4a860155449ece74ade84c9ff, type: 3}
 --- !u!224 &4021393925039848557 stripped
 RectTransform:

@@ -7,6 +7,7 @@ using UnityEngine.Events;
 using static UnityEngine.Rendering.DebugUI.Table;
 using Random = UnityEngine.Random;
 using CandyCoded.HapticFeedback;
+using System.Runtime.CompilerServices;
 
 public class PotionBoard : MonoBehaviour
 {
@@ -87,6 +88,7 @@ public class PotionBoard : MonoBehaviour
     public GameEvent WinGame;
     public GameEvent LoseGame;
     public BooleanSO canLose;
+    private bool won = false;
 
     private Timer timer;
 
@@ -139,7 +141,8 @@ public class PotionBoard : MonoBehaviour
 
     private void Update()
     {
-        CheckUserActions();
+        if (!won)
+            CheckUserActions();
 
         if (!isShaking && Time.time - lastMoveTime > inactivityThreshold && AreAllPotionsSettled())
         {
@@ -596,7 +599,7 @@ public class PotionBoard : MonoBehaviour
                 StartCoroutine(AnimatePotionToUI(potionsToAnimate, potionsToReduce));
             }
 
-            if (violetPotionCount.count + greenPotionCount.count + orangePotionCount.count + redPotionCount.count + bluePotionCount.count <= 0)
+            if (violetPotionCount.count + greenPotionCount.count + orangePotionCount.count + redPotionCount.count + bluePotionCount.count <= 0 && !won)
             {
                 if (!win)
                 {
@@ -604,6 +607,7 @@ public class PotionBoard : MonoBehaviour
 
                     GameObject targetPlayer = GameObject.FindWithTag("Player");
                     PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
+                    playerManager.AddMoney(10);
                     playerManager.AddMoney((int)timer.GetMovesLeft() * 5);
 
                     level.PassLevel();
@@ -1430,7 +1434,7 @@ public class PotionBoard : MonoBehaviour
                 yield return coroutine;
             }
 
-            if (violetPotionCount.count + greenPotionCount.count + orangePotionCount.count + redPotionCount.count + bluePotionCount.count <= 0)
+            if (violetPotionCount.count + greenPotionCount.count + orangePotionCount.count + redPotionCount.count + bluePotionCount.count <= 0 && !won)
             {
                 if (!win)
                 {
@@ -1709,6 +1713,11 @@ public class PotionBoard : MonoBehaviour
         Debug.Log($"Finalizando ShakePossibleMatch (Time: {Time.time})");
         isShaking = false;
         shakeCoroutine = null;
+    }
+
+    public void WinGameBool(bool state)
+    {
+        won = state;
     }
 }
 

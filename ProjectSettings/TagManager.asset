@@ -16,6 +16,7 @@ TagManager:
   - Red
   - Orange
   - Blue
+  - Board
   layers:
   - Default
   - TransparentFX
