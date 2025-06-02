@@ -141,17 +141,19 @@ public class PotionBoard : MonoBehaviour
 
     private void Update()
     {
-        if (!won)
+        if (!won && timer.GetMovesLeft() > 0)
+        {
             CheckUserActions();
 
-        if (!isShaking && Time.time - lastMoveTime > inactivityThreshold && AreAllPotionsSettled())
-        {
-            if (shakeCoroutine != null)
+            if (!isShaking && Time.time - lastMoveTime > inactivityThreshold && AreAllPotionsSettled())
             {
-                StopCoroutine(shakeCoroutine);
-                shakeCoroutine = null;
+                if (shakeCoroutine != null)
+                {
+                    StopCoroutine(shakeCoroutine);
+                    shakeCoroutine = null;
+                }
+                shakeCoroutine = StartCoroutine(ShakePossibleMatch());
             }
-            shakeCoroutine = StartCoroutine(ShakePossibleMatch());
         }
     }
 

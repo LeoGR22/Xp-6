@@ -18,7 +18,7 @@ public class WinLoseUI : MonoBehaviour
     private void Start()
     {
         winUI.SetActive(false);
-        loseUI.SetActive(false);
+        //loseUI.SetActive(false);
     }
 
     public void OpenWinUI()

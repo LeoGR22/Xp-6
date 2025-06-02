@@ -35,6 +35,8 @@ public class LevelConfirmationTarget : MonoBehaviour
     {
         loadLevel.LoadData();
         AlignUIElements();
+
+       gameObject.SetActive(false);
     }
 
     private void AlignUIElements()

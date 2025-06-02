@@ -27,7 +27,7 @@
     {
       "Level" : 3,
       "Tipo" : "Jogadas",
-      "Timer" : 30,
+      "Timer" : 34,
       "Altura" : 6,
       "Largura" : 6,
       "Green" : 0,
@@ -39,7 +39,7 @@
     {
       "Level" : 4,
       "Tipo" : "Jogadas",
-      "Timer" : 50,
+      "Timer" : 34,
       "Altura" : 7,
       "Largura" : 6,
       "Green" : 20,
