@@ -113,11 +113,20 @@ MonoBehaviour:
   redPotionCount: {fileID: 11400000, guid: 5b5f650ca1fead54987ede366fe41fca, type: 2}
   orangePotionCount: {fileID: 11400000, guid: f6c09167b899c32448ed1227c34c3154, type: 2}
   bluePotionCount: {fileID: 11400000, guid: 4163e0545bac8a742a42e0fc0621bcac, type: 2}
-  violetCountUI: {fileID: 8476203835732299399, guid: 61297fd39603efe42938712aafb428bd, type: 3}
-  greenCountUI: {fileID: 3474582564266905046, guid: 2fe55f87864e1df4c84d7f3bfe2d98b1, type: 3}
-  redCountUI: {fileID: 6122086126151041057, guid: ff2d569da87146443afbbb2650a5d4f1, type: 3}
-  orangeCountUI: {fileID: 6942495238947591100, guid: 1fbd57c7d711a41458d527c2334fa4d9, type: 3}
-  blueCountUI: {fileID: 3474582564266905046, guid: 14fffdec6ce39ce418aa9765ac115a9b, type: 3}
+  worldSpacing: 0.9
+  uiSpacing: 140
+  worldCenterX: 1.5
+  uiCenterX: 35
+  violetSymbolGO: {fileID: 0}
+  greenSymbolGO: {fileID: 0}
+  redSymbolGO: {fileID: 0}
+  orangeSymbolGO: {fileID: 0}
+  blueSymbolGO: {fileID: 0}
+  violetCountUI: {fileID: 9220764076523847263, guid: 023570402ad989045be3871e0af46b87, type: 3}
+  greenCountUI: {fileID: 7438254133324051163, guid: a9d3256c15478954faafd3ad75e95437, type: 3}
+  redCountUI: {fileID: 3449776491320037323, guid: b8cadff88130ab84aaca565695f16852, type: 3}
+  orangeCountUI: {fileID: 6220645662529431293, guid: 399d992022e01a04f86cbfe90b453039, type: 3}
+  blueCountUI: {fileID: 2556247225697555382, guid: c55a874f536d477419dbf16fcd429688, type: 3}
   WinGame: {fileID: 11400000, guid: f46f0692262eb1e469e2897432e5195d, type: 2}
   LoseGame: {fileID: 0}
   canLose: {fileID: 11400000, guid: 446c2009f1040a344b7e9b7006677d43, type: 2}

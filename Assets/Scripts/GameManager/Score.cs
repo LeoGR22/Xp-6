@@ -21,10 +21,10 @@ public class Score : MonoBehaviour
 
     void Update()
     {
-        violetCount.text = "x " + violetCountData.count.ToString();
-        greenCount.text = "x " + greenCountData.count.ToString();
-        redCount.text = "x " + redCountData.count.ToString();
-        orangeCount.text = "x " + orangeData.count.ToString();
-        blueCount.text = "x " + blueData.count.ToString();
+        violetCount.text = violetCountData.count.ToString();
+        greenCount.text = greenCountData.count.ToString();
+        redCount.text = redCountData.count.ToString();
+        orangeCount.text = orangeData.count.ToString();
+        blueCount.text = blueData.count.ToString();
     }
 }

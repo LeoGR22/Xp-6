@@ -11,6 +11,11 @@ TagManager:
   - Cup
   - Candle
   - WallDecor
+  - Violet
+  - Green
+  - Red
+  - Orange
+  - Blue
   layers:
   - Default
   - TransparentFX

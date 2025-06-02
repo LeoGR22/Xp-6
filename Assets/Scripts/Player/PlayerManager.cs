@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -14,7 +15,7 @@ public class PlayerManager : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private GameObject buyConfirmationUI;
     [SerializeField] private TMP_Text coinText;
-    [SerializeField] private ColorPickerUI colorPickerUI; // UI de seleção de cores
+    [SerializeField] private ColorPickerUI colorPickerUI; 
 
     [Header("Animation Settings")]
     [SerializeField] private GameObject effectPrefab;
@@ -304,7 +305,19 @@ public class PlayerManager : MonoBehaviour
     {
         if (buyConfirmationUI != null)
         {
-            buyConfirmationUI.SetActive(isActive);
+            if (isActive)
+            {
+                buyConfirmationUI.SetActive(true);
+                buyConfirmationUI.transform.localScale = Vector3.zero;
+                buyConfirmationUI.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+            }
+            else
+            {
+                buyConfirmationUI.transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack).OnComplete(() =>
+                {
+                    buyConfirmationUI.SetActive(false);
+                });
+            }
         }
     }
 }

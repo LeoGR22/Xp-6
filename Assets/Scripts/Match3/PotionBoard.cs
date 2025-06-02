@@ -67,6 +67,17 @@ public class PotionBoard : MonoBehaviour
     public ObjectiveBoardData orangePotionCount;
     public ObjectiveBoardData bluePotionCount;
 
+    [SerializeField] private float worldSpacing = 0.9f;
+    [SerializeField] private float uiSpacing = 50f;
+    [SerializeField] private float worldCenterX = 0f;    
+    [SerializeField] private float uiCenterX = 0f;
+
+    public GameObject violetSymbolGO; 
+    public GameObject greenSymbolGO;  
+    public GameObject redSymbolGO;   
+    public GameObject orangeSymbolGO; 
+    public GameObject blueSymbolGO;   
+
     public GameObject violetCountUI;
     public GameObject greenCountUI;
     public GameObject redCountUI;
@@ -113,6 +124,16 @@ public class PotionBoard : MonoBehaviour
         selectedMatch = null;
         InitializeBoard();
         AssignCountUIs();
+
+        violetSymbolGO = GameObject.FindGameObjectWithTag("Violet");
+        greenSymbolGO = GameObject.FindGameObjectWithTag("Green");
+        redSymbolGO = GameObject.FindGameObjectWithTag("Red");
+        orangeSymbolGO = GameObject.FindGameObjectWithTag("Orange");
+        blueSymbolGO = GameObject.FindGameObjectWithTag("Blue");
+
+        UpdateUIVisibility();
+        RepositionCountUIs();
+
         CheckBoard(true);
     }
 
@@ -254,6 +275,84 @@ public class PotionBoard : MonoBehaviour
             }
 
             validBoard = !CheckBoard(false) && HasPossibleMoves();
+        }
+    }
+
+    private void UpdateUIVisibility()
+    {
+        if (violetSymbolGO != null)
+            violetSymbolGO.SetActive(violetPotionCount.count > 0);
+        if (greenSymbolGO != null)
+            greenSymbolGO.SetActive(greenPotionCount.count > 0);
+        if (redSymbolGO != null)
+            redSymbolGO.SetActive(redPotionCount.count > 0);
+        if (orangeSymbolGO != null)
+            orangeSymbolGO.SetActive(orangePotionCount.count > 0);
+        if (blueSymbolGO != null)
+            blueSymbolGO.SetActive(bluePotionCount.count > 0);
+
+        if (violetCountUI != null)
+            violetCountUI.SetActive(violetPotionCount.count > 0);
+        if (greenCountUI != null)
+            greenCountUI.SetActive(greenPotionCount.count > 0);
+        if (redCountUI != null)
+            redCountUI.SetActive(redPotionCount.count > 0);
+        if (orangeCountUI != null)
+            orangeCountUI.SetActive(orangePotionCount.count > 0);
+        if (blueCountUI != null)
+            blueCountUI.SetActive(bluePotionCount.count > 0);
+    }
+
+    private void RepositionCountUIs()
+    {
+        List<GameObject> symbolGOs = new List<GameObject> { violetSymbolGO, greenSymbolGO, redSymbolGO, orangeSymbolGO, blueSymbolGO };
+        List<GameObject> countUIs = new List<GameObject> { violetCountUI, greenCountUI, redCountUI, orangeCountUI, blueCountUI };
+        List<GameObject> activeSymbolGOs = symbolGOs.Where(go => go != null && go.activeSelf).ToList();
+        List<GameObject> activeCountUIs = countUIs.Where(ui => ui != null && ui.activeSelf).ToList();
+
+        if (activeSymbolGOs.Count == 0 || activeCountUIs.Count == 0)
+        {
+            Debug.LogWarning("Nenhum símbolo ou UI ativo encontrado.");
+            return;
+        }
+
+        float worldYPosition = symbolGOs.FirstOrDefault(go => go != null)?.transform.position.y ?? 0f; 
+
+        float worldTotalWidth = (activeSymbolGOs.Count - 1) * worldSpacing;
+        float worldStartX = worldCenterX - (worldTotalWidth / 2f);
+
+        float uiTotalWidth = (activeCountUIs.Count - 1) * uiSpacing;
+        float uiStartX = uiCenterX - (uiTotalWidth / 2f);
+
+        for (int i = 0; i < activeSymbolGOs.Count; i++)
+        {
+            if (activeSymbolGOs[i] != null)
+            {
+                Vector3 newWorldPos = new Vector3(worldStartX + (i * worldSpacing), worldYPosition, activeSymbolGOs[i].transform.position.z);
+                activeSymbolGOs[i].transform.position = newWorldPos;
+                Debug.Log($"Reposicionando {activeSymbolGOs[i].name} para {newWorldPos}");
+            }
+        }
+
+        for (int i = 0; i < activeCountUIs.Count; i++)
+        {
+            if (activeCountUIs[i] != null)
+            {
+                RectTransform uiRect = activeCountUIs[i].GetComponent<RectTransform>();
+                if (uiRect != null)
+                {
+                    float currentY = uiRect.anchoredPosition.y;
+
+                    float newX = uiStartX + (i * uiSpacing);
+                    Vector2 newCanvasPos = new Vector2(newX, currentY);
+                    uiRect.anchoredPosition = newCanvasPos;
+                    Debug.Log($"Reposicionando {activeCountUIs[i].name} no Canvas para anchoredPosition: {newCanvasPos}");
+                }
+                else
+                {
+                    Debug.LogWarning($"RectTransform não encontrado em {activeCountUIs[i].name}.");
+                }
+            }
         }
     }
 
