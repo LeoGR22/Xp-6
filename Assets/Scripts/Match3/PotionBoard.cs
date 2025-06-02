@@ -72,11 +72,11 @@ public class PotionBoard : MonoBehaviour
     [SerializeField] private float worldCenterX = 0f;    
     [SerializeField] private float uiCenterX = 0f;
 
-    public GameObject violetSymbolGO; 
-    public GameObject greenSymbolGO;  
-    public GameObject redSymbolGO;   
-    public GameObject orangeSymbolGO; 
-    public GameObject blueSymbolGO;   
+    private GameObject violetSymbolGO;
+    private GameObject greenSymbolGO;
+    private GameObject redSymbolGO;
+    private GameObject orangeSymbolGO;
+    private GameObject blueSymbolGO;   
 
     public GameObject violetCountUI;
     public GameObject greenCountUI;
