@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -93,9 +93,119 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: MaosTutorial_4
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 264
+        width: 354
+        height: 554
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7dffd3472ded11f4698617e5e25ae1f7
+      internalID: -160846983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MaosTutorial_5
+      rect:
+        serializedVersion: 2
+        x: 915
+        y: 280
+        width: 365
+        height: 546
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cd448f97f6a3d64b8442559ad5d02e4
+      internalID: -2008394069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MaosTutorial_6
+      rect:
+        serializedVersion: 2
+        x: 1311
+        y: 268
+        width: 555
+        height: 556
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 646f745c3319c484dbcdeaf0866f4ec6
+      internalID: 1891901500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MaosTutorial_8
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 252
+        width: 374
+        height: 552
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40113d682ced846448339ce9e414379e
+      internalID: -1664604676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -106,7 +216,48 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      MaosTutorial_0: -2104295952
+      MaosTutorial_1: -1916633469
+      MaosTutorial_10: 176076308
+      MaosTutorial_11: 1460383565
+      MaosTutorial_12: 37454587
+      MaosTutorial_13: 272793551
+      MaosTutorial_14: -530854665
+      MaosTutorial_15: -1316742286
+      MaosTutorial_16: -1609891704
+      MaosTutorial_17: 1509392324
+      MaosTutorial_18: -2014294667
+      MaosTutorial_19: -1914003215
+      MaosTutorial_2: 1742596213
+      MaosTutorial_20: -45019297
+      MaosTutorial_21: -210842890
+      MaosTutorial_22: -1755657590
+      MaosTutorial_23: 1705786397
+      MaosTutorial_24: -865633266
+      MaosTutorial_25: -2117824457
+      MaosTutorial_26: 73725176
+      MaosTutorial_27: -1574204548
+      MaosTutorial_28: -306227848
+      MaosTutorial_29: 1294967214
+      MaosTutorial_3: 171629670
+      MaosTutorial_30: 1055943683
+      MaosTutorial_31: -1861101591
+      MaosTutorial_32: -249646303
+      MaosTutorial_33: -206427205
+      MaosTutorial_34: -2104552174
+      MaosTutorial_35: -493473815
+      MaosTutorial_36: 312798614
+      MaosTutorial_37: -1063932692
+      MaosTutorial_38: -424674572
+      MaosTutorial_39: -900344285
+      MaosTutorial_4: -160846983
+      MaosTutorial_40: 965923804
+      MaosTutorial_5: -2008394069
+      MaosTutorial_6: 1891901500
+      MaosTutorial_7: -1667715865
+      MaosTutorial_8: -1664604676
+      MaosTutorial_9: 1534561446
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

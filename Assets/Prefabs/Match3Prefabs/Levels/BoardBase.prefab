@@ -78,6 +78,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   widthData: {fileID: 11400000, guid: e44cdf145070f0f4cadeabf8239463bf, type: 2}
   heightData: {fileID: 11400000, guid: 24ea6bb3b12404540a26c758f9c2b42b, type: 2}
+  tutorialSO: {fileID: 11400000, guid: 46f17fbd616de264e9a8960687829fdd, type: 2}
   potionPrefabs:
   - {fileID: 2274775717001111761, guid: 93f42c7f10e57c143a44471addf215a1, type: 3}
   - {fileID: 4229577481417212027, guid: 893104be94400fa4ba8e4326453dc53f, type: 3}
@@ -126,3 +127,8 @@ MonoBehaviour:
   LoseGame: {fileID: 0}
   canLose: {fileID: 11400000, guid: 446c2009f1040a344b7e9b7006677d43, type: 2}
   glowVFXPrefab: {fileID: 6937530239127161567, guid: ac4775c1d8cee3047919727409c55d1c, type: 3}
+  isTutorialLevel: 1
+  tutorialLayout:
+    width: 3
+    height: 3
+    tiles: []

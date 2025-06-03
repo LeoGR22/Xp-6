@@ -7,7 +7,6 @@ using UnityEngine.Events;
 using static UnityEngine.Rendering.DebugUI.Table;
 using Random = UnityEngine.Random;
 using CandyCoded.HapticFeedback;
-using System.Runtime.CompilerServices;
 
 public class PotionBoard : MonoBehaviour
 {
@@ -15,6 +14,8 @@ public class PotionBoard : MonoBehaviour
     private int height = 4;
     public BoardSizeData widthData;
     public BoardSizeData heightData;
+
+    public BooleanSO tutorialSO;
 
     SetLevel level;
     bool win;
@@ -28,12 +29,12 @@ public class PotionBoard : MonoBehaviour
 
     public GameObject explosionVFXPrefab;
 
-    public GameObject centerTilePrefab; 
-    public GameObject topLeftTilePrefab; 
-    public GameObject topRightTilePrefab; 
-    public GameObject bottomLeftTilePrefab; 
-    public GameObject bottomRightTilePrefab; 
-    public GameObject tileParent; 
+    public GameObject centerTilePrefab;
+    public GameObject topLeftTilePrefab;
+    public GameObject topRightTilePrefab;
+    public GameObject bottomLeftTilePrefab;
+    public GameObject bottomRightTilePrefab;
+    public GameObject tileParent;
     private List<GameObject> tilesToDestroy = new();
 
     private Dictionary<ItemType, Color> potionColors = new Dictionary<ItemType, Color>
@@ -70,14 +71,14 @@ public class PotionBoard : MonoBehaviour
 
     [SerializeField] private float worldSpacing = 0.9f;
     [SerializeField] private float uiSpacing = 50f;
-    [SerializeField] private float worldCenterX = 0f;    
+    [SerializeField] private float worldCenterX = 0f;
     [SerializeField] private float uiCenterX = 0f;
 
     private GameObject violetSymbolGO;
     private GameObject greenSymbolGO;
     private GameObject redSymbolGO;
     private GameObject orangeSymbolGO;
-    private GameObject blueSymbolGO;   
+    private GameObject blueSymbolGO;
 
     public GameObject violetCountUI;
     public GameObject greenCountUI;
@@ -108,16 +109,58 @@ public class PotionBoard : MonoBehaviour
     // Lista para partículas ativas
     private List<ParticleSystem> activeGlowEffects = new List<ParticleSystem>();
 
+    // Tutorial
+    private bool isTutorialLevel;
+    [SerializeField] private TutorialBoardLayout tutorialLayout;
+
+    [System.Serializable]
+    public class TutorialBoardLayout
+    {
+        public int width;
+        public int height;
+        public TutorialTile[] tiles;
+    }
+
+    [System.Serializable]
+    public class TutorialTile
+    {
+        public int x;
+        public int y;
+        public ItemType potionType;
+        public bool isUsable;
+    }
+
     private void Awake()
     {
         Instance = this;
+
+        isTutorialLevel = tutorialSO.value;
+
+        if (isTutorialLevel)
+        {
+            tutorialLayout = new TutorialBoardLayout
+            {
+                width = 3,
+                height = 3,
+                tiles = new TutorialTile[]
+                {
+                    new TutorialTile { x = 0, y = 0, potionType = ItemType.Violet, isUsable = true },
+                    new TutorialTile { x = 1, y = 0, potionType = ItemType.Blue, isUsable = true },
+                    new TutorialTile { x = 2, y = 0, potionType = ItemType.Red, isUsable = true },
+                    new TutorialTile { x = 0, y = 1, potionType = ItemType.Red, isUsable = true },
+                    new TutorialTile { x = 1, y = 1, potionType = ItemType.Red, isUsable = true },
+                    new TutorialTile { x = 2, y = 1, potionType = ItemType.Blue, isUsable = true },
+                    new TutorialTile { x = 0, y = 2, potionType = ItemType.Orange, isUsable = true },
+                    new TutorialTile { x = 1, y = 2, potionType = ItemType.Green, isUsable = true },
+                    new TutorialTile { x = 2, y = 2, potionType = ItemType.Violet, isUsable = true }
+                }
+            };
+        }
     }
 
     void Start()
     {
         win = false;
-        width = widthData.GetSize();
-        height = heightData.GetSize();
         level = FindObjectOfType<SetLevel>();
         timer = FindObjectOfType<Timer>();
 
@@ -133,6 +176,17 @@ public class PotionBoard : MonoBehaviour
         orangeSymbolGO = GameObject.FindGameObjectWithTag("Orange");
         blueSymbolGO = GameObject.FindGameObjectWithTag("Blue");
 
+        if (isTutorialLevel)
+        {
+            timer.ChangeMoves(3);
+
+            redPotionCount.count = 3;
+            violetPotionCount.count = 0;
+            greenPotionCount.count = 0;
+            orangePotionCount.count = 0;
+            bluePotionCount.count = 0;
+        }
+
         UpdateUIVisibility();
         RepositionCountUIs();
 
@@ -141,11 +195,12 @@ public class PotionBoard : MonoBehaviour
 
     private void Update()
     {
+
         if (!won && timer.GetMovesLeft() > 0)
         {
             CheckUserActions();
 
-            if (!isShaking && Time.time - lastMoveTime > inactivityThreshold && AreAllPotionsSettled())
+            if (!isShaking && Time.time - lastMoveTime > inactivityThreshold && AreAllPotionsSettled() && !isTutorialLevel)
             {
                 if (shakeCoroutine != null)
                 {
@@ -177,11 +232,14 @@ public class PotionBoard : MonoBehaviour
                     clickedPotion = hit.collider.gameObject.GetComponent<Potion>();
                 }
             }
-            else if (touch.phase == TouchPhase.Moved && clickedPotion != null)
+            else if (touch.phase == TouchPhase.Ended)
             {
-                Vector2 currentTouchPosition = touch.position;
-                Vector2 delta = currentTouchPosition - startTouchPosition;
-                float swipeThreshold = 50f; 
+                endTouchPosition = touch.position;
+
+                if (clickedPotion == null) return;
+
+                Vector2 delta = endTouchPosition - startTouchPosition;
+                float swipeThreshold = 50f;
 
                 if (delta.magnitude > swipeThreshold)
                 {
@@ -213,14 +271,9 @@ public class PotionBoard : MonoBehaviour
                         playerMadeAMove = true;
                         SelectPotion(clickedPotion);
                         SelectPotion(targetPotion);
-                        clickedPotion = null; 
-                        startTouchPosition = currentTouchPosition; 
                     }
                 }
-            }
-            else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
-            {
-                clickedPotion = null; 
+                clickedPotion = null;
             }
         }
     }
@@ -239,38 +292,65 @@ public class PotionBoard : MonoBehaviour
 
     void InitializeBoard()
     {
-        bool validBoard = false;
+        win = false;
 
-        while (!validBoard)
+        if (isTutorialLevel && tutorialLayout != null)
         {
-            DestroyPotions();
-            DestroyTiles();
-            potionBoard = new Node[width, height];
+            width = tutorialLayout.width;
+            height = tutorialLayout.height;
+        }
+        else
+        {
+            width = widthData.GetSize();
+            height = heightData.GetSize();
+        }
 
-            spacingX = (float)(width - 1) / 2;
-            spacingY = (float)((height - 1) / 2) + .75f;
+        level = FindObjectOfType<SetLevel>();
+        timer = FindObjectOfType<Timer>();
 
-            CreateVisualBoard();
+        lastMoveTime = Time.time;
+        possibleMatches = new List<(List<Potion> matchPotions, int x1, int y1, int x2, int y2)>();
+        selectedMatch = null;
 
+        DestroyPotions();
+        DestroyTiles();
+        potionBoard = new Node[width, height];
+
+        spacingX = (float)(width - 1) / 2;
+        spacingY = (float)((height - 1) / 2) + .75f;
+
+        CreateVisualBoard();
+
+        if (isTutorialLevel && tutorialLayout != null)
+        {
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
                     Vector2 position = new Vector2(x - spacingX, y - spacingY);
-                    if (arrayLayout.rows[y].row[x])
+                    TutorialTile tile = tutorialLayout.tiles.FirstOrDefault(t => t.x == x && t.y == y);
+
+                    if (tile == null || !tile.isUsable)
                     {
                         potionBoard[x, y] = new Node(false, null);
                     }
                     else
                     {
-                        int randomIndex = Random.Range(0, potionPrefabs.Length);
-                        GameObject potion = Instantiate(potionPrefabs[randomIndex], position, Quaternion.identity);
+                        GameObject potionPrefab = potionPrefabs.FirstOrDefault(p => p.GetComponent<Potion>().potionType == tile.potionType);
+                        if (potionPrefab == null)
+                        {
+                            Debug.LogError($"Nenhum prefab encontrado para o tipo {tile.potionType} em ({x},{y})");
+                            potionBoard[x, y] = new Node(false, null);
+                            continue;
+                        }
+
+                        GameObject potion = Instantiate(potionPrefab, position, Quaternion.identity);
                         potion.transform.SetParent(potionParent.transform);
-                        potion.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f); 
+                        potion.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
                         SpriteRenderer potionRenderer = potion.GetComponent<SpriteRenderer>();
                         if (potionRenderer != null)
                         {
-                            potionRenderer.sortingOrder = 3; 
+                            potionRenderer.sortingOrder = 3;
                         }
                         potion.GetComponent<Potion>().SetIndicies(x, y);
                         potionBoard[x, y] = new Node(true, potion);
@@ -278,8 +358,50 @@ public class PotionBoard : MonoBehaviour
                     }
                 }
             }
+        }
+        else
+        {
+            bool validBoard = false;
+            while (!validBoard)
+            {
+                DestroyPotions();
+                DestroyTiles();
+                potionBoard = new Node[width, height];
 
-            validBoard = !CheckBoard(false) && HasPossibleMoves();
+                spacingX = (float)(width - 1) / 2;
+                spacingY = (float)((height - 1) / 2) + .75f;
+
+                CreateVisualBoard();
+
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        Vector2 position = new Vector2(x - spacingX, y - spacingY);
+                        if (arrayLayout.rows[y].row[x])
+                        {
+                            potionBoard[x, y] = new Node(false, null);
+                        }
+                        else
+                        {
+                            int randomIndex = Random.Range(0, potionPrefabs.Length);
+                            GameObject potion = Instantiate(potionPrefabs[randomIndex], position, Quaternion.identity);
+                            potion.transform.SetParent(potionParent.transform);
+                            potion.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+                            SpriteRenderer potionRenderer = potion.GetComponent<SpriteRenderer>();
+                            if (potionRenderer != null)
+                            {
+                                potionRenderer.sortingOrder = 3;
+                            }
+                            potion.GetComponent<Potion>().SetIndicies(x, y);
+                            potionBoard[x, y] = new Node(true, potion);
+                            potionsToDestroy.Add(potion);
+                        }
+                    }
+                }
+
+                validBoard = !CheckBoard(false) && HasPossibleMoves();
+            }
         }
     }
 
@@ -321,7 +443,7 @@ public class PotionBoard : MonoBehaviour
             return;
         }
 
-        float worldYPosition = symbolGOs.FirstOrDefault(go => go != null)?.transform.position.y ?? 0f; 
+        float worldYPosition = symbolGOs.FirstOrDefault(go => go != null)?.transform.position.y ?? 0f;
 
         float worldTotalWidth = (activeSymbolGOs.Count - 1) * worldSpacing;
         float worldStartX = worldCenterX - (worldTotalWidth / 2f);
@@ -347,7 +469,6 @@ public class PotionBoard : MonoBehaviour
                 if (uiRect != null)
                 {
                     float currentY = uiRect.anchoredPosition.y;
-
                     float newX = uiStartX + (i * uiSpacing);
                     Vector2 newCanvasPos = new Vector2(newX, currentY);
                     uiRect.anchoredPosition = newCanvasPos;
@@ -363,13 +484,18 @@ public class PotionBoard : MonoBehaviour
 
     private void CreateVisualBoard()
     {
-        tilesToDestroy.Clear(); 
+        tilesToDestroy.Clear();
 
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                if (arrayLayout.rows[y].row[x]) continue; 
+                if (isTutorialLevel && tutorialLayout != null)
+                {
+                    TutorialTile tutorialTile = tutorialLayout.tiles.FirstOrDefault(t => t.x == x && t.y == y);
+                    if (tutorialTile == null || !tutorialTile.isUsable) continue;
+                }
+                else if (arrayLayout.rows[y].row[x]) continue;
 
                 Vector2 position = new Vector2(x - spacingX, y - spacingY);
                 GameObject tilePrefab;
@@ -377,13 +503,13 @@ public class PotionBoard : MonoBehaviour
                 if (x == 0 && y == 0)
                     tilePrefab = bottomLeftTilePrefab;
                 else if (x == 0 && y == height - 1)
-                    tilePrefab = topLeftTilePrefab; 
+                    tilePrefab = topLeftTilePrefab;
                 else if (x == width - 1 && y == 0)
                     tilePrefab = bottomRightTilePrefab;
                 else if (x == width - 1 && y == height - 1)
-                    tilePrefab = topRightTilePrefab; 
+                    tilePrefab = topRightTilePrefab;
                 else
-                    tilePrefab = centerTilePrefab; 
+                    tilePrefab = centerTilePrefab;
 
                 GameObject tile = Instantiate(tilePrefab, position, Quaternion.identity);
                 tile.transform.SetParent(tileParent.transform);
@@ -391,10 +517,10 @@ public class PotionBoard : MonoBehaviour
                 SpriteRenderer renderer = tile.GetComponent<SpriteRenderer>();
                 if (renderer != null)
                 {
-                    renderer.sortingOrder = 1; 
+                    renderer.sortingOrder = 1;
                 }
 
-                tilesToDestroy.Add(tile); 
+                tilesToDestroy.Add(tile);
             }
         }
     }
@@ -441,7 +567,6 @@ public class PotionBoard : MonoBehaviour
             }
         }
     }
-
 
     public void DestroyPotions()
     {
@@ -692,7 +817,7 @@ public class PotionBoard : MonoBehaviour
                 ParticleSystemRenderer renderer = vfx.GetComponent<ParticleSystemRenderer>();
                 if (renderer != null)
                 {
-                    renderer.sortingOrder = 2; // Partículas de explosão na camada 2
+                    renderer.sortingOrder = 2;
                 }
             }
         }
@@ -797,7 +922,7 @@ public class PotionBoard : MonoBehaviour
         int randomIndex = Random.Range(0, potionPrefabs.Length);
         GameObject newPotion = Instantiate(potionPrefabs[randomIndex], new Vector2(x - spacingX, height - spacingY), Quaternion.identity);
         newPotion.transform.SetParent(potionParent.transform);
-        newPotion.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f); 
+        newPotion.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
         SpriteRenderer potionRenderer = newPotion.GetComponent<SpriteRenderer>();
         if (potionRenderer != null)
         {
@@ -1146,7 +1271,7 @@ public class PotionBoard : MonoBehaviour
         }
         else if (selectedPotion == _potion)
         {
-            selectedPotion = null; 
+            selectedPotion = null;
         }
         else
         {
@@ -1167,7 +1292,6 @@ public class PotionBoard : MonoBehaviour
         lastMoveTime = Time.time;
         selectedMatch = null;
 
-        // Para a animação de tremor e limpa partículas
         if (shakeCoroutine != null)
         {
             StopCoroutine(shakeCoroutine);
@@ -1176,7 +1300,6 @@ public class PotionBoard : MonoBehaviour
         }
 
         ClearAllGlowEffects();
-
         DoSwap(_currentPotion, _targetPotion);
         StartCoroutine(ProcessMatches(_currentPotion, _targetPotion));
     }
@@ -1253,7 +1376,7 @@ public class PotionBoard : MonoBehaviour
     {
         yield return new WaitUntil(() => AreAllPotionsSettled());
 
-        if (!HasPossibleMoves())
+        if (!HasPossibleMoves() && !isTutorialLevel)
         {
             int maxAttempts = 100;
             int attempts = 0;
@@ -1357,12 +1480,12 @@ public class PotionBoard : MonoBehaviour
 
                 GameObject potionClone = Instantiate(potion.gameObject, potion.transform.position, Quaternion.identity);
                 potionClone.transform.SetParent(potionParent.transform);
-                potionClone.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f); // Escala 0.8, conforme ajustado anteriormente
+                potionClone.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
 
                 SpriteRenderer cloneRenderer = potionClone.GetComponent<SpriteRenderer>();
                 if (cloneRenderer != null)
                 {
-                    cloneRenderer.sortingOrder = 3; // Clones das poções na camada 3
+                    cloneRenderer.sortingOrder = 3;
                 }
 
                 Potion clonePotion = potionClone.GetComponent<Potion>();
@@ -1471,14 +1594,14 @@ public class PotionBoard : MonoBehaviour
 
             clone.transform.position = new Vector3(x, y, startPosition.z);
 
-            float scale = Mathf.Lerp(0.8f, 0.8f, t); // Mantém a escala em 0.8 durante a animação
+            float scale = Mathf.Lerp(0.8f, 0.8f, t);
             clone.transform.localScale = new Vector3(scale, scale, scale);
 
             yield return null;
         }
 
         clone.transform.position = targetPosition;
-        clone.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f); // Escala final ajustada para 0.8
+        clone.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
 
         AudioManager.Instance.PlaySFX("Collect");
 
@@ -1513,7 +1636,6 @@ public class PotionBoard : MonoBehaviour
         Destroy(clone);
     }
 
-    // Limpa todas as partículas de brilho ativas
     private void ClearAllGlowEffects()
     {
         foreach (var ps in activeGlowEffects)
@@ -1537,7 +1659,6 @@ public class PotionBoard : MonoBehaviour
         isShaking = true;
         Debug.Log($"Iniciando ShakePossibleMatch (Time: {Time.time})");
 
-        // Valida selectedMatch
         if (selectedMatch.HasValue)
         {
             var match = selectedMatch.Value;
@@ -1560,14 +1681,13 @@ public class PotionBoard : MonoBehaviour
                 }
                 if (!isValid)
                 {
-                    Debug.Log("Selected match não está mais válido (poções movidas ou destruídas). Resetando selectedMatch.");
+                    Debug.Log("Selected match não está mais válido. Resetando selectedMatch.");
                     selectedMatch = null;
                 }
             }
         }
 
-        // Seleciona novo match se necessário
-        if (selectedMatch == null)
+        if (selectedMatch == null && !isTutorialLevel)
         {
             if (!HasPossibleMoves())
             {
@@ -1594,7 +1714,6 @@ public class PotionBoard : MonoBehaviour
 
         Debug.Log($"Animating {matchPotions.Count} potions for match at ({selectedMatch.Value.x1}, {selectedMatch.Value.y1}) to ({selectedMatch.Value.x2}, {selectedMatch.Value.y2}) (Time: {Time.time})");
 
-        // Armazena posições e escalas originais
         Dictionary<Potion, Vector3> originalPositions = new Dictionary<Potion, Vector3>();
         Dictionary<Potion, Vector3> originalScales = new Dictionary<Potion, Vector3>();
 
@@ -1603,9 +1722,8 @@ public class PotionBoard : MonoBehaviour
             if (potion != null && potion.gameObject != null)
             {
                 originalPositions[potion] = potion.transform.position;
-                originalScales[potion] = new Vector3(0.8f, 0.8f, 0.8f); // Escala base ajustada para 0.8
+                originalScales[potion] = new Vector3(0.8f, 0.8f, 0.8f);
 
-                // Cria efeito de brilho
                 if (glowVFXPrefab != null)
                 {
                     GameObject vfx = Instantiate(glowVFXPrefab, potion.transform.position, Quaternion.identity, potion.transform);
@@ -1617,7 +1735,7 @@ public class PotionBoard : MonoBehaviour
                         ParticleSystemRenderer renderer = vfx.GetComponent<ParticleSystemRenderer>();
                         if (renderer != null)
                         {
-                            renderer.sortingOrder = 2; // Partículas de brilho na camada 2
+                            renderer.sortingOrder = 2;
                         }
                         activeGlowEffects.Add(ps);
                     }
@@ -1632,7 +1750,6 @@ public class PotionBoard : MonoBehaviour
         float elapsed = 0f;
         bool fadeInCompleted = false;
 
-        // Animação de tremor
         while (isShaking)
         {
             elapsed += Time.deltaTime;
@@ -1648,14 +1765,14 @@ public class PotionBoard : MonoBehaviour
                 if (potion != null && potion.gameObject != null)
                 {
                     float bounce = Mathf.Abs(Mathf.Sin(Time.time * bounceFrequency * Mathf.PI)) * heightMagnitude;
-                    float scale = 0.8f + Mathf.Abs(Mathf.Sin(Time.time * bounceFrequency * Mathf.PI)) * scaleMagnitude; // Escala base 0.8
+                    float scale = 0.8f + Mathf.Abs(Mathf.Sin(Time.time * bounceFrequency * Mathf.PI)) * scaleMagnitude;
 
                     bounce *= fadeInFactor;
-                    scale = 0.8f + (scale - 0.8f) * fadeInFactor; // Ajusta a interpolação para escala base 0.8
+                    scale = 0.8f + (scale - 0.8f) * fadeInFactor;
 
                     Vector3 originalPos = originalPositions[potion];
                     potion.transform.position = new Vector3(originalPos.x, originalPos.y + bounce, originalPos.z);
-                    potion.transform.localScale = new Vector3(scale, scale, scale); // Aplica a nova escala
+                    potion.transform.localScale = new Vector3(scale, scale, scale);
                 }
             }
 
@@ -1671,7 +1788,6 @@ public class PotionBoard : MonoBehaviour
             yield return null;
         }
 
-        // Fade-out
         float fadeOutDuration = 0.2f;
         float fadeOutElapsed = 0f;
         while (fadeOutElapsed < fadeOutDuration)
@@ -1700,7 +1816,6 @@ public class PotionBoard : MonoBehaviour
             yield return null;
         }
 
-        // Restaura posições e escalas
         foreach (Potion potion in matchPotions)
         {
             if (potion != null && potion.gameObject != null)

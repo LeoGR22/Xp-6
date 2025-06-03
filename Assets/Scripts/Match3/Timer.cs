@@ -36,6 +36,10 @@ public class Timer : MonoBehaviour
         }
     }
 
+    public void ChangeMoves(int num)
+    {
+        time = num;
+    }
 
     void DecrementTimer()
     {
