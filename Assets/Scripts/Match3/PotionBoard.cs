@@ -177,20 +177,16 @@ public class PotionBoard : MonoBehaviour
                     clickedPotion = hit.collider.gameObject.GetComponent<Potion>();
                 }
             }
-            else if (touch.phase == TouchPhase.Ended)
+            else if (touch.phase == TouchPhase.Moved && clickedPotion != null)
             {
-                endTouchPosition = touch.position;
-
-                if (clickedPotion == null) return;
-
-                Vector2 delta = endTouchPosition - startTouchPosition;
+                Vector2 currentTouchPosition = touch.position;
+                Vector2 delta = currentTouchPosition - startTouchPosition;
                 float swipeThreshold = 50f; 
 
                 if (delta.magnitude > swipeThreshold)
                 {
                     if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
                     {
-                        // Swipe horizontal
                         if (delta.x > 0)
                         {
                             targetPotion = GetPotionAt(clickedPotion.xIndex + 1, clickedPotion.yIndex);
@@ -202,7 +198,6 @@ public class PotionBoard : MonoBehaviour
                     }
                     else
                     {
-                        // Swipe vertical
                         if (delta.y > 0)
                         {
                             targetPotion = GetPotionAt(clickedPotion.xIndex, clickedPotion.yIndex + 1);
@@ -216,11 +211,16 @@ public class PotionBoard : MonoBehaviour
                     if (targetPotion != null)
                     {
                         playerMadeAMove = true;
-                        SelectPotion(clickedPotion); 
-                        SelectPotion(targetPotion); 
+                        SelectPotion(clickedPotion);
+                        SelectPotion(targetPotion);
+                        clickedPotion = null; 
+                        startTouchPosition = currentTouchPosition; 
                     }
                 }
-                clickedPotion = null;
+            }
+            else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+            {
+                clickedPotion = null; 
             }
         }
     }
