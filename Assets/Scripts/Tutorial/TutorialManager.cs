@@ -7,8 +7,10 @@ using DG.Tweening;
 public class TutorialManager : MonoBehaviour
 {
     [SerializeField] private GameObject tutorialGO;
+    [SerializeField] private GameObject HandGO;
     [SerializeField] private Animator gameAnim;
     [SerializeField] private BooleanSO isTuto;
+    [SerializeField] private BooleanSO canMove;
     [SerializeField] private string tuto;
     [SerializeField] private string tuto2;
     [SerializeField] private TextMeshProUGUI textMesh;
@@ -36,7 +38,7 @@ public class TutorialManager : MonoBehaviour
             if (tutoPart.value == 2)
             {
                 gameAnim.Play(tuto2);
-                StartCoroutine(TutorialSequence());
+                StartCoroutine(TutorialSequence2());
             }
         }
         else { tutorialGO.SetActive(false); }
@@ -115,6 +117,94 @@ public class TutorialManager : MonoBehaviour
         tutoPart.value = 2;
     }
 
+    IEnumerator TutorialSequence2()
+    {
+        canMove.value = false;
+        textMesh.text = "";
+        ChangeSprite(0);
+
+        yield return new WaitForSeconds(1.35f);
+        ChangeText("Hey again!");
+        ChangeSprite(0);
+        currentStep++;
+        canClick = true;
+
+        yield return new WaitUntil(() => currentStep > 1 && canClick);
+
+        canClick = false;
+        ChangeText("This might all look a bit complicated...");
+        canClick = true;
+
+        yield return new WaitUntil(() => currentStep > 2 && canClick);
+
+        canClick = false;
+        ChangeText("But don't worry! It's actually super simple!");
+        ChangeSprite(1);
+        canClick = true;
+
+        yield return new WaitUntil(() => currentStep > 3 && canClick);
+
+        canClick = false;
+        ChangeText("Here, you can organize some objects and earn coins for it!");
+        ChangeSprite(3);
+        canClick = true;
+
+        yield return new WaitUntil(() => currentStep > 4 && canClick);
+        canClick = false;
+        ChangeText("");
+        ChangeSprite(2);
+
+        yield return new WaitForSeconds(0.3f);
+        gameAnim.SetTrigger("Tuto");
+
+        yield return new WaitForSeconds(0.9f);
+        ChangeText("Up here, you can see which objects you need to collect.");
+
+        canClick = true;
+
+        yield return new WaitUntil(() => currentStep > 5 && canClick);
+         canClick = false;
+        ChangeText("To collect them, just match them in groups of 3 or more!");
+        ChangeSprite(3);
+        canClick = true;
+
+        yield return new WaitUntil(() => currentStep > 6 && canClick);
+        canClick = false;
+        ChangeText("");
+
+        yield return new WaitForSeconds(0.3f);
+        ChangeSprite(0);
+        gameAnim.SetTrigger("Tuto");
+
+        yield return new WaitForSeconds(0.9f);
+        ChangeText("And to do that, all you need is a swipe!");
+
+        yield return new WaitForSeconds(2f);
+
+        ChangeText("");
+        yield return new WaitForSeconds(.3f);
+        ChangeSprite(5);
+        gameAnim.SetTrigger("Tuto");
+        nextButton.gameObject.SetActive(false);
+        canMove.value = true;
+        AudioManager.Instance.PlaySFX("Swipe");
+
+        yield return new WaitForSeconds(1f);
+        ChangeText("Like this!");
+        ChangeSprite(0);
+
+        yield return new WaitUntil(() => currentStep > 7);
+        ChangeText("");
+
+        yield return new WaitForSeconds(1.5f);
+        ChangeSprite(3);
+        gameAnim.SetTrigger("Tuto");
+
+        yield return new WaitForSeconds(1f);
+        ChangeText("Now lets go Back to the setup!");
+    }
+
+
     public void OnNextButtonClicked()
     {
         if (canClick)
@@ -122,6 +212,11 @@ public class TutorialManager : MonoBehaviour
             currentStep++;
             nextButton.interactable = false; 
         }
+    }
+
+    public void Next()
+    {
+        currentStep++;
     }
 
     public void LoadMatch3()
@@ -135,6 +230,7 @@ public class TutorialManager : MonoBehaviour
             gameAnim.Play("OpenSelectLevel");
         }
     }
+
 
     private void ChangeText(string newText)
     {

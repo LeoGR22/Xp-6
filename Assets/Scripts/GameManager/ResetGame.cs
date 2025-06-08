@@ -12,9 +12,9 @@ public class ResetGame : MonoBehaviour
     void Start()
     {
         if(isTutorial !=  null) 
-            isTutorial.ChangeBool(true);
+            isTutorial.value = true;
         if(levelData != null)
-            levelData.ChangeLevel(0);
+            levelData.level = 0;
         if (playerMoney != null)
             playerMoney.value = 0;
         if (tutoarialPart != null)

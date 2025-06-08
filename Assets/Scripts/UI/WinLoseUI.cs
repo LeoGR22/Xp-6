@@ -9,6 +9,8 @@ public class WinLoseUI : MonoBehaviour
     public GameObject winUI;
     public GameObject loseUI;
 
+    public BooleanSO isTuto;
+
     public Animator fadeUI;
 
     public GameObject conffetiPrefab;
@@ -46,7 +48,8 @@ public class WinLoseUI : MonoBehaviour
     }
     public void NextLevel()
     {
-        StartCoroutine(GoTo("Match3"));
+        if(!isTuto.value)
+            StartCoroutine(GoTo("Match3"));
     }
 
     private IEnumerator GoTo(string sceneName)

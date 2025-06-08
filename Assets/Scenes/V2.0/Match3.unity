@@ -131,6 +131,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3528050720107831178, guid: 94f0a510d69e78d4ab341b7a5690e211, type: 3}
+      propertyPath: HandGO
+      value: 
+      objectReference: {fileID: 2065580941}
+    - target: {fileID: 3528050720107831178, guid: 94f0a510d69e78d4ab341b7a5690e211, type: 3}
+      propertyPath: gameAnim
+      value: 
+      objectReference: {fileID: 189890191}
+    - target: {fileID: 3528050720107831178, guid: 94f0a510d69e78d4ab341b7a5690e211, type: 3}
       propertyPath: textMesh
       value: 
       objectReference: {fileID: 2040913268}
@@ -146,6 +154,14 @@ PrefabInstance:
       propertyPath: tutorialGO
       value: 
       objectReference: {fileID: 823797691}
+    - target: {fileID: 3528050720107831178, guid: 94f0a510d69e78d4ab341b7a5690e211, type: 3}
+      propertyPath: spriteArray.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3528050720107831178, guid: 94f0a510d69e78d4ab341b7a5690e211, type: 3}
+      propertyPath: spriteArray.Array.data[4]
+      value: 
+      objectReference: {fileID: -1421667151, guid: a127b5eb829387f4f848e0b58c5e69e2, type: 3}
     - target: {fileID: 7490917085127227147, guid: 94f0a510d69e78d4ab341b7a5690e211, type: 3}
       propertyPath: m_Name
       value: TutorialManager
@@ -824,6 +840,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   winUI: {fileID: 1283595368}
   loseUI: {fileID: 404421762}
+  isTuto: {fileID: 11400000, guid: 46f17fbd616de264e9a8960687829fdd, type: 2}
   fadeUI: {fileID: 1759100933}
   conffetiPrefab: {fileID: 0}
 --- !u!1001 &237711720
@@ -4095,6 +4112,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7302658502208913848, guid: aed2e4a104c447e438d4cf81a9fa508a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1320645078}
+    - target: {fileID: 7302658502208913848, guid: aed2e4a104c447e438d4cf81a9fa508a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PlaySFX
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5500,6 +5525,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2065580941 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 719585172063914144, guid: aed2e4a104c447e438d4cf81a9fa508a, type: 3}
+  m_PrefabInstance: {fileID: 1700731376}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2136873792
 GameObject:
   m_ObjectHideFlags: 0
