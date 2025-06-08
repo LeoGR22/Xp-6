@@ -79,6 +79,7 @@ MonoBehaviour:
   widthData: {fileID: 11400000, guid: e44cdf145070f0f4cadeabf8239463bf, type: 2}
   heightData: {fileID: 11400000, guid: 24ea6bb3b12404540a26c758f9c2b42b, type: 2}
   tutorialSO: {fileID: 11400000, guid: 46f17fbd616de264e9a8960687829fdd, type: 2}
+  canMove: {fileID: 11400000, guid: 126d222e7130eea4d95fcafcc62289e1, type: 2}
   potionPrefabs:
   - {fileID: 2274775717001111761, guid: 93f42c7f10e57c143a44471addf215a1, type: 3}
   - {fileID: 4229577481417212027, guid: 893104be94400fa4ba8e4326453dc53f, type: 3}
@@ -88,6 +89,18 @@ MonoBehaviour:
   potionsToDestroy: []
   potionParent: {fileID: 1403515373038798881}
   explosionVFXPrefab: {fileID: 2939641832844967255, guid: 47f6051afa8ca5e49b9698dd6b742f74, type: 3}
+  backgroundSprites:
+  - {fileID: -2142656235, guid: f569897296165324c8dedc18da8f05e6, type: 3}
+  - {fileID: -730917247, guid: f569897296165324c8dedc18da8f05e6, type: 3}
+  - {fileID: -211150092, guid: f569897296165324c8dedc18da8f05e6, type: 3}
+  - {fileID: 1084953016, guid: f569897296165324c8dedc18da8f05e6, type: 3}
+  - {fileID: 946347670, guid: f569897296165324c8dedc18da8f05e6, type: 3}
+  - {fileID: -1765127037, guid: f569897296165324c8dedc18da8f05e6, type: 3}
+  - {fileID: -199968988, guid: f569897296165324c8dedc18da8f05e6, type: 3}
+  - {fileID: 31167497, guid: f569897296165324c8dedc18da8f05e6, type: 3}
+  - {fileID: -750408484, guid: f569897296165324c8dedc18da8f05e6, type: 3}
+  extraMargin: 0.2
+  backgroundScale: 1.3
   centerTilePrefab: {fileID: 6144982618925084835, guid: 0889fc05c9a60c246adbc1b8779aa464, type: 3}
   topLeftTilePrefab: {fileID: 7639101232971208168, guid: d74cfb38e9a190e45b06f31c1fe6a943, type: 3}
   topRightTilePrefab: {fileID: 7786443610423890668, guid: b14dd712f8d23f947ba51babdea0a9bd, type: 3}
@@ -114,10 +127,11 @@ MonoBehaviour:
   redPotionCount: {fileID: 11400000, guid: 5b5f650ca1fead54987ede366fe41fca, type: 2}
   orangePotionCount: {fileID: 11400000, guid: f6c09167b899c32448ed1227c34c3154, type: 2}
   bluePotionCount: {fileID: 11400000, guid: 4163e0545bac8a742a42e0fc0621bcac, type: 2}
-  worldSpacing: 0.9
-  uiSpacing: 140
-  worldCenterX: 1.5
-  uiCenterX: 35
+  finalPotionScale: 0.55
+  worldSpacing: 0.7
+  uiSpacing: 120
+  worldCenterX: 1.2
+  uiCenterX: 50
   violetCountUI: {fileID: 9220764076523847263, guid: 023570402ad989045be3871e0af46b87, type: 3}
   greenCountUI: {fileID: 7438254133324051163, guid: a9d3256c15478954faafd3ad75e95437, type: 3}
   redCountUI: {fileID: 3449776491320037323, guid: b8cadff88130ab84aaca565695f16852, type: 3}
@@ -127,7 +141,6 @@ MonoBehaviour:
   LoseGame: {fileID: 0}
   canLose: {fileID: 11400000, guid: 446c2009f1040a344b7e9b7006677d43, type: 2}
   glowVFXPrefab: {fileID: 6937530239127161567, guid: ac4775c1d8cee3047919727409c55d1c, type: 3}
-  isTutorialLevel: 1
   tutorialLayout:
     width: 3
     height: 3

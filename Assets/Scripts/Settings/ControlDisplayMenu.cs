@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Unity.VisualScripting;
 
 public class ControlDisplayMenu : MonoBehaviour
 {
@@ -10,8 +11,11 @@ public class ControlDisplayMenu : MonoBehaviour
 
     private void Start()
     {
-        playMenu.SetActive(false);
-        settingsMenu.SetActive(false);
+        if(playMenu != null)
+            playMenu.SetActive(false);
+
+        if(settingsMenu != null)
+            settingsMenu.SetActive(false);
     }
 
     public void OpenSettings()

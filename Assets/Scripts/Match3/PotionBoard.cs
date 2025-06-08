@@ -17,6 +17,8 @@ public class PotionBoard : MonoBehaviour
 
     public BooleanSO tutorialSO;
 
+    public BooleanSO canMove;
+
     SetLevel level;
     bool win;
 
@@ -28,6 +30,11 @@ public class PotionBoard : MonoBehaviour
     public GameObject potionParent;
 
     public GameObject explosionVFXPrefab;
+
+    [SerializeField] private Sprite[] backgroundSprites; 
+    [SerializeField] private float extraMargin = 0.1f; 
+    [SerializeField] private float backgroundScale = 0.8f; 
+    private List<GameObject> backgroundTiles = new List<GameObject>();
 
     public GameObject centerTilePrefab;
     public GameObject topLeftTilePrefab;
@@ -69,6 +76,7 @@ public class PotionBoard : MonoBehaviour
     public ObjectiveBoardData orangePotionCount;
     public ObjectiveBoardData bluePotionCount;
 
+    [SerializeField] private float finalPotionScale = 0.7f;
     [SerializeField] private float worldSpacing = 0.9f;
     [SerializeField] private float uiSpacing = 50f;
     [SerializeField] private float worldCenterX = 0f;
@@ -106,7 +114,6 @@ public class PotionBoard : MonoBehaviour
 
     [SerializeField] private GameObject glowVFXPrefab;
 
-    // Lista para partículas ativas
     private List<ParticleSystem> activeGlowEffects = new List<ParticleSystem>();
 
     // Tutorial
@@ -195,19 +202,21 @@ public class PotionBoard : MonoBehaviour
 
     private void Update()
     {
-
-        if (!won && timer.GetMovesLeft() > 0)
+        if (canMove.value)
         {
-            CheckUserActions();
-
-            if (!isShaking && Time.time - lastMoveTime > inactivityThreshold && AreAllPotionsSettled() && !isTutorialLevel)
+            if (!won && timer.GetMovesLeft() > 0)
             {
-                if (shakeCoroutine != null)
+                CheckUserActions();
+
+                if (!isShaking && Time.time - lastMoveTime > inactivityThreshold && AreAllPotionsSettled() && !isTutorialLevel)
                 {
-                    StopCoroutine(shakeCoroutine);
-                    shakeCoroutine = null;
+                    if (shakeCoroutine != null)
+                    {
+                        StopCoroutine(shakeCoroutine);
+                        shakeCoroutine = null;
+                    }
+                    shakeCoroutine = StartCoroutine(ShakePossibleMatch());
                 }
-                shakeCoroutine = StartCoroutine(ShakePossibleMatch());
             }
         }
     }
@@ -232,13 +241,10 @@ public class PotionBoard : MonoBehaviour
                     clickedPotion = hit.collider.gameObject.GetComponent<Potion>();
                 }
             }
-            else if (touch.phase == TouchPhase.Ended)
+            else if (touch.phase == TouchPhase.Moved && clickedPotion != null)
             {
-                endTouchPosition = touch.position;
-
-                if (clickedPotion == null) return;
-
-                Vector2 delta = endTouchPosition - startTouchPosition;
+                Vector2 currentTouchPosition = touch.position;
+                Vector2 delta = currentTouchPosition - startTouchPosition;
                 float swipeThreshold = 50f;
 
                 if (delta.magnitude > swipeThreshold)
@@ -271,9 +277,14 @@ public class PotionBoard : MonoBehaviour
                         playerMadeAMove = true;
                         SelectPotion(clickedPotion);
                         SelectPotion(targetPotion);
+                        clickedPotion = null; 
                     }
                 }
+            }
+            else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+            {
                 clickedPotion = null;
+                targetPotion = null;
             }
         }
     }
@@ -485,7 +496,9 @@ public class PotionBoard : MonoBehaviour
     private void CreateVisualBoard()
     {
         tilesToDestroy.Clear();
+        backgroundTiles.Clear(); // Não usaremos mais backgroundTiles separadamente, mas mantemos a limpeza por segurança
 
+        // Loop para criar os tiles do tabuleiro
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -500,6 +513,7 @@ public class PotionBoard : MonoBehaviour
                 Vector2 position = new Vector2(x - spacingX, y - spacingY);
                 GameObject tilePrefab;
 
+                // Selecionar o prefab do tile
                 if (x == 0 && y == 0)
                     tilePrefab = bottomLeftTilePrefab;
                 else if (x == 0 && y == height - 1)
@@ -511,13 +525,55 @@ public class PotionBoard : MonoBehaviour
                 else
                     tilePrefab = centerTilePrefab;
 
+                // Instanciar o tile
                 GameObject tile = Instantiate(tilePrefab, position, Quaternion.identity);
-                tile.transform.SetParent(tileParent.transform);
+                tile.transform.SetParent(tileParent.transform, false);
 
-                SpriteRenderer renderer = tile.GetComponent<SpriteRenderer>();
-                if (renderer != null)
+                SpriteRenderer tileRenderer = tile.GetComponent<SpriteRenderer>();
+                if (tileRenderer != null)
                 {
-                    renderer.sortingOrder = 1;
+                    tileRenderer.sortingOrder = 1; // Tiles acima do fundo
+                }
+
+                // Adicionar sprite de fundo como filho do tile
+                if (backgroundSprites != null && backgroundSprites.Length >= 9)
+                {
+                    Sprite spriteToUse;
+                    // Determinar qual sprite usar com base na posição
+                    if (x == 0 && y == 0)
+                        spriteToUse = backgroundSprites[0]; // Canto inferior esquerdo
+                    else if (x == width - 1 && y == 0)
+                        spriteToUse = backgroundSprites[2]; // Canto inferior direito
+                    else if (x == 0 && y == height - 1)
+                        spriteToUse = backgroundSprites[3]; // Canto superior esquerdo
+                    else if (x == width - 1 && y == height - 1)
+                        spriteToUse = backgroundSprites[4]; // Canto superior direito
+                    else if (x == 0)
+                        spriteToUse = backgroundSprites[1]; // Borda esquerda
+                    else if (x == width - 1)
+                        spriteToUse = backgroundSprites[5]; // Borda direita
+                    else if (y == 0)
+                        spriteToUse = backgroundSprites[6]; // Borda inferior
+                    else if (y == height - 1)
+                        spriteToUse = backgroundSprites[7]; // Borda superior
+                    else
+                        spriteToUse = backgroundSprites[8]; // Centro
+
+                    // Criar GameObject filho para o sprite de fundo
+                    GameObject bgTile = new GameObject($"BackgroundTile_{x}_{y}");
+                    bgTile.transform.SetParent(tile.transform, false); // Filho do tile
+                    bgTile.transform.localPosition = Vector3.zero; // Centralizado no tile
+                    SpriteRenderer bgRenderer = bgTile.AddComponent<SpriteRenderer>();
+                    bgRenderer.sprite = spriteToUse;
+                    bgRenderer.sortingOrder = 0; // Fundo abaixo do tile
+
+                    // Aplicar escala e margem
+                    float bgScale = backgroundScale + extraMargin; // A margem aumenta o tamanho do fundo
+                    bgTile.transform.localScale = new Vector3(bgScale, bgScale, 1f);
+                }
+                else
+                {
+                    Debug.LogWarning("Array de sprites de fundo incompleto ou não atribuído. Necessário 9 sprites.");
                 }
 
                 tilesToDestroy.Add(tile);
@@ -533,11 +589,14 @@ public class PotionBoard : MonoBehaviour
             {
                 if (tile != null)
                 {
-                    Destroy(tile);
+                    Destroy(tile); // Destroi o tile e seus filhos (incluindo o sprite de fundo)
                 }
             }
             tilesToDestroy.Clear();
         }
+
+        // backgroundTiles não é mais necessário, mas mantemos a limpeza por segurança
+        backgroundTiles.Clear();
     }
 
     private void AssignCountUIs()
@@ -1485,7 +1544,7 @@ public class PotionBoard : MonoBehaviour
                 SpriteRenderer cloneRenderer = potionClone.GetComponent<SpriteRenderer>();
                 if (cloneRenderer != null)
                 {
-                    cloneRenderer.sortingOrder = 3;
+                    cloneRenderer.sortingOrder = 4;
                 }
 
                 Potion clonePotion = potionClone.GetComponent<Potion>();
@@ -1580,31 +1639,35 @@ public class PotionBoard : MonoBehaviour
     private IEnumerator AnimateSinglePotion(GameObject clone, Vector3 startPosition, Vector3 targetPosition, float duration, float height, ItemType type, int potionIndex, Dictionary<ItemType, int> potionsToReduce)
     {
         float elapsedTime = 0f;
+        float initialScale = 0.8f; // Escala inicial da poção
 
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
             float t = elapsedTime / duration;
 
+            // Posição com trajetória parabólica
             float x = Mathf.Lerp(startPosition.x, targetPosition.x, t);
             float y = Mathf.Lerp(startPosition.y, targetPosition.y, t);
-
             float parabola = height * Mathf.Sin(t * Mathf.PI);
             y += parabola;
 
-            clone.transform.position = new Vector3(x, y, startPosition.z);
-
-            float scale = Mathf.Lerp(0.8f, 0.8f, t);
+            // Escala diminuindo gradualmente
+            float scale = Mathf.Lerp(initialScale, finalPotionScale, t);
             clone.transform.localScale = new Vector3(scale, scale, scale);
+
+            clone.transform.position = new Vector3(x, y, startPosition.z);
 
             yield return null;
         }
 
+        // Posição e escala finais
         clone.transform.position = targetPosition;
-        clone.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+        clone.transform.localScale = new Vector3(finalPotionScale, finalPotionScale, finalPotionScale);
 
         AudioManager.Instance.PlaySFX("Collect");
 
+        // Redução da contagem de objetivos
         if (potionsToReduce.ContainsKey(type) && potionsToReduce[type] > 0)
         {
             switch (type)
@@ -1635,8 +1698,7 @@ public class PotionBoard : MonoBehaviour
 
         Destroy(clone);
     }
-
-    private void ClearAllGlowEffects()
+private void ClearAllGlowEffects()
     {
         foreach (var ps in activeGlowEffects)
         {

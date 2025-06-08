@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/V1.0/Match3.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
+    path: Assets/Scenes/V2.0/Menu.unity
+    guid: 36bf7c3554e949749bd564ffcbb1eb88
+  - enabled: 1
     path: Assets/Scenes/V2.0/LoadingScreen.unity
     guid: 4713726c6edc7e5409d2664c3beb8028
   - enabled: 1

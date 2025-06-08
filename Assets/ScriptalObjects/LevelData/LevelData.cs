@@ -12,6 +12,11 @@ public class LevelData : ScriptableObject
     {
         return level;
     }
+
+    public void ChangeLevel(int num)
+    {
+        level = num;
+    }
 }
 
 
