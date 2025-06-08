@@ -16,6 +16,7 @@ public class PotionBoard : MonoBehaviour
     public BoardSizeData heightData;
 
     public BooleanSO tutorialSO;
+    private GameObject tutorialGO;
 
     public BooleanSO canMove;
 
@@ -182,6 +183,7 @@ public class PotionBoard : MonoBehaviour
         redSymbolGO = GameObject.FindGameObjectWithTag("Red");
         orangeSymbolGO = GameObject.FindGameObjectWithTag("Orange");
         blueSymbolGO = GameObject.FindGameObjectWithTag("Blue");
+        tutorialGO = GameObject.FindGameObjectWithTag("Tutorial");
 
         if (isTutorialLevel)
         {
@@ -713,6 +715,11 @@ public class PotionBoard : MonoBehaviour
 
         if (_takeAction)
         {
+            if (tutorialSO.value)
+            {
+                tutorialGO.GetComponent<TutorialManager>().Next();
+            }
+
             List<(Potion potion, ItemType type)> potionsToAnimate = new List<(Potion, ItemType)>();
             Dictionary<ItemType, int> potionsToReduce = new Dictionary<ItemType, int>();
 
