@@ -20,14 +20,19 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Image handSprite;
     [SerializeField] private Sprite[] spriteArray;
     [SerializeField] private Button nextButton;
+    [SerializeField] private Button playButton;
     [SerializeField] private FloatSO tutoPart;
 
     private int currentStep = 0;
     private bool canClick = true;
+    private bool playButtonClicked = false;
 
     private void Start()
     {
         nextButton.onClick.AddListener(OnNextButtonClicked);
+
+        if (playButton != null)
+            playButton.onClick.AddListener(OnPlayButtonClicked);
 
         if (errorMenu != null)
             errorMenu.SetActive(false);
@@ -119,9 +124,14 @@ public class TutorialManager : MonoBehaviour
         canClick = true;
         nextButton.gameObject.SetActive(false);
 
-        yield return new WaitUntil(() => currentStep > 7);
+        playButtonClicked = false; 
+        yield return new WaitUntil(() => playButtonClicked && canClick);
         canClick = false;
         ChangeText("");
+
+        yield return new WaitForSeconds(0.3f);
+        currentStep++;
+        gameAnim.SetTrigger("Tuto");
 
         yield return new WaitForSeconds(0.7f);
         ChangeText("Now here!");
@@ -178,7 +188,7 @@ public class TutorialManager : MonoBehaviour
         ChangeSprite(3);
         canClick = true;
 
-        yield return new WaitUntil(() => currentStep > 6 && canClick);
+        yield return new WaitUntil(() => currentStep > 6 && canClick); 
         canClick = false;
         ChangeText("");
 
@@ -329,12 +339,6 @@ public class TutorialManager : MonoBehaviour
 
     public void OpenPlay()
     {
-        if (isTuto.value)
-        {
-            currentStep++;
-            gameAnim.SetTrigger("Tuto");
-        }
-
         playMenu.SetActive(true);
         playMenu.transform.localScale = Vector3.zero;
         playMenu.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
@@ -386,6 +390,14 @@ public class TutorialManager : MonoBehaviour
         {
             coinMenu.SetActive(false);
         });
+    }
+    private void OnPlayButtonClicked()
+    {
+        if (canClick)
+        {
+            playButtonClicked = true; 
+            playButton.interactable = false; 
+        }
     }
 
     public void OpenErrorMenu()

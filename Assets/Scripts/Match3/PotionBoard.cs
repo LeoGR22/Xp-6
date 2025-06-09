@@ -720,8 +720,8 @@ public class PotionBoard : MonoBehaviour
                 tutorialGO.GetComponent<TutorialManager>().Next();
             }
 
-            List<(Potion potion, ItemType type)> potionsToAnimate = new List<(Potion, ItemType)>();
-            Dictionary<ItemType, int> potionsToReduce = new Dictionary<ItemType, int>();
+            List<(Potion potion, ItemType type)> potionsToAnimate = new();
+            Dictionary<ItemType, int> potionsToReduce = new();
 
             foreach (var kvp in potionsByTypeInMatch)
             {
@@ -792,23 +792,23 @@ public class PotionBoard : MonoBehaviour
                 StartCoroutine(AnimatePotionToUI(potionsToAnimate, potionsToReduce));
             }
 
-            if (violetPotionCount.count + greenPotionCount.count + orangePotionCount.count + redPotionCount.count + bluePotionCount.count <= 0 && !won)
+            bool isVictory = violetPotionCount.count + greenPotionCount.count + orangePotionCount.count +
+                             redPotionCount.count + bluePotionCount.count <= 0 && !won;
+
+            if (isVictory)
             {
                 if (!win)
                 {
                     win = true;
-
                     GameObject targetPlayer = GameObject.FindWithTag("Player");
                     PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
                     playerManager.AddMoney(10 + (int)timer.GetMovesLeft() * 5);
-
                     level.PassLevel();
                 }
                 canLose.value = false;
                 WinGame.Raise();
             }
-
-            if (hasMatched && playerMadeAMove)
+            else if (hasMatched && playerMadeAMove)
             {
                 playerMadeAMove = false;
                 timer.DecreaseMove();
@@ -871,13 +871,25 @@ public class PotionBoard : MonoBehaviour
         if (explosionVFXPrefab != null && validPotionCount > 0 && firstValidPotion != null)
         {
             GameObject vfx = Instantiate(explosionVFXPrefab, centerPoint, Quaternion.identity);
-            ParticleSystem particleSystem = vfx.GetComponent<ParticleSystem>();
-            if (particleSystem != null)
+            Color potionColor = potionColors[firstValidPotion.potionType]; // Obtém a cor da poção
+
+            // Obtém todos os ParticleSystem (raiz e filhos)
+            ParticleSystem[] particleSystems = vfx.GetComponentsInChildren<ParticleSystem>(true);
+            foreach (ParticleSystem particleSystem in particleSystems)
             {
-                var main = particleSystem.main;
-                main.startColor = potionColors[firstValidPotion.potionType];
+                if (particleSystem != null)
+                {
+                    var main = particleSystem.main;
+                    main.startColor = potionColor; // Define a cor para cada sistema de partículas
+                }
+            }
+
+            // Aplica configurações adicionais ao ParticleSystem principal
+            ParticleSystem mainParticleSystem = vfx.GetComponent<ParticleSystem>();
+            if (mainParticleSystem != null)
+            {
                 vfx.transform.localScale *= 1.5f;
-                var emission = particleSystem.emission;
+                var emission = mainParticleSystem.emission;
                 emission.rateOverTimeMultiplier *= 1.5f;
                 ParticleSystemRenderer renderer = vfx.GetComponent<ParticleSystemRenderer>();
                 if (renderer != null)
