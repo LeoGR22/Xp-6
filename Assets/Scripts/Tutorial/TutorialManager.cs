@@ -8,6 +8,7 @@ public class TutorialManager : MonoBehaviour
 {
     [SerializeField] private GameObject tutorialGO;
     [SerializeField] private GameObject coinMenu;
+    [SerializeField] private GameObject errorMenu;
     [SerializeField] private Animator gameAnim;
     [SerializeField] private BooleanSO isTuto;
     [SerializeField] private BooleanSO canMove;
@@ -27,7 +28,10 @@ public class TutorialManager : MonoBehaviour
     {
         nextButton.onClick.AddListener(OnNextButtonClicked);
 
-        if(coinMenu != null)
+        if (errorMenu != null)
+            errorMenu.SetActive(false);
+
+        if (coinMenu != null)
             coinMenu.SetActive(false);
 
         if (isTuto.value)
@@ -348,7 +352,7 @@ public class TutorialManager : MonoBehaviour
     }
     public void OpenCoinShop()
     {
-        if (!isTuto.value)
+        if (!isTuto.value && !coinMenu.active)
         {
             coinMenu.SetActive(true);
             coinMenu.transform.localScale = Vector3.zero;
@@ -361,6 +365,24 @@ public class TutorialManager : MonoBehaviour
         coinMenu.transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack).OnComplete(() =>
         {
             coinMenu.SetActive(false);
+        });
+    }
+
+    public void OpenErrorMenu()
+    {
+        if (!isTuto.value && !errorMenu.active)
+        {
+            errorMenu.SetActive(true);
+            errorMenu.transform.localScale = Vector3.zero;
+            errorMenu.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+        }
+    }
+
+    public void CloseErrorMenu()
+    {
+        errorMenu.transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack).OnComplete(() =>
+        {
+            errorMenu.SetActive(false);
         });
     }
 
