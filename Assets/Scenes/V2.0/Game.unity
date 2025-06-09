@@ -735,7 +735,7 @@ PrefabInstance:
     - target: {fileID: 770842285346324959, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
-      objectReference: {fileID: 399940913}
+      objectReference: {fileID: 1432888102}
     - target: {fileID: 770842285346324959, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_Target
       value: 
@@ -778,7 +778,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 770842285346324959, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
-      value: TutorialManager, Assembly-CSharp
+      value: ControlDisplayMenu, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 770842285346324959, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[3].m_TargetAssemblyTypeName

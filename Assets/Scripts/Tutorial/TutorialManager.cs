@@ -118,15 +118,17 @@ public class TutorialManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.3f);
         gameAnim.SetTrigger("Tuto");
+        nextButton.gameObject.SetActive(false);
 
         yield return new WaitForSeconds(0.7f);
         ChangeText("Click here!");
         canClick = true;
-        nextButton.gameObject.SetActive(false);
+
 
         playButtonClicked = false; 
         yield return new WaitUntil(() => playButtonClicked && canClick);
         canClick = false;
+        OpenPlay();
         ChangeText("");
 
         yield return new WaitForSeconds(0.3f);
@@ -396,7 +398,6 @@ public class TutorialManager : MonoBehaviour
         if (canClick)
         {
             playButtonClicked = true; 
-            playButton.interactable = false; 
         }
     }
 
