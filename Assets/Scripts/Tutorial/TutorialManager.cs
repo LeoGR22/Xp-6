@@ -9,6 +9,7 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private GameObject tutorialGO;
     [SerializeField] private GameObject coinMenu;
     [SerializeField] private GameObject errorMenu;
+    [SerializeField] private GameObject playMenu;
     [SerializeField] private Animator gameAnim;
     [SerializeField] private BooleanSO isTuto;
     [SerializeField] private BooleanSO canMove;
@@ -118,12 +119,9 @@ public class TutorialManager : MonoBehaviour
         canClick = true;
         nextButton.gameObject.SetActive(false);
 
-        yield return new WaitUntil(() => currentStep > 7 && canClick);
+        yield return new WaitUntil(() => currentStep > 7);
         canClick = false;
         ChangeText("");
-
-        yield return new WaitForSeconds(0.3f);
-        gameAnim.SetTrigger("Tuto");
 
         yield return new WaitForSeconds(0.7f);
         ChangeText("Now here!");
@@ -327,6 +325,27 @@ public class TutorialManager : MonoBehaviour
         {
             gameAnim.Play("OpenSelectLevel");
         }
+    }
+
+    public void OpenPlay()
+    {
+        if (isTuto.value)
+        {
+            currentStep++;
+            gameAnim.SetTrigger("Tuto");
+        }
+
+        playMenu.SetActive(true);
+        playMenu.transform.localScale = Vector3.zero;
+        playMenu.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+    }
+
+    public void ClosePlay()
+    {
+        playMenu.transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack).OnComplete(() =>
+        {
+            playMenu.SetActive(false);
+        });
     }
 
     public void OpenShop()
