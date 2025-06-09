@@ -18,6 +18,8 @@ TagManager:
   - Blue
   - Board
   - Tutorial
+  - Headset
+  - Mic
   layers:
   - Default
   - TransparentFX
