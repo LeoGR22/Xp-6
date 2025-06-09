@@ -29398,6 +29398,7 @@ GameObject:
   - component: {fileID: 5371176669450385711}
   - component: {fileID: 2744666422765618814}
   - component: {fileID: 5437000557313949363}
+  - component: {fileID: 6405857234794410997}
   m_Layer: 0
   m_Name: confetti_large
   m_TagString: Untagged
@@ -29405,14 +29406,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5371176669450385711
-Transform:
+--- !u!224 &5371176669450385711
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8250176067105482797}
-  serializedVersion: 2
   m_LocalRotation: {x: 0.09229599, y: -0.7010574, z: -0.09229599, w: -0.7010574}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -29420,6 +29420,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4457984602281519433}
   m_LocalEulerAnglesHint: {x: -15.000001, y: -90, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!198 &2744666422765618814
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -34326,3 +34331,11 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!222 &6405857234794410997
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8250176067105482797}
+  m_CullTransparentMesh: 1

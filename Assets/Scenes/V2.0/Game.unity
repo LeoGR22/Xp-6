@@ -12907,10 +12907,14 @@ PrefabInstance:
     - target: {fileID: 4606143148945773704, guid: 07637d9e949a9c547af11708003654fa, type: 3}
       propertyPath: musicSounds.Array.data[0].clip
       value: 
-      objectReference: {fileID: 8300000, guid: 9bc73d53d7405d44a9feeb43d4df91c9, type: 3}
+      objectReference: {fileID: 8300000, guid: 18ef495a73922bc4ea2541c2b25a2b30, type: 3}
     - target: {fileID: 4606143148945773704, guid: 07637d9e949a9c547af11708003654fa, type: 3}
       propertyPath: sfxSounds.Array.data[3].volume
       value: 0.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 4606143148945773704, guid: 07637d9e949a9c547af11708003654fa, type: 3}
+      propertyPath: musicSounds.Array.data[0].volume
+      value: 0.139
       objectReference: {fileID: 0}
     - target: {fileID: 9174242058124671246, guid: 07637d9e949a9c547af11708003654fa, type: 3}
       propertyPath: m_Name
