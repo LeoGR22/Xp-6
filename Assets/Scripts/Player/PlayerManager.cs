@@ -15,7 +15,8 @@ public class PlayerManager : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private GameObject buyConfirmationUI;
     [SerializeField] private TMP_Text coinText;
-    //[SerializeField] private ColorPickerUI colorPickerUI;
+    [SerializeField] private Button fullScreenButton; // Botão que cobre a tela para o clique do jogador
+    [SerializeField] private Sprite openBoxSprite; // Sprite da caixa aberta
 
     [Header("Animation Settings")]
     [SerializeField] private GameObject effectPrefab;
@@ -32,7 +33,6 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
-        // Add applicators for existing and new categories
         textureApplicators.Add("Monitor", sprite => ApplyTextureToTaggedObject("Monitor", sprite));
         textureApplicators.Add("Keyboard", sprite => ApplyTextureToTaggedObject("Keyboard", sprite));
         textureApplicators.Add("Mouse", sprite => ApplyTextureToTaggedObject("Mouse", sprite));
@@ -40,8 +40,8 @@ public class PlayerManager : MonoBehaviour
         textureApplicators.Add("Cup", sprite => ApplyTextureToTaggedObject("Cup", sprite));
         textureApplicators.Add("Candle", sprite => ApplyTextureToTaggedObject("Candle", sprite));
         textureApplicators.Add("WallDecor", sprite => ApplyTextureToTaggedObject("WallDecor", sprite));
-        textureApplicators.Add("Mic", sprite => ApplyTextureToTaggedObject("Mic", sprite)); // New Mic category
-        textureApplicators.Add("Headset", sprite => ApplyTextureToTaggedObject("Headset", sprite)); // New Headset category
+        textureApplicators.Add("Mic", sprite => ApplyTextureToTaggedObject("Mic", sprite));
+        textureApplicators.Add("Headset", sprite => ApplyTextureToTaggedObject("Headset", sprite));
     }
 
     private void Start()
@@ -49,6 +49,10 @@ public class PlayerManager : MonoBehaviour
         ApplyAllTextures();
         UpdateCoinText();
         SetBuyConfirmationActive(false);
+        if (fullScreenButton != null)
+        {
+            fullScreenButton.gameObject.SetActive(false);
+        }
     }
 
     public void VerifyItem(string itemName, Sprite sprite)
@@ -57,6 +61,11 @@ public class PlayerManager : MonoBehaviour
         {
             playerItemSO.SetCurrentSprite(itemName, sprite);
             ApplyAllTextures();
+
+            foreach (PriceManager priceManager in FindObjectsOfType<PriceManager>())
+            {
+                priceManager.RefreshButtonState();
+            }
         }
         else
         {
@@ -88,8 +97,7 @@ public class PlayerManager : MonoBehaviour
     private IEnumerator OpenBoxCoroutine()
     {
         yield return new WaitForSeconds(0.5f);
-        StartCoroutine(AnimateBoxImage(lastSelectedItemName));
-        yield return new WaitForSeconds(2f);
+        yield return StartCoroutine(AnimateBoxImage(lastSelectedItemName));
         BuyItem(lastSelectedItemName, lastSelectedSprite);
     }
 
@@ -102,6 +110,11 @@ public class PlayerManager : MonoBehaviour
         playerItemSO.AddPlayerItemTexture(itemName, sprite);
         playerItemSO.SetCurrentSprite(itemName, sprite);
         ApplyAllTextures();
+
+        foreach (PriceManager priceManager in FindObjectsOfType<PriceManager>())
+        {
+            priceManager.RefreshButtonState();
+        }
     }
 
     public void AddMoney(int amount)
@@ -124,7 +137,7 @@ public class PlayerManager : MonoBehaviour
         textureApplicators["Cup"](playerItemSO.ReturnCupTexture());
         textureApplicators["Candle"](playerItemSO.ReturnCandleTexture());
         textureApplicators["WallDecor"](playerItemSO.ReturnWallDecorTexture());
-        textureApplicators["Mic"](playerItemSO.ReturnMicTexture()); 
+        textureApplicators["Mic"](playerItemSO.ReturnMicTexture());
         textureApplicators["Headset"](playerItemSO.ReturnHeadsetTexture());
     }
 
@@ -173,6 +186,13 @@ public class PlayerManager : MonoBehaviour
         }
 
         GameObject box = boxTransform.gameObject;
+        Image boxImage = box.GetComponent<Image>();
+        if (boxImage == null)
+        {
+            Debug.LogWarning($"Componente Image não encontrado na caixa.");
+            yield break;
+        }
+
         box.SetActive(true);
 
         Canvas boxCanvas = box.GetComponent<Canvas>();
@@ -187,93 +207,89 @@ public class PlayerManager : MonoBehaviour
         boxTransform.localScale = new Vector3(0.2f, 0.2f, 1f);
         boxTransform.localRotation = Quaternion.identity;
 
-        float initialGrowTime = 0.5f;
-        float elapsed = 0f;
-        Vector3 targetScale = Vector3.one;
-        while (elapsed < initialGrowTime)
-        {
-            elapsed += Time.deltaTime;
-            float t = elapsed / initialGrowTime;
+        Sequence sequence = DOTween.Sequence();
 
-            float baseScale = Mathf.Lerp(0.2f, 1f, t);
+        // Fase 1: Crescimento inicial (0.5s)
+        sequence.Append(boxTransform.DOScale(Vector3.one, 0.5f)
+            .SetEase(Ease.InOutSine)
+            .OnUpdate(() =>
+            {
+                float t = sequence.ElapsedPercentage();
+                float squish = Mathf.Sin(t * Mathf.PI) * 0.05f;
+                boxTransform.localScale = new Vector3(
+                    boxTransform.localScale.x * (1f + squish),
+                    boxTransform.localScale.y * (1f - squish),
+                    1f);
+                float swayAngle = Mathf.Sin(t * Mathf.PI * 2f) * 3f;
+                boxTransform.localRotation = Quaternion.Euler(0f, 0f, swayAngle);
+            }));
 
-            float squish = Mathf.Sin(t * Mathf.PI) * 0.05f;
-            float scaleX = baseScale * (1f + squish);
-            float scaleY = baseScale * (1f - squish);
-            boxTransform.localScale = new Vector3(scaleX, scaleY, 1f);
-
-            float swayAngle = Mathf.Sin(t * Mathf.PI * 2f) * 3f;
-            boxTransform.localRotation = Quaternion.Euler(0f, 0f, swayAngle);
-
-            yield return null;
-        }
-        boxTransform.localScale = Vector3.one;
-        boxTransform.localRotation = Quaternion.identity;
-
+        // Fase 2: Dois ciclos de pulsação (0.4s cada)
         for (int i = 0; i < 2; i++)
         {
-            float cycleTime = 0.4f;
             float maxScale = 1.05f + (i * 0.05f);
-
-            elapsed = 0f;
-            while (elapsed < cycleTime / 2)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / (cycleTime / 2);
-                float baseScale = Mathf.Lerp(1f, maxScale, t);
-
-                float squish = Mathf.Sin(t * Mathf.PI) * 0.03f;
-                float scaleX = baseScale * (1f - squish);
-                float scaleY = baseScale * (1f + squish);
-                boxTransform.localScale = new Vector3(scaleX, scaleY, 1f);
-
-                float swayAngle = Mathf.Sin(t * Mathf.PI * 2f) * 3f;
-                boxTransform.localRotation = Quaternion.Euler(0f, 0f, swayAngle);
-
-                yield return null;
-            }
-
-            elapsed = 0f;
-            while (elapsed < cycleTime / 2)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / (cycleTime / 2);
-                float baseScale = Mathf.Lerp(maxScale, 1f, t);
-
-                float squish = Mathf.Sin(t * Mathf.PI) * 0.03f;
-                float scaleX = baseScale * (1f + squish);
-                float scaleY = baseScale * (1f - squish);
-                boxTransform.localScale = new Vector3(scaleX, scaleY, 1f);
-
-                float swayAngle = Mathf.Sin(t * Mathf.PI * 2f) * 3f;
-                boxTransform.localRotation = Quaternion.Euler(0f, 0f, swayAngle);
-
-                yield return null;
-            }
-            boxTransform.localScale = Vector3.one;
-            boxTransform.localRotation = Quaternion.identity;
+            sequence.Append(boxTransform.DOScale(maxScale, 0.2f)
+                .SetEase(Ease.InOutSine)
+                .OnUpdate(() =>
+                {
+                    float t = sequence.ElapsedPercentage(true);
+                    float squish = Mathf.Sin(t * Mathf.PI) * 0.03f;
+                    boxTransform.localScale = new Vector3(
+                        boxTransform.localScale.x * (1f - squish),
+                        boxTransform.localScale.y * (1f + squish),
+                        1f);
+                    float swayAngle = Mathf.Sin(t * Mathf.PI * 2f) * 3f;
+                    boxTransform.localRotation = Quaternion.Euler(0f, 0f, swayAngle);
+                }));
+            sequence.Append(boxTransform.DOScale(1f, 0.2f)
+                .SetEase(Ease.InOutSine)
+                .OnUpdate(() =>
+                {
+                    float t = sequence.ElapsedPercentage(true);
+                    float squish = Mathf.Sin(t * Mathf.PI) * 0.03f;
+                    boxTransform.localScale = new Vector3(
+                        boxTransform.localScale.x * (1f + squish),
+                        boxTransform.localScale.y * (1f - squish),
+                        1f);
+                    float swayAngle = Mathf.Sin(t * Mathf.PI * 2f) * 3f;
+                    boxTransform.localRotation = Quaternion.Euler(0f, 0f, swayAngle);
+                }));
         }
 
-        float finalGrowTime = 0.8f;
-        elapsed = 0f;
-        float finalMaxScale = 1.3f;
-        while (elapsed < finalGrowTime)
+        yield return sequence.WaitForCompletion();
+
+        // Ativa o botão de tela cheia
+        if (fullScreenButton != null)
         {
-            elapsed += Time.deltaTime;
-            float t = elapsed / finalGrowTime;
-            float easedT = t * t * t;
-            float baseScale = Mathf.Lerp(1f, finalMaxScale, easedT);
-
-            float squish = easedT * 0.05f;
-            float scaleX = baseScale * (1f - squish);
-            float scaleY = baseScale * (1f + squish);
-            boxTransform.localScale = new Vector3(scaleX, scaleY, 1f);
-
-            float swayAngle = Mathf.Sin(t * Mathf.PI * 2f) * 7f;
-            boxTransform.localRotation = Quaternion.Euler(0f, 0f, swayAngle);
-
-            yield return null;
+            fullScreenButton.gameObject.SetActive(true);
         }
+        else
+        {
+            Debug.LogWarning("Botão de tela cheia não atribuído no PlayerManager.");
+            yield break;
+        }
+
+        // Espera o clique do jogador
+        bool clicked = false;
+        fullScreenButton.onClick.AddListener(() => clicked = true);
+        yield return new WaitUntil(() => clicked);
+        fullScreenButton.onClick.RemoveAllListeners();
+        fullScreenButton.gameObject.SetActive(false);
+
+        // Troca para o sprite da caixa aberta
+
+        gameAnimator.SetTrigger("OpenBox");
+
+        if (openBoxSprite != null)
+        {
+            boxImage.sprite = openBoxSprite;
+        }
+        else
+        {
+            Debug.LogWarning("Sprite da caixa aberta não atribuído no PlayerManager.");
+        }
+
+        // Fase 3: Crescimento final (0.8s)
 
         if (effectPrefab != null)
         {
@@ -283,6 +299,23 @@ public class PlayerManager : MonoBehaviour
         {
             Debug.LogWarning("Prefab de efeito não atribuído no PlayerManager.");
         }
+
+        sequence = DOTween.Sequence();
+        sequence.Append(boxTransform.DOScale(1.3f, 0.8f)
+            .SetEase(Ease.InOutCubic)
+            .OnUpdate(() =>
+            {
+                float t = sequence.ElapsedPercentage(true);
+                float squish = t * 0.05f;
+                boxTransform.localScale = new Vector3(
+                    boxTransform.localScale.x * (1f - squish),
+                    boxTransform.localScale.y * (1f + squish),
+                    1f);
+                float swayAngle = Mathf.Sin(t * Mathf.PI * 2f) * 7f;
+                boxTransform.localRotation = Quaternion.Euler(0f, 0f, swayAngle);
+            }));
+
+        yield return sequence.WaitForCompletion();
 
         boxCanvas.sortingOrder = originalSortingOrder;
         box.SetActive(false);
@@ -320,11 +353,8 @@ public class PlayerManager : MonoBehaviour
     {
         playerItemSO.ResetAllItems();
         itensSO.ResetAllItems();
-
         ApplyAllTextures();
-
         UpdateCoinText();
-
         Debug.Log("All items reset in PlayerManager.");
     }
 }

@@ -225,6 +225,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itensSO: {fileID: 11400000, guid: bf1a459da58d1ae43b0a29274619389e, type: 2}
+  playerItensSO: {fileID: 11400000, guid: f251e94affbf3c54a81ee84eea37b3c8, type: 2}
+  buyButtonSprite: {fileID: 21300000, guid: d59992469609f4c4eac322daf6e19df0, type: 3}
+  equipButtonSprite: {fileID: 21300000, guid: b7aeebc055d09d04fb0ec09908f80165, type: 3}
+  equippedButtonSprite: {fileID: 21300000, guid: fdfd8240ef4f8484eae43cd05315487a, type: 3}
 --- !u!114 &9079272009440899096
 MonoBehaviour:
   m_ObjectHideFlags: 0
