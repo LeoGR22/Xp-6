@@ -13533,7 +13533,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4606143148945773704, guid: 07637d9e949a9c547af11708003654fa, type: 3}
       propertyPath: sfxSounds.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4606143148945773704, guid: 07637d9e949a9c547af11708003654fa, type: 3}
       propertyPath: sfxSounds.Array.data[3].clip
@@ -13544,11 +13544,23 @@ PrefabInstance:
       value: Keyboard
       objectReference: {fileID: 0}
     - target: {fileID: 4606143148945773704, guid: 07637d9e949a9c547af11708003654fa, type: 3}
+      propertyPath: sfxSounds.Array.data[4].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: f6a5440473e39254ca149290eb87da2b, type: 3}
+    - target: {fileID: 4606143148945773704, guid: 07637d9e949a9c547af11708003654fa, type: 3}
+      propertyPath: sfxSounds.Array.data[4].name
+      value: OpenBox
+      objectReference: {fileID: 0}
+    - target: {fileID: 4606143148945773704, guid: 07637d9e949a9c547af11708003654fa, type: 3}
       propertyPath: musicSounds.Array.data[0].clip
       value: 
       objectReference: {fileID: 8300000, guid: 18ef495a73922bc4ea2541c2b25a2b30, type: 3}
     - target: {fileID: 4606143148945773704, guid: 07637d9e949a9c547af11708003654fa, type: 3}
       propertyPath: sfxSounds.Array.data[3].volume
+      value: 0.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 4606143148945773704, guid: 07637d9e949a9c547af11708003654fa, type: 3}
+      propertyPath: sfxSounds.Array.data[4].volume
       value: 0.28
       objectReference: {fileID: 0}
     - target: {fileID: 4606143148945773704, guid: 07637d9e949a9c547af11708003654fa, type: 3}

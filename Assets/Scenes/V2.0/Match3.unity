@@ -3284,7 +3284,7 @@ MonoBehaviour:
   movesSO: {fileID: 11400000, guid: 5a6960d2003dd0847be2cd03c1b3ced2, type: 2}
   spawnRadius: 60
   spawnPosition: {x: -423, y: 951}
-  targetPosition: {x: -55, y: 133}
+  targetPosition: {x: -100, y: 160}
 --- !u!224 &1031058406 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
