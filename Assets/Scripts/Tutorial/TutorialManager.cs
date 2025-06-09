@@ -7,6 +7,7 @@ using DG.Tweening;
 public class TutorialManager : MonoBehaviour
 {
     [SerializeField] private GameObject tutorialGO;
+    [SerializeField] private GameObject coinMenu;
     [SerializeField] private Animator gameAnim;
     [SerializeField] private BooleanSO isTuto;
     [SerializeField] private BooleanSO canMove;
@@ -25,6 +26,9 @@ public class TutorialManager : MonoBehaviour
     private void Start()
     {
         nextButton.onClick.AddListener(OnNextButtonClicked);
+
+        if(coinMenu != null)
+            coinMenu.SetActive(false);
 
         if (isTuto.value)
         {
@@ -119,7 +123,6 @@ public class TutorialManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.7f);
         ChangeText("Now here!");
-        tutoPart.value = 2;
     }
 
     IEnumerator TutorialSequence2()
@@ -312,7 +315,8 @@ public class TutorialManager : MonoBehaviour
     {
         if (isTuto.value)
         {
-            OnNextButtonClicked();
+            gameAnim.SetTrigger("Tuto");
+            tutoPart.value = 2;
         }
         else
         {
@@ -324,7 +328,6 @@ public class TutorialManager : MonoBehaviour
     {
         if (isTuto.value)
         {
-            gameAnim.SetTrigger("Tuto");
             Next();
         }
         else
@@ -343,7 +346,23 @@ public class TutorialManager : MonoBehaviour
             gameAnim.Play("CloseShop");
         }
     }
+    public void OpenCoinShop()
+    {
+        if (!isTuto.value)
+        {
+            coinMenu.SetActive(true);
+            coinMenu.transform.localScale = Vector3.zero;
+            coinMenu.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+        }
+    }
 
+    public void CloseCoinShop()
+    {
+        coinMenu.transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack).OnComplete(() =>
+        {
+            coinMenu.SetActive(false);
+        });
+    }
 
     private void ChangeText(string newText)
     {
