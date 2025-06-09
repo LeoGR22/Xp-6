@@ -5673,11 +5673,6 @@ MonoBehaviour:
   redCount: {fileID: 6791323671561659560}
   orangeCount: {fileID: 6791323671648550308}
   blueCount: {fileID: 6791323671503247276}
-  violetCheckmark: {fileID: 3651307575414813351, guid: ae0570fa77dd4eb4e91211cb75d650d8, type: 3}
-  greenCheckmark: {fileID: 3651307575414813351, guid: ae0570fa77dd4eb4e91211cb75d650d8, type: 3}
-  redCheckmark: {fileID: 3651307575414813351, guid: ae0570fa77dd4eb4e91211cb75d650d8, type: 3}
-  orangeCheckmark: {fileID: 3651307575414813351, guid: ae0570fa77dd4eb4e91211cb75d650d8, type: 3}
-  blueCheckmark: {fileID: 3651307575414813351, guid: ae0570fa77dd4eb4e91211cb75d650d8, type: 3}
   checkmarkSprite: {fileID: 21300000, guid: 33bd6f6cc37927b4d9b65f6ebe1c7056, type: 3}
 --- !u!4 &1931302046
 Transform:
@@ -6961,6 +6956,10 @@ PrefabInstance:
     - target: {fileID: 4147659956070422744, guid: e97a56c207136b44494e66e59212ddbd, type: 3}
       propertyPath: m_Name
       value: MatchMessages
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147659956070422744, guid: e97a56c207136b44494e66e59212ddbd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9157402820495212460, guid: e97a56c207136b44494e66e59212ddbd, type: 3}
       propertyPath: m_Pivot.x
