@@ -13,6 +13,7 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private BooleanSO canMove;
     [SerializeField] private string tuto;
     [SerializeField] private string tuto2;
+    [SerializeField] private string tuto3;
     [SerializeField] private TextMeshProUGUI textMesh;
     [SerializeField] private Image handSprite;
     [SerializeField] private Sprite[] spriteArray;
@@ -39,6 +40,11 @@ public class TutorialManager : MonoBehaviour
             {
                 gameAnim.Play(tuto2);
                 StartCoroutine(TutorialSequence2());
+            }
+            if (tutoPart.value == 3)
+            {
+                gameAnim.Play(tuto3);
+                StartCoroutine(TutorialSequence3());
             }
         }
         else { tutorialGO.SetActive(false); }
@@ -202,6 +208,49 @@ public class TutorialManager : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
         ChangeText("Now lets go Back to the setup!");
+        tutoPart.value = 3;
+    }
+
+    IEnumerator TutorialSequence3()
+    {
+        textMesh.text = "";
+        ChangeSprite(0);
+
+        yield return new WaitForSeconds(1.35f);
+        ChangeText("We're back!");
+        ChangeSprite(0);
+        currentStep++;
+        canClick = true;
+
+        yield return new WaitUntil(() => currentStep > 1 && canClick);
+        canClick = false;
+        ChangeText("Look! You have 20 coins now!");
+        ChangeSprite(2);
+        canClick = true;
+
+        yield return new WaitUntil(() => currentStep > 2 && canClick);
+        canClick = false;
+        ChangeText("Let's buy something with them!");
+        ChangeSprite(1);
+        canClick = true;
+
+        yield return new WaitUntil(() => currentStep > 3 && canClick);
+        canClick = false;
+        ChangeText("");
+
+        yield return new WaitForSeconds(0.3f);
+        ChangeSprite(2);
+        gameAnim.SetTrigger("Tuto");
+
+        yield return new WaitForSeconds(1f);
+        ChangeText("Click here to open the Shop!");
+        nextButton.gameObject.SetActive(false);
+
+        yield return new WaitUntil(() => currentStep > 4 && canClick);
+        ChangeText("");
+
+        yield return new WaitForSeconds(0.3f);
+        gameAnim.SetTrigger("Tuto");
     }
 
 
@@ -223,11 +272,34 @@ public class TutorialManager : MonoBehaviour
     {
         if (isTuto.value)
         {
-            gameAnim.SetTrigger("Tuto");
+            Next();
         }
         else
         {
             gameAnim.Play("OpenSelectLevel");
+        }
+    }
+
+    public void OpenShop()
+    {
+        if (isTuto.value)
+        {
+            gameAnim.SetTrigger("Tuto");
+        }
+        else
+        {
+            gameAnim.Play("OpenShop");
+        }
+    }
+    public void CloseShop()
+    {
+        if (isTuto.value)
+        {
+            return;
+        }
+        else
+        {
+            gameAnim.Play("CloseShop");
         }
     }
 
