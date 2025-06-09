@@ -7,7 +7,6 @@ using DG.Tweening;
 public class TutorialManager : MonoBehaviour
 {
     [SerializeField] private GameObject tutorialGO;
-    [SerializeField] private GameObject HandGO;
     [SerializeField] private Animator gameAnim;
     [SerializeField] private BooleanSO isTuto;
     [SerializeField] private BooleanSO canMove;
@@ -245,12 +244,53 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         ChangeText("Click here to open the Shop!");
         nextButton.gameObject.SetActive(false);
+        canClick = true;
 
         yield return new WaitUntil(() => currentStep > 4 && canClick);
+
+        yield return new WaitForSeconds(0.3f);
+        ChangeText("");
+        ChangeSprite(0);
+
+        yield return new WaitForSeconds(1f);
+        canClick = true;
+        nextButton.gameObject.SetActive(true);
+        ChangeText("Look at all the possibilities!");
+
+        yield return new WaitUntil(() => currentStep > 5 && canClick);
+        canClick = false;
+        ChangeSprite(2);
+        ChangeText("You can choose from different categories of items that fit your space.");
+        canClick = true;
+
+        yield return new WaitUntil(() => currentStep > 6 && canClick);
+        canClick = false;
+        ChangeSprite(0);
+        ChangeText("Pick something that matches your style!");
+        canClick = true;
+
+        yield return new WaitUntil(() => currentStep > 7 && canClick);
+        canClick = false;
+        ChangeSprite(1);
+        ChangeText("I think that's all I can teach you...");
+        canClick = true;
+
+        yield return new WaitUntil(() => currentStep > 8 && canClick);
+        canClick = false;
+        ChangeText("Now I leave it in your hands! See you later!");
+        canClick = true;
+
+        yield return new WaitUntil(() => currentStep > 9 && canClick);
+        ChangeSprite(0);
         ChangeText("");
 
         yield return new WaitForSeconds(0.3f);
         gameAnim.SetTrigger("Tuto");
+        isTuto.value = false;
+        nextButton.gameObject.SetActive(false);
+
+        yield return new WaitForSeconds(5f);
+        tutorialGO.SetActive(false);
     }
 
 
@@ -272,7 +312,7 @@ public class TutorialManager : MonoBehaviour
     {
         if (isTuto.value)
         {
-            Next();
+            OnNextButtonClicked();
         }
         else
         {
@@ -285,6 +325,7 @@ public class TutorialManager : MonoBehaviour
         if (isTuto.value)
         {
             gameAnim.SetTrigger("Tuto");
+            Next();
         }
         else
         {

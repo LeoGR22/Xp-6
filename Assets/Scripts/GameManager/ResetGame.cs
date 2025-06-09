@@ -8,7 +8,7 @@ public class ResetGame : MonoBehaviour
     [SerializeField] private BooleanSO isTutorial;
     [SerializeField] private LevelData levelData;
     [SerializeField] private PlayerMoneySO playerMoney;
-    [SerializeField] private FloatSO tutoarialPart;
+    [SerializeField] private FloatSO tutorialPart;
     void Start()
     {
         if(isTutorial !=  null) 
@@ -17,7 +17,7 @@ public class ResetGame : MonoBehaviour
             levelData.level = 0;
         if (playerMoney != null)
             playerMoney.value = 0;
-        if (tutoarialPart != null)
-            tutoarialPart.value = 1;
+        if (tutorialPart != null)
+            tutorialPart.value = 1;
     }
 }
