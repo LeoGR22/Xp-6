@@ -140,6 +140,12 @@ MonoBehaviour:
   WinGame: {fileID: 11400000, guid: f46f0692262eb1e469e2897432e5195d, type: 2}
   LoseGame: {fileID: 0}
   canLose: {fileID: 11400000, guid: 446c2009f1040a344b7e9b7006677d43, type: 2}
+  comboMessagePrefab: {fileID: 424205128883356347, guid: 9f5539baa047c834182ed76993c8de47, type: 3}
+  comboMessageSprites:
+  - {fileID: 21300000, guid: 29232d3a235eea04fb271e2066f476c5, type: 3}
+  - {fileID: 21300000, guid: d195bdf73405e9c4283a1409a936c06d, type: 3}
+  - {fileID: 21300000, guid: 124572ded5d9690479f4afcb1f4dbc91, type: 3}
+  - {fileID: 21300000, guid: 5fd53eee1ed22f147b082312f0a6cc8f, type: 3}
   glowVFXPrefab: {fileID: 6937530239127161567, guid: ac4775c1d8cee3047919727409c55d1c, type: 3}
   tutorialLayout:
     width: 3

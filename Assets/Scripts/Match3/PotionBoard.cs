@@ -7,6 +7,7 @@ using UnityEngine.Events;
 using static UnityEngine.Rendering.DebugUI.Table;
 using Random = UnityEngine.Random;
 using CandyCoded.HapticFeedback;
+using DG.Tweening;
 
 public class PotionBoard : MonoBehaviour
 {
@@ -101,6 +102,10 @@ public class PotionBoard : MonoBehaviour
     private bool won = false;
 
     private Timer timer;
+
+    [SerializeField] private GameObject comboMessagePrefab;
+    [SerializeField] private Sprite[] comboMessageSprites; 
+    private int cascadeComboCount = 0; 
 
     // Controle de inatividade e animação
     private float lastMoveTime;
@@ -1435,6 +1440,7 @@ public class PotionBoard : MonoBehaviour
     private IEnumerator ResolveCascadingMatches()
     {
         bool hasMoreMatches = true;
+        cascadeComboCount = 0; // Resetar o contador no início de cada sequência de combos em cascata
 
         while (hasMoreMatches)
         {
@@ -1442,8 +1448,19 @@ public class PotionBoard : MonoBehaviour
             hasMoreMatches = CheckBoard(false);
             if (hasMoreMatches)
             {
+                cascadeComboCount++; // Incrementar o contador de combos em cascata
+                Debug.Log($"Cascading match #{cascadeComboCount} detected");
+
                 CheckBoard(true);
                 yield return new WaitUntil(() => AreAllPotionsSettled());
+
+                // Verificar se atingiu 3 ou mais combos em cascata
+                if (cascadeComboCount >= 3)
+                {
+                    // Escolher aleatoriamente um sprite de combo (índices 1, 2 ou 3)
+                    int randomSpriteIndex = Random.Range(1, 4); // Índices 1, 2, 3
+                    yield return StartCoroutine(ShowComboMessage(comboMessageSprites[randomSpriteIndex]));
+                }
             }
         }
         processedPotions.Clear();
@@ -1461,10 +1478,52 @@ public class PotionBoard : MonoBehaviour
             do
             {
                 ShuffleBoard();
+                yield return StartCoroutine(ShowComboMessage(comboMessageSprites[0])); // Exibir sprite de Reshuffle
                 yield return new WaitUntil(() => AreAllPotionsSettled());
                 attempts++;
             } while (!HasPossibleMoves() && attempts < maxAttempts);
         }
+    }
+
+    private IEnumerator ShowComboMessage(Sprite messageSprite)
+    {
+        if (comboMessagePrefab == null || messageSprite == null)
+        {
+            Debug.LogWarning("Combo message prefab ou sprite não configurado!");
+            yield break;
+        }
+
+        GameObject messageGO = Instantiate(comboMessagePrefab, new Vector3(0f, 0f, -1f), Quaternion.identity);
+        SpriteRenderer spriteRenderer = messageGO.GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer == null)
+        {
+            Debug.LogError("Prefab deve conter SpriteRenderer!");
+            Destroy(messageGO);
+            yield break;
+        }
+
+        messageGO.transform.SetParent(potionParent.transform, false);
+
+        spriteRenderer.sprite = messageSprite;
+        spriteRenderer.color = new Color(1f, 1f, 1f, 0f); 
+        messageGO.transform.localScale = Vector3.one * (0.5f / 3f); 
+
+        float fadeInDuration = 0.3f;
+        float scaleDuration = 0.5f;
+        float displayDuration = 1f;
+        float fadeOutDuration = 0.3f;
+
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(spriteRenderer.DOFade(1f, fadeInDuration)); 
+        sequence.Join(messageGO.transform.DOScale(0.3334f, scaleDuration).SetEase(Ease.OutBack)); 
+        sequence.AppendInterval(displayDuration); 
+        sequence.Append(spriteRenderer.DOFade(0f, fadeOutDuration)); 
+        sequence.Join(messageGO.transform.DOScale(0.1667f, fadeOutDuration)); 
+
+        yield return sequence.WaitForCompletion();
+
+        Destroy(messageGO);
     }
 
     private bool IsAdjacent(Potion _currentPotion, Potion _targetPotion)
