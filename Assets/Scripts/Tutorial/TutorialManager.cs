@@ -255,6 +255,7 @@ public class TutorialManager : MonoBehaviour
 
         yield return new WaitUntil(() => currentStep > 4 && canClick);
 
+        gameAnim.SetTrigger("Tuto");
         yield return new WaitForSeconds(0.3f);
         ChangeText("");
         ChangeSprite(0);
@@ -388,7 +389,9 @@ public class TutorialManager : MonoBehaviour
 
     private void ChangeText(string newText)
     {
-        Vector3 originalScale = textMesh.transform.localScale;
+        LeanTween.cancel(textMesh.gameObject);
+
+        Vector3 originalScale = Vector3.one;
         LeanTween.scale(textMesh.gameObject, new Vector3(originalScale.x * 1.2f, originalScale.y * 0.8f, originalScale.z), 0.15f)
             .setEase(LeanTweenType.easeInOutQuad)
             .setOnComplete(() =>
@@ -396,7 +399,7 @@ public class TutorialManager : MonoBehaviour
                 textMesh.text = newText;
                 LeanTween.scale(textMesh.gameObject, originalScale, 0.15f)
                     .setEase(LeanTweenType.easeOutBounce)
-                    .setOnComplete(() => nextButton.interactable = true); 
+                    .setOnComplete(() => nextButton.interactable = true);
             });
     }
 
@@ -405,7 +408,9 @@ public class TutorialManager : MonoBehaviour
         if (spriteIndex < 0 || spriteIndex >= spriteArray.Length || spriteArray[spriteIndex] == null)
             return;
 
-        Vector3 originalScale = handSprite.transform.localScale;
+        LeanTween.cancel(handSprite.gameObject);
+
+        Vector3 originalScale = Vector3.one; 
         LeanTween.scale(handSprite.gameObject, new Vector3(originalScale.x * 1.2f, originalScale.y * 0.8f, originalScale.z), 0.15f)
             .setEase(LeanTweenType.easeInOutQuad)
             .setOnComplete(() =>
@@ -413,7 +418,7 @@ public class TutorialManager : MonoBehaviour
                 handSprite.sprite = spriteArray[spriteIndex];
                 LeanTween.scale(handSprite.gameObject, originalScale, 0.15f)
                     .setEase(LeanTweenType.easeOutBounce)
-                    .setOnComplete(() => nextButton.interactable = true); 
+                    .setOnComplete(() => nextButton.interactable = true);
             });
     }
 }

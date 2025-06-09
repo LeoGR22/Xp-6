@@ -15,8 +15,8 @@ public class PlayerManager : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private GameObject buyConfirmationUI;
     [SerializeField] private TMP_Text coinText;
-    [SerializeField] private Button fullScreenButton; // Botão que cobre a tela para o clique do jogador
-    [SerializeField] private Sprite openBoxSprite; // Sprite da caixa aberta
+    [SerializeField] private Button fullScreenButton;
+    [SerializeField] private Sprite openBoxSprite;
 
     [Header("Animation Settings")]
     [SerializeField] private GameObject effectPrefab;
@@ -269,17 +269,26 @@ public class PlayerManager : MonoBehaviour
             yield break;
         }
 
+        // Animação de idle (pulsação leve e rotação)
+        Sequence idleSequence = DOTween.Sequence();
+        idleSequence.SetLoops(-1); // Loop infinito até o clique
+        idleSequence.Append(boxTransform.DOScale(1.05f, 0.5f).SetEase(Ease.InOutSine));
+        idleSequence.Append(boxTransform.DOScale(1f, 0.5f).SetEase(Ease.InOutSine));
+        idleSequence.Join(boxTransform.DORotate(new Vector3(0f, 0f, 3f), 0.5f).SetEase(Ease.InOutSine));
+        idleSequence.Append(boxTransform.DORotate(new Vector3(0f, 0f, -3f), 1f).SetEase(Ease.InOutSine));
+        idleSequence.Append(boxTransform.DORotate(new Vector3(0f, 0f, 0f), 0.5f).SetEase(Ease.InOutSine));
+
         // Espera o clique do jogador
         bool clicked = false;
         fullScreenButton.onClick.AddListener(() => clicked = true);
         yield return new WaitUntil(() => clicked);
         fullScreenButton.onClick.RemoveAllListeners();
         fullScreenButton.gameObject.SetActive(false);
+        
+        // Para a animação de idle
+        idleSequence.Kill();
 
         // Troca para o sprite da caixa aberta
-
-        gameAnimator.SetTrigger("OpenBox");
-
         if (openBoxSprite != null)
         {
             boxImage.sprite = openBoxSprite;
@@ -290,16 +299,6 @@ public class PlayerManager : MonoBehaviour
         }
 
         // Fase 3: Crescimento final (0.8s)
-
-        if (effectPrefab != null)
-        {
-            Instantiate(effectPrefab, boxTransform.position, Quaternion.identity);
-        }
-        else
-        {
-            Debug.LogWarning("Prefab de efeito não atribuído no PlayerManager.");
-        }
-
         sequence = DOTween.Sequence();
         sequence.Append(boxTransform.DOScale(1.3f, 0.8f)
             .SetEase(Ease.InOutCubic)
@@ -317,6 +316,16 @@ public class PlayerManager : MonoBehaviour
 
         yield return sequence.WaitForCompletion();
 
+        if (effectPrefab != null)
+        {
+            Instantiate(effectPrefab, boxTransform.position, Quaternion.identity);
+        }
+        else
+        {
+            Debug.LogWarning("Prefab de efeito não atribuído no PlayerManager.");
+        }
+
+        gameAnimator.SetTrigger("OpenBox");
         boxCanvas.sortingOrder = originalSortingOrder;
         box.SetActive(false);
     }

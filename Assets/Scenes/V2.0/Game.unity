@@ -3521,15 +3521,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fe9dcc538aea5f4d9f6dbb1d858faa5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonPrefab: {fileID: 7713919523716066804, guid: 0178b4f68f9304647a47fbf2c8486474, type: 3}
-  buttonContainer: {fileID: 326191690}
-  itensSO: {fileID: 11400000, guid: bf1a459da58d1ae43b0a29274619389e, type: 2}
-  canvas: {fileID: 453412469}
-  buttonSpacing: {x: 100, y: 100}
-  verticalOffset: 25
-  xOffset: 50
-  currentItemType: 
-  playerManager: {fileID: 0}
 --- !u!1 &472014616
 GameObject:
   m_ObjectHideFlags: 0
@@ -6233,8 +6224,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 166812717}
   - {fileID: 1561332882}
+  - {fileID: 166812717}
   m_Father: {fileID: 1432888099}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -9384,7 +9375,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1561332879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13732,6 +13723,18 @@ PrefabInstance:
       propertyPath: loadLevel
       value: 
       objectReference: {fileID: 803693924}
+    - target: {fileID: 7886262062752880272, guid: 15674cc4a860155449ece74ade84c9ff, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7886262062752880272, guid: 15674cc4a860155449ece74ade84c9ff, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7886262062752880272, guid: 15674cc4a860155449ece74ade84c9ff, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
