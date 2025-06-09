@@ -27,6 +27,10 @@ public class LevelConfirmationTarget : MonoBehaviour
     [SerializeField] private float verticalSpacing = 50f;
     [SerializeField] private GameObject canvasParent;
 
+    [Header("Level")]
+    [SerializeField] private LevelData level;
+
+
     public LoadLevelData loadLevel;
 
     private List<GameObject> instantiatedCountUIs = new List<GameObject>();
