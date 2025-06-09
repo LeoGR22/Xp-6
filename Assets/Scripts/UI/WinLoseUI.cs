@@ -61,6 +61,7 @@ public class WinLoseUI : MonoBehaviour
 
     public void OpenLoseUI()
     {
+        AudioManager.Instance.PlaySFX("Fail");
         loseUI.SetActive(true);
         loseUI.transform.localScale = Vector3.zero;
         loseUI.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);

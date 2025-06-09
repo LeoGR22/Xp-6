@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerItensSO : ScriptableObject
 {
     [Header("Monitores")]
-    public Sprite[] playerMonitorSprites; // Sprites de monitores possuídos
+    public Sprite[] playerMonitorSprites;
     public Sprite currentMonitor;
 
     [Header("Teclados")]
@@ -32,6 +32,14 @@ public class PlayerItensSO : ScriptableObject
     [Header("WallDecors")]
     public Sprite[] playerWallDecorSprites;
     public Sprite currentWallDecor;
+
+    [Header("Mics")]
+    public Sprite[] playerMicSprites;
+    public Sprite currentMic;
+
+    [Header("Headsets")]
+    public Sprite[] playerHeadsetSprites;
+    public Sprite currentHeadset;
 
     [Header("Empty")]
     public Sprite empty;
@@ -89,6 +97,20 @@ public class PlayerItensSO : ScriptableObject
                     playerWallDecorSprites[playerWallDecorSprites.Length - 1] = newTexture;
                 }
                 break;
+            case "Mic":
+                if (!new List<Sprite>(playerMicSprites).Contains(newTexture))
+                {
+                    Array.Resize(ref playerMicSprites, playerMicSprites.Length + 1);
+                    playerMicSprites[playerMicSprites.Length - 1] = newTexture;
+                }
+                break;
+            case "Headset":
+                if (!new List<Sprite>(playerHeadsetSprites).Contains(newTexture))
+                {
+                    Array.Resize(ref playerHeadsetSprites, playerHeadsetSprites.Length + 1);
+                    playerHeadsetSprites[playerHeadsetSprites.Length - 1] = newTexture;
+                }
+                break;
             default:
                 Debug.LogWarning("Tipo de item inválido: " + itemType);
                 break;
@@ -120,6 +142,15 @@ public class PlayerItensSO : ScriptableObject
             case "WallDecor":
                 currentWallDecor = sprite;
                 break;
+            case "Mic":
+                currentMic = sprite;
+                break;
+            case "Headset":
+                currentHeadset = sprite;
+                break;
+            default:
+                Debug.LogWarning("Categoria inválida: " + name);
+                break;
         }
     }
 
@@ -141,6 +172,10 @@ public class PlayerItensSO : ScriptableObject
                 return new List<Sprite>(playerCandleSprites).Contains(sprite);
             case "WallDecor":
                 return new List<Sprite>(playerWallDecorSprites).Contains(sprite);
+            case "Mic":
+                return new List<Sprite>(playerMicSprites).Contains(sprite);
+            case "Headset":
+                return new List<Sprite>(playerHeadsetSprites).Contains(sprite);
             default:
                 Debug.LogWarning("Categoria inválida: " + name);
                 return false;
@@ -154,4 +189,29 @@ public class PlayerItensSO : ScriptableObject
     public Sprite ReturnCupTexture() => currentCup != null ? currentCup : empty;
     public Sprite ReturnCandleTexture() => currentCandle != null ? currentCandle : empty;
     public Sprite ReturnWallDecorTexture() => currentWallDecor != null ? currentWallDecor : empty;
+    public Sprite ReturnMicTexture() => currentMic != null ? currentMic : empty;
+    public Sprite ReturnHeadsetTexture() => currentHeadset != null ? currentHeadset : empty;
+
+    public void ResetAllItems()
+    {
+        currentMonitor = empty;
+        currentKeyboard = empty;
+        currentMouse = empty;
+        currentMousepad = empty;
+        currentCup = empty;
+        currentCandle = empty;
+        currentWallDecor = empty;
+        currentMic = empty;
+        currentHeadset = empty;
+
+        playerMonitorSprites = new Sprite[0];
+        playerKeyboardSprites = new Sprite[0];
+        playerMouseSprites = new Sprite[0];
+        playerMousepadSprites = new Sprite[0];
+        playerCupSprites = new Sprite[0];
+        playerCandleSprites = new Sprite[0];
+        playerWallDecorSprites = new Sprite[0];
+        playerMicSprites = new Sprite[0];
+        playerHeadsetSprites = new Sprite[0];
+    }
 }

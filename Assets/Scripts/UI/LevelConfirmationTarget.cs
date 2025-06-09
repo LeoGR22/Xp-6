@@ -29,7 +29,7 @@ public class LevelConfirmationTarget : MonoBehaviour
 
     [Header("Level")]
     [SerializeField] private LevelData level;
-
+    [SerializeField] private TMP_Text levelText;
 
     public LoadLevelData loadLevel;
 
@@ -46,6 +46,11 @@ public class LevelConfirmationTarget : MonoBehaviour
     private void AlignUIElements()
     {
         ClearInstantiatedElements();
+
+        if (levelText != null)
+        {
+            levelText.text = $"Level {level.level}";
+        }
 
         var countUIPrefabs = new Dictionary<ItemType, GameObject>
         {
