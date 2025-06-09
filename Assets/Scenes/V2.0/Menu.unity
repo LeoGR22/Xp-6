@@ -417,7 +417,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1689201179128186540, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_fontSize
-      value: 90
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 1689201179128186540, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_fontAsset
@@ -441,7 +441,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1689201179128186540, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_fontSizeBase
-      value: 90
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 1689201179128186540, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_sharedMaterial
@@ -481,11 +481,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 500
+      value: 420.78
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 148
+      value: 152.632
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_LocalPosition.x
@@ -517,11 +517,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 18.928
+      value: 1.4917
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -887.8
+      value: -878
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -550,7 +550,7 @@ PrefabInstance:
     - target: {fileID: 9005044167577420006, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: b5f8e66bd1a349d4d96b9946b7b5fb68, type: 3}
+      objectReference: {fileID: 21300000, guid: afe28fcbae9b0d14e85b80d81d1fb67b, type: 3}
     - target: {fileID: 9005044167577420006, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_Color.a
       value: 1
@@ -722,11 +722,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 500
+      value: 421.6528
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 148
+      value: 172.933
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_LocalPosition.x
@@ -758,11 +758,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 18.928
+      value: 1.9281006
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -687
+      value: -674.53345
       objectReference: {fileID: 0}
     - target: {fileID: 2397610123155234956, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -795,7 +795,7 @@ PrefabInstance:
     - target: {fileID: 9005044167577420006, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: b5f8e66bd1a349d4d96b9946b7b5fb68, type: 3}
+      objectReference: {fileID: 21300000, guid: afe28fcbae9b0d14e85b80d81d1fb67b, type: 3}
     - target: {fileID: 9005044167577420006, guid: 494fa820007396c4eae8f51aee99b593, type: 3}
       propertyPath: m_Color.a
       value: 1
