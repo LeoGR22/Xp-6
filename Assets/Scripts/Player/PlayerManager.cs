@@ -15,7 +15,7 @@ public class PlayerManager : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private GameObject buyConfirmationUI;
     [SerializeField] private TMP_Text coinText;
-    [SerializeField] private ColorPickerUI colorPickerUI; 
+    //[SerializeField] private ColorPickerUI colorPickerUI;
 
     [Header("Animation Settings")]
     [SerializeField] private GameObject effectPrefab;
@@ -32,6 +32,7 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
+        // Add applicators for existing and new categories
         textureApplicators.Add("Monitor", sprite => ApplyTextureToTaggedObject("Monitor", sprite));
         textureApplicators.Add("Keyboard", sprite => ApplyTextureToTaggedObject("Keyboard", sprite));
         textureApplicators.Add("Mouse", sprite => ApplyTextureToTaggedObject("Mouse", sprite));
@@ -39,6 +40,8 @@ public class PlayerManager : MonoBehaviour
         textureApplicators.Add("Cup", sprite => ApplyTextureToTaggedObject("Cup", sprite));
         textureApplicators.Add("Candle", sprite => ApplyTextureToTaggedObject("Candle", sprite));
         textureApplicators.Add("WallDecor", sprite => ApplyTextureToTaggedObject("WallDecor", sprite));
+        textureApplicators.Add("Mic", sprite => ApplyTextureToTaggedObject("Mic", sprite)); // New Mic category
+        textureApplicators.Add("Headset", sprite => ApplyTextureToTaggedObject("Headset", sprite)); // New Headset category
     }
 
     private void Start()
@@ -46,8 +49,6 @@ public class PlayerManager : MonoBehaviour
         ApplyAllTextures();
         UpdateCoinText();
         SetBuyConfirmationActive(false);
-        if (colorPickerUI != null)
-            colorPickerUI.gameObject.SetActive(false);
     }
 
     public void VerifyItem(string itemName, Sprite sprite)
@@ -98,15 +99,7 @@ public class PlayerManager : MonoBehaviour
         playerMoneySO.ChangeMoney(-price);
         UpdateCoinText();
 
-        // Adiciona todas as variações do item comprado
-        var itemData = itensSO.GetItemDataFromSprite(sprite);
-        if (itemData != null)
-        {
-            foreach (var variant in itemData.variants)
-            {
-                playerItemSO.AddPlayerItemTexture(itemName, variant.sprite);
-            }
-        }
+        playerItemSO.AddPlayerItemTexture(itemName, sprite);
         playerItemSO.SetCurrentSprite(itemName, sprite);
         ApplyAllTextures();
     }
@@ -131,6 +124,8 @@ public class PlayerManager : MonoBehaviour
         textureApplicators["Cup"](playerItemSO.ReturnCupTexture());
         textureApplicators["Candle"](playerItemSO.ReturnCandleTexture());
         textureApplicators["WallDecor"](playerItemSO.ReturnWallDecorTexture());
+        textureApplicators["Mic"](playerItemSO.ReturnMicTexture()); 
+        textureApplicators["Headset"](playerItemSO.ReturnHeadsetTexture());
     }
 
     private void ApplyTextureToTaggedObject(string tag, Sprite sprite)
@@ -319,5 +314,17 @@ public class PlayerManager : MonoBehaviour
                 });
             }
         }
+    }
+
+    public void ResetAllItems()
+    {
+        playerItemSO.ResetAllItems();
+        itensSO.ResetAllItems();
+
+        ApplyAllTextures();
+
+        UpdateCoinText();
+
+        Debug.Log("All items reset in PlayerManager.");
     }
 }

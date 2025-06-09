@@ -12,23 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20973514d6b046d46aecf54c1f321c72, type: 3}
   m_Name: PlayerItensSO
   m_EditorClassIdentifier: 
-  playerMonitorSprites:
-  - {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
-  currentMonitor: {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
+  playerMonitorSprites: []
+  currentMonitor: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
   playerKeyboardSprites: []
-  currentKeyboard: {fileID: 21300000, guid: c49d4e9ac2bf20443a2394b2a2a9e70f, type: 3}
+  currentKeyboard: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
   playerMouseSprites: []
   currentMouse: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
   playerMousepadSprites: []
-  currentMousepad: {fileID: 245754006, guid: 2cde76829bb3aaf46aefd1761f6a3f5b, type: 3}
+  currentMousepad: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
   playerCupSprites: []
   currentCup: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
   playerCandleSprites: []
-  currentCandle: {fileID: 21300000, guid: 7cea82fec9cd04a42aa4959432359878, type: 3}
+  currentCandle: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
   playerWallDecorSprites: []
-  currentWallDecor: {fileID: 21300000, guid: d036c840862f68e499b46c04c9c23e48, type: 3}
+  currentWallDecor: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
   playerMicSprites: []
-  currentMic: {fileID: 0}
+  currentMic: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
   playerHeadsetSprites: []
-  currentHeadset: {fileID: 0}
+  currentHeadset: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}
   empty: {fileID: 21300000, guid: 5940d9e6b7b5cc248a427bab4762c85d, type: 3}

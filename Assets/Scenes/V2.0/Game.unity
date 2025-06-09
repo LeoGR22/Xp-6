@@ -3528,6 +3528,8 @@ MonoBehaviour:
   buttonSpacing: {x: 100, y: 100}
   verticalOffset: 25
   xOffset: 50
+  currentItemType: 
+  playerManager: {fileID: 0}
 --- !u!1 &472014616
 GameObject:
   m_ObjectHideFlags: 0
@@ -3693,8 +3695,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemType: Candle
-  colorPickerUI: {fileID: 453412471}
   playerItensSO: {fileID: 11400000, guid: f251e94affbf3c54a81ee84eea37b3c8, type: 2}
+  playerManager: {fileID: 0}
   slider: {fileID: 2107386796}
 --- !u!1 &480363232
 GameObject:
@@ -4070,8 +4072,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemType: Candle
-  colorPickerUI: {fileID: 453412471}
   playerItensSO: {fileID: 11400000, guid: f251e94affbf3c54a81ee84eea37b3c8, type: 2}
+  playerManager: {fileID: 0}
   slider: {fileID: 2107386796}
 --- !u!114 &533470871
 MonoBehaviour:
@@ -4839,8 +4841,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemType: WallDecor
-  colorPickerUI: {fileID: 453412471}
   playerItensSO: {fileID: 11400000, guid: f251e94affbf3c54a81ee84eea37b3c8, type: 2}
+  playerManager: {fileID: 0}
   slider: {fileID: 2107386796}
 --- !u!1 &737970593
 GameObject:
@@ -6154,8 +6156,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemType: Candle
-  colorPickerUI: {fileID: 453412471}
   playerItensSO: {fileID: 11400000, guid: f251e94affbf3c54a81ee84eea37b3c8, type: 2}
+  playerManager: {fileID: 0}
   slider: {fileID: 2107386796}
 --- !u!114 &1014266877
 MonoBehaviour:
@@ -6396,14 +6398,14 @@ RectTransform:
   m_GameObject: {fileID: 1094622461}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.99996847, y: 0.99996847, z: 0.99996847}
+  m_LocalScale: {x: 1.4860531, y: 1.4860531, z: 1.4860531}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2091165397}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00030517578, y: 14.220001}
+  m_AnchoredPosition: {x: -0.00030517578, y: -29}
   m_SizeDelta: {x: 260.57, y: 244.97}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1094622463
@@ -6994,8 +6996,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemType: Mousepad
-  colorPickerUI: {fileID: 453412471}
   playerItensSO: {fileID: 11400000, guid: f251e94affbf3c54a81ee84eea37b3c8, type: 2}
+  playerManager: {fileID: 0}
   slider: {fileID: 2107386796}
 --- !u!224 &1344855574 stripped
 RectTransform:
@@ -7468,14 +7470,14 @@ RectTransform:
   m_GameObject: {fileID: 1393308521}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.9999685, y: 0.9999685, z: 0.9999685}
+  m_LocalScale: {x: 1.9288605, y: 1.9288605, z: 1.9288605}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1014266875}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.00033331, y: 16}
+  m_AnchoredPosition: {x: 0.00033331, y: -3}
   m_SizeDelta: {x: 237.58, y: 226.86}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1393308523
@@ -8780,8 +8782,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemType: Monitor
-  colorPickerUI: {fileID: 453412471}
   playerItensSO: {fileID: 11400000, guid: f251e94affbf3c54a81ee84eea37b3c8, type: 2}
+  playerManager: {fileID: 0}
   slider: {fileID: 2107386796}
 --- !u!1001 &1507571217
 PrefabInstance:
@@ -10875,8 +10877,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemType: Mouse
-  colorPickerUI: {fileID: 453412471}
   playerItensSO: {fileID: 11400000, guid: f251e94affbf3c54a81ee84eea37b3c8, type: 2}
+  playerManager: {fileID: 0}
   slider: {fileID: 2107386796}
 --- !u!1 &1840464411
 GameObject:
@@ -11156,8 +11158,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemType: Keyboard
-  colorPickerUI: {fileID: 453412471}
   playerItensSO: {fileID: 11400000, guid: f251e94affbf3c54a81ee84eea37b3c8, type: 2}
+  playerManager: {fileID: 0}
   slider: {fileID: 2107386796}
 --- !u!224 &1902532045 stripped
 RectTransform:
@@ -12969,8 +12971,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemType: Cup
-  colorPickerUI: {fileID: 453412471}
   playerItensSO: {fileID: 11400000, guid: f251e94affbf3c54a81ee84eea37b3c8, type: 2}
+  playerManager: {fileID: 0}
   slider: {fileID: 2107386796}
 --- !u!1 &2106298794
 GameObject:

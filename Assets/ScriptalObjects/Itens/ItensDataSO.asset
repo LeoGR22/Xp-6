@@ -13,63 +13,113 @@ MonoBehaviour:
   m_Name: ItensDataSO
   m_EditorClassIdentifier: 
   monitors:
-  - variants:
-    - sprite: {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
-      colorName: White
+  - sprite: {fileID: 21300000, guid: 4a4b8180f1f31ca49b65d94d32732541, type: 3}
     price: 75
-  - variants:
-    - sprite: {fileID: -820468762, guid: b661ce650dec2c34e822705b9805bee6, type: 3}
-      colorName: White
-    - sprite: {fileID: 1733424781, guid: 0a9c379ba2e7ab748ac3bedc0b65dea2, type: 3}
-      colorName: Black
+  - sprite: {fileID: -820468762, guid: b661ce650dec2c34e822705b9805bee6, type: 3}
     price: 75
+  - sprite: {fileID: 21300000, guid: 3598dc745b98b8146b3932bab162d36c, type: 3}
+    price: 90
+  - sprite: {fileID: 21300000, guid: 1e789962eba07764e8496c55e7b7f077, type: 3}
+    price: 90
+  - sprite: {fileID: 21300000, guid: 3c6a96a682fc63d4cb0502f1d316a372, type: 3}
+    price: 90
+  - sprite: {fileID: 21300000, guid: f6f0988ff5cf49e46855573aeeeb247f, type: 3}
+    price: 90
   keyboards:
-  - variants:
-    - sprite: {fileID: 21300000, guid: 0d9dffdd52aab2d47bc2667ae9f95d0b, type: 3}
-      colorName: White
-    - sprite: {fileID: 379342947, guid: ae6ef482dc9ed2b4aaf5ca26c4852442, type: 3}
-      colorName: Black
+  - sprite: {fileID: 21300000, guid: dde358b3db0179d43b7ae1eace3ce6ea, type: 3}
     price: 35
+  - sprite: {fileID: 21300000, guid: c49d4e9ac2bf20443a2394b2a2a9e70f, type: 3}
+    price: 35
+  - sprite: {fileID: 21300000, guid: b48ebbc90da4dbe4db5116b791171d9b, type: 3}
+    price: 35
+  - sprite: {fileID: 21300000, guid: 19f6386645118a44f82212848397918b, type: 3}
+    price: 35
+  - sprite: {fileID: 21300000, guid: a1eafb9afa37c4a42be63115acec918f, type: 3}
+    price: 40
+  - sprite: {fileID: 21300000, guid: beafa1c79aff1db409ecc3059d8e99ba, type: 3}
+    price: 40
+  - sprite: {fileID: 21300000, guid: e44ed244f00c7dd449aaf0c4d13f89a0, type: 3}
+    price: 40
+  - sprite: {fileID: 21300000, guid: 209dd37d2671cb746abf97280f12110e, type: 3}
+    price: 40
   mouses:
-  - variants:
-    - sprite: {fileID: 21300000, guid: 8c4dc95df9d42384ebee4dc111fbfce6, type: 3}
-      colorName: White
+  - sprite: {fileID: 21300000, guid: 8c4dc95df9d42384ebee4dc111fbfce6, type: 3}
     price: 25
+  - sprite: {fileID: 21300000, guid: ee0b7c4a3c9064f4e92ae0c158f8fec0, type: 3}
+    price: 25
+  - sprite: {fileID: 21300000, guid: 5411ce673d0f6df41abe0dbddb2de2d7, type: 3}
+    price: 25
+  - sprite: {fileID: 21300000, guid: 6f07bce5f75638747b080b35493e51ff, type: 3}
+    price: 25
+  - sprite: {fileID: 21300000, guid: 95e614138d9ef514b819fbd4f1305f0b, type: 3}
+    price: 25
+  - sprite: {fileID: 21300000, guid: 991d5c1870780d440821a213675b2eda, type: 3}
+    price: 35
+  - sprite: {fileID: 21300000, guid: e4870fc962b2cab45a15d4ed56fbba9c, type: 3}
+    price: 35
+  - sprite: {fileID: 21300000, guid: b28fde3725d045d4394b2e88014a73dd, type: 3}
+    price: 35
+  - sprite: {fileID: 21300000, guid: c5e66f35c7521d1419e81d34804e41cb, type: 3}
+    price: 35
   mousepads:
-  - variants:
-    - sprite: {fileID: 245754006, guid: 2cde76829bb3aaf46aefd1761f6a3f5b, type: 3}
-      colorName: Yellow
-    - sprite: {fileID: -1845546816, guid: c18e47539853688438c31230cb9ecdeb, type: 3}
-      colorName: Blue
-    - sprite: {fileID: -1836599618, guid: 096ba3095936df44692874db99d536db, type: 3}
-      colorName: Green
-    - sprite: {fileID: -1822715541, guid: 925dd4944a463c145ba0ab3bd21d43af, type: 3}
-      colorName: Pink
+  - sprite: {fileID: 245754006, guid: 2cde76829bb3aaf46aefd1761f6a3f5b, type: 3}
+    price: 40
+  - sprite: {fileID: -1845546816, guid: c18e47539853688438c31230cb9ecdeb, type: 3}
+    price: 40
+  - sprite: {fileID: -1836599618, guid: 096ba3095936df44692874db99d536db, type: 3}
+    price: 40
+  - sprite: {fileID: -1822715541, guid: 925dd4944a463c145ba0ab3bd21d43af, type: 3}
+    price: 40
+  - sprite: {fileID: 1236606761, guid: 4043e2b8f014dc946842a1ece7174e2b, type: 3}
     price: 20
-  - variants:
-    - sprite: {fileID: -1424492827, guid: 7d549772beceb8c4285ea9c4f521bc37, type: 3}
-      colorName: Yellow
-    - sprite: {fileID: -1412744152, guid: a904e2fe07cb666459e4ebbcc7d73a25, type: 3}
-      colorName: Green
-    - sprite: {fileID: 1236606761, guid: 4043e2b8f014dc946842a1ece7174e2b, type: 3}
-      colorName: Blue
-    - sprite: {fileID: 3592096, guid: 50ef7a2cc7fbb514ba93589f30ac357b, type: 3}
-      colorName: Pink
+  - sprite: {fileID: -1412744152, guid: a904e2fe07cb666459e4ebbcc7d73a25, type: 3}
+    price: 20
+  - sprite: {fileID: 3592096, guid: 50ef7a2cc7fbb514ba93589f30ac357b, type: 3}
+    price: 20
+  - sprite: {fileID: -1424492827, guid: 7d549772beceb8c4285ea9c4f521bc37, type: 3}
     price: 20
   cups:
-  - variants:
-    - sprite: {fileID: 1442025916, guid: 612cffde792c31f4b8376647c250262d, type: 3}
-      colorName: Yellow
-    - sprite: {fileID: -1425995213, guid: 612cffde792c31f4b8376647c250262d, type: 3}
-      colorName: Pink
+  - sprite: {fileID: -1425995213, guid: 612cffde792c31f4b8376647c250262d, type: 3}
     price: 10
+  - sprite: {fileID: 1442025916, guid: 612cffde792c31f4b8376647c250262d, type: 3}
+    price: 10
+  - sprite: {fileID: 1405994431, guid: 148872bb9f3b62547bdc61d12b888526, type: 3}
+    price: 20
   candles:
-  - variants:
-    - sprite: {fileID: 907267700, guid: 9bba2770141e35848a8387fdb94f5736, type: 3}
-      colorName: Yellow
+  - sprite: {fileID: 21300000, guid: 7cea82fec9cd04a42aa4959432359878, type: 3}
+    price: 20
+  - sprite: {fileID: 907267700, guid: 9bba2770141e35848a8387fdb94f5736, type: 3}
     price: 15
+  - sprite: {fileID: 21300000, guid: 9b7386aacbf7bc14ea7e4e6b58ae9a7f, type: 3}
+    price: 20
+  - sprite: {fileID: 21300000, guid: 40fd146771f80214480440343f990943, type: 3}
+    price: 45
+  - sprite: {fileID: 21300000, guid: 4ead5e03a278555448ee48159f168f46, type: 3}
+    price: 45
+  - sprite: {fileID: 21300000, guid: 547caccd8ec9dc94981f2105e34c76a4, type: 3}
+    price: 20
   wallDecors:
-  - variants:
-    - sprite: {fileID: 742581112, guid: da4885ce514953f46897cd7df9d93467, type: 3}
-      colorName: Brown
+  - sprite: {fileID: 21300000, guid: d036c840862f68e499b46c04c9c23e48, type: 3}
+    price: 75
+  - sprite: {fileID: 21300000, guid: da66f4d58135ccb4a83adfe6103fc863, type: 3}
     price: 25
+  mics:
+  - sprite: {fileID: 21300000, guid: ac2877f51fb65b14b89f7a1aa0446ec3, type: 3}
+    price: 35
+  headsets:
+  - sprite: {fileID: 21300000, guid: f4877bf47f39f1e408805b177596a920, type: 3}
+    price: 30
+  - sprite: {fileID: 21300000, guid: 2715de0937d46b54db3cfc1ba2440ae7, type: 3}
+    price: 30
+  - sprite: {fileID: 21300000, guid: e4a22213947e8034d926a802af56472a, type: 3}
+    price: 30
+  - sprite: {fileID: 21300000, guid: 46860a204a4f6fe4ebbcdebbb475cd7e, type: 3}
+    price: 30
+  - sprite: {fileID: 21300000, guid: eed50a3785d2d7b47b3ba224b2cbca75, type: 3}
+    price: 45
+  - sprite: {fileID: 21300000, guid: 856553a1d0965004cb4bb92aeed7f26e, type: 3}
+    price: 45
+  - sprite: {fileID: 21300000, guid: f06ed809246e8b54c965bedb1182dfc7, type: 3}
+    price: 45
+  - sprite: {fileID: 21300000, guid: f706f5e652793b64faa18bfd7d9e5cf9, type: 3}
+    price: 45

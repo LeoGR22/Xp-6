@@ -5,17 +5,10 @@ using UnityEngine;
 public class ItensSO : ScriptableObject
 {
     [System.Serializable]
-    public class ItemVariant
-    {
-        public Sprite sprite; // Sprite da variação de cor
-        public string colorName; // Nome da cor (ex.: "Red", "Blue")
-    }
-
-    [System.Serializable]
     public class ItemData
     {
-        public ItemVariant[] variants; // Variações de cor do item
-        public int price; // Preço para comprar o item (inclui todas as variações)
+        public Sprite sprite; 
+        public int price; 
     }
 
     [Header("Item Categories")]
@@ -26,6 +19,8 @@ public class ItensSO : ScriptableObject
     public List<ItemData> cups;
     public List<ItemData> candles;
     public List<ItemData> wallDecors;
+    public List<ItemData> mics;
+    public List<ItemData> headsets; 
 
     private readonly List<List<ItemData>> itemCategories = new List<List<ItemData>>();
     private readonly Dictionary<Sprite, int> priceCache = new Dictionary<Sprite, int>();
@@ -44,6 +39,8 @@ public class ItensSO : ScriptableObject
         itemCategories.Add(cups);
         itemCategories.Add(candles);
         itemCategories.Add(wallDecors);
+        itemCategories.Add(mics);
+        itemCategories.Add(headsets);
 
         foreach (var category in itemCategories)
         {
@@ -51,16 +48,10 @@ public class ItensSO : ScriptableObject
             {
                 foreach (var item in category)
                 {
-                    if (item != null && item.variants != null)
+                    if (item != null && item.sprite != null)
                     {
-                        foreach (var variant in item.variants)
-                        {
-                            if (variant.sprite != null)
-                            {
-                                priceCache[variant.sprite] = item.price;
-                                itemDataCache[variant.sprite] = item;
-                            }
-                        }
+                        priceCache[item.sprite] = item.price;
+                        itemDataCache[item.sprite] = item;
                     }
                 }
             }
@@ -93,9 +84,38 @@ public class ItensSO : ScriptableObject
         return null;
     }
 
-    public ItemVariant[] GetVariantsFromSprite(Sprite targetSprite)
+    public ItemData[] GetVariantsFromSprite(Sprite targetSprite)
     {
         ItemData itemData = GetItemDataFromSprite(targetSprite);
-        return itemData?.variants ?? new ItemVariant[0];
+        return itemData != null ? new ItemData[] { itemData } : new ItemData[0];
+    }
+
+    public void ResetAllItems()
+    {
+        monitors.Clear();
+        keyboards.Clear();
+        mouses.Clear();
+        mousepads.Clear();
+        cups.Clear();
+        candles.Clear();
+        wallDecors.Clear();
+        mics.Clear();
+        headsets.Clear();
+
+        priceCache.Clear();
+        itemDataCache.Clear();
+
+        itemCategories.Clear();
+        itemCategories.Add(monitors);
+        itemCategories.Add(keyboards);
+        itemCategories.Add(mouses);
+        itemCategories.Add(mousepads);
+        itemCategories.Add(cups);
+        itemCategories.Add(candles);
+        itemCategories.Add(wallDecors);
+        itemCategories.Add(mics);
+        itemCategories.Add(headsets);
+
+        Debug.Log("Todas as categorias de itens foram resetadas.");
     }
 }

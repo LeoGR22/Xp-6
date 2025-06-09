@@ -4,13 +4,13 @@ using UnityEngine.UI;
 
 public class SetupItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
-    [SerializeField] private string itemType; 
-    [SerializeField] private ColorPickerUI colorPickerUI; 
+    [SerializeField] private string itemType;
     [SerializeField] private PlayerItensSO playerItensSO;
+    [SerializeField] private PlayerManager playerManager; // Adicionado pra chamar VerifyItem
     [SerializeField] private Slider slider;
 
     private bool isTouching;
-    private int pointerId = -1; 
+    private int pointerId = -1;
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -46,11 +46,13 @@ public class SetupItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
             case "Cup": currentSprite = playerItensSO.ReturnCupTexture(); break;
             case "Candle": currentSprite = playerItensSO.ReturnCandleTexture(); break;
             case "WallDecor": currentSprite = playerItensSO.ReturnWallDecorTexture(); break;
+            case "Mic": currentSprite = playerItensSO.ReturnMicTexture(); break; 
+            case "Headset": currentSprite = playerItensSO.ReturnHeadsetTexture(); break; 
         }
 
         if (currentSprite != playerItensSO.empty)
         {
-            colorPickerUI.Show(itemType, currentSprite, eventData.position);
+            playerManager.VerifyItem(itemType, uiImage.sprite);
             AudioManager.Instance.PlaySFX("Click2");
 #if UNITY_IOS || UNITY_ANDROID
             Handheld.Vibrate();
@@ -74,8 +76,5 @@ public class SetupItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
         isTouching = false;
         pointerId = -1;
-
-        colorPickerUI.TrySelectColor(eventData);
-        colorPickerUI.Hide();
     }
 }
