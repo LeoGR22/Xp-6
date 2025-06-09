@@ -193,6 +193,9 @@ public class PlayerManager : MonoBehaviour
             yield break;
         }
 
+        // Salvar o sprite inicial da caixa
+        Sprite initialBoxSprite = boxImage.sprite;
+
         box.SetActive(true);
 
         Canvas boxCanvas = box.GetComponent<Canvas>();
@@ -284,9 +287,10 @@ public class PlayerManager : MonoBehaviour
         yield return new WaitUntil(() => clicked);
         fullScreenButton.onClick.RemoveAllListeners();
         fullScreenButton.gameObject.SetActive(false);
-        
+
         // Para a animação de idle
         idleSequence.Kill();
+        AudioManager.Instance.PlaySFX("OpenBox");
 
         // Troca para o sprite da caixa aberta
         if (openBoxSprite != null)
@@ -327,6 +331,10 @@ public class PlayerManager : MonoBehaviour
 
         gameAnimator.SetTrigger("OpenBox");
         boxCanvas.sortingOrder = originalSortingOrder;
+
+        // Restaurar o sprite inicial da caixa antes de desativá-la
+        boxImage.sprite = initialBoxSprite;
+
         box.SetActive(false);
     }
 

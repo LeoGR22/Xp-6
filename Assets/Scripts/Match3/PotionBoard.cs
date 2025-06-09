@@ -800,8 +800,7 @@ public class PotionBoard : MonoBehaviour
 
                     GameObject targetPlayer = GameObject.FindWithTag("Player");
                     PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
-                    playerManager.AddMoney(10);
-                    playerManager.AddMoney((int)timer.GetMovesLeft() * 5);
+                    playerManager.AddMoney(10 + (int)timer.GetMovesLeft() * 5);
 
                     level.PassLevel();
                 }
@@ -1633,7 +1632,7 @@ public class PotionBoard : MonoBehaviour
 
                     GameObject targetPlayer = GameObject.FindWithTag("Player");
                     PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
-                    playerManager.AddMoney((int)timer.GetMovesLeft() * 5);
+                    playerManager.AddMoney(10 + (int)timer.GetMovesLeft() * 5);
 
                     level.PassLevel();
                 }
