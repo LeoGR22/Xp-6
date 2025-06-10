@@ -7236,6 +7236,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 243073058}
+  - component: {fileID: 243073059}
   m_Layer: 5
   m_Name: Lights
   m_TagString: Untagged
@@ -7271,6 +7272,24 @@ RectTransform:
   m_AnchoredPosition: {x: 95.655, y: 302.76248}
   m_SizeDelta: {x: 985.29, y: 748.25494}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &243073059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 243073057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68221ac224161134d98bfe7d15232f2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  luzAmbiente: {fileID: 1033083429}
+  luzJanela: {fileID: 1187121569}
+  usarHorarioSimulado: 0
+  horaSimulada: 6
+  velocidadeSimulacao: 0.1
+  suavidade: 2
 --- !u!1001 &270002286
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11633,7 +11652,7 @@ MonoBehaviour:
   m_LightType: 4
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
-  m_Color: {r: 0.3285422, g: 0.37595418, b: 0.6509434, a: 1}
+  m_Color: {r: 0.28266865, g: 0.22739409, b: 0.6603774, a: 1}
   m_Intensity: 1.54
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
@@ -12373,7 +12392,7 @@ MonoBehaviour:
   m_LightType: 1
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
-  m_Color: {r: 0.8679245, g: 0.7115737, b: 0.10234957, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_Intensity: 0.3
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
