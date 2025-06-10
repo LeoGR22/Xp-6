@@ -17,6 +17,8 @@ public class WinLoseUI : MonoBehaviour
 
     private GameObject potionBoard;
 
+    public LevelData levelData;
+
     private void Start()
     {
         winUI.SetActive(false);
@@ -48,7 +50,7 @@ public class WinLoseUI : MonoBehaviour
     }
     public void NextLevel()
     {
-        if(!isTuto.value)
+        if(!isTuto.value && levelData.level != 13)
             StartCoroutine(GoTo("Match3"));
     }
 

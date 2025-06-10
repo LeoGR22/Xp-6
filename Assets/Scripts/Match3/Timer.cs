@@ -54,8 +54,20 @@ public class Timer : MonoBehaviour
     public void DecreaseMove()
     {
         time -= 1f;
+    }
+    public void Reset()
+    {
+        hasTriggeredLose = false;
+        canLose.value = true;
+        time = timeData.value;
+        pauseTimer = false;
+    }
 
-        if (time <= 0f && canLose.value == true)
+    private bool hasTriggeredLose = false; 
+
+    public void CheckLose()
+    {
+        if (time <= 0f && canLose.value && !hasTriggeredLose)
         {
             Lose();
         }
@@ -63,6 +75,7 @@ public class Timer : MonoBehaviour
 
     void Lose()
     {
+        hasTriggeredLose = true;
         loseGame.Invoke();
     }
 

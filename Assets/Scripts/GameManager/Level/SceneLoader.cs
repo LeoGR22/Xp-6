@@ -7,8 +7,13 @@ public class SceneLoader : MonoBehaviour
 {
     public float timeDelay = 2.0f;
 
+    public LevelData levelData;
+
     public void LoadScene(string sceneName)
     {
+        if (sceneName == "Match3" && levelData.level >= 13)
+            return;
+
         StartCoroutine(Delay(sceneName));
     }
 

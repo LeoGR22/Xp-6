@@ -7,6 +7,7 @@ using DG.Tweening;
 public class TutorialManager : MonoBehaviour
 {
     [SerializeField] private GameObject tutorialGO;
+    [SerializeField] private GameObject congratsMenu;
     [SerializeField] private GameObject coinMenu;
     [SerializeField] private GameObject errorMenu;
     [SerializeField] private GameObject playMenu;
@@ -22,6 +23,7 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Button nextButton;
     [SerializeField] private Button playButton;
     [SerializeField] private FloatSO tutoPart;
+    [SerializeField] private LevelData levelData;
 
     private int currentStep = 0;
     private bool canClick = true;
@@ -39,6 +41,9 @@ public class TutorialManager : MonoBehaviour
 
         if (coinMenu != null)
             coinMenu.SetActive(false);
+
+        if (congratsMenu != null)
+            congratsMenu.SetActive(false);
 
         if (isTuto.value)
         {
@@ -332,6 +337,9 @@ public class TutorialManager : MonoBehaviour
         {
             gameAnim.SetTrigger("Tuto");
             tutoPart.value = 2;
+        }else if (levelData.level >= 13)
+        {
+            OpenCongrats();
         }
         else
         {
@@ -345,12 +353,26 @@ public class TutorialManager : MonoBehaviour
         playMenu.transform.localScale = Vector3.zero;
         playMenu.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
     }
+    public void OpenCongrats()
+    {
+        congratsMenu.SetActive(true);
+        congratsMenu.transform.localScale = Vector3.zero;
+        congratsMenu.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+    }
 
     public void ClosePlay()
     {
         playMenu.transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack).OnComplete(() =>
         {
             playMenu.SetActive(false);
+        });
+    }
+
+    public void CloseCongrats()
+    {
+        congratsMenu.transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.InBack).OnComplete(() =>
+        {
+            congratsMenu.SetActive(false);
         });
     }
 

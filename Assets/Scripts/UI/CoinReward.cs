@@ -43,7 +43,7 @@ public class CoinReward : MonoBehaviour
 
         int coinsAmount = Mathf.FloorToInt(timer.GetMovesLeft());
         if (coinsAmount == 0)
-            coinsAmount = 10;
+            //coinsAmount = 10;
 
         foreach (Transform child in pileOfCoins.transform)
         {

@@ -207,14 +207,33 @@ public class PotionBoard : MonoBehaviour
         CheckBoard(true);
     }
 
+    private bool hasLost = false;
+
     private void Update()
     {
         if (canMove.value)
         {
+            bool isVictory = violetPotionCount.count + greenPotionCount.count + orangePotionCount.count +
+                             redPotionCount.count + bluePotionCount.count <= 0 && !won;
+            if (isVictory)
+            {
+                if (!win)
+                {
+                    win = true;
+                    GameObject targetPlayer = GameObject.FindWithTag("Player");
+                    PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
+                    playerManager.AddMoney(10 + (int)timer.GetMovesLeft() * 5);
+                    level.PassLevel();
+                }
+                canLose.value = false;
+                won = true;
+                WinGame.Raise();
+                return;
+            }
+
             if (!won && timer.GetMovesLeft() > 0)
             {
                 CheckUserActions();
-
                 if (!isShaking && Time.time - lastMoveTime > inactivityThreshold && AreAllPotionsSettled() && !isTutorialLevel)
                 {
                     if (shakeCoroutine != null)
@@ -292,6 +311,20 @@ public class PotionBoard : MonoBehaviour
             {
                 clickedPotion = null;
                 targetPotion = null;
+            }
+        }
+    }
+
+    private void CheckLoseCondition()
+    {
+        Debug.Log($"CheckLoseCondition: MovesLeft={timer.GetMovesLeft()}, HasPossibleMoves={HasPossibleMoves()}");
+        if (!hasLost && !won)
+        {
+            timer.CheckLose();
+            if (timer.GetMovesLeft() <= 0 && !HasPossibleMoves() && canLose.value)
+            {
+                hasLost = true;
+                LoseGame.Raise();
             }
         }
     }
@@ -796,24 +829,12 @@ public class PotionBoard : MonoBehaviour
                 Debug.Log($"Starting animation for {potionsToAnimate.Count} potions: [{potionTypes}]");
                 StartCoroutine(AnimatePotionToUI(potionsToAnimate, potionsToReduce));
             }
-
-            bool isVictory = violetPotionCount.count + greenPotionCount.count + orangePotionCount.count +
-                             redPotionCount.count + bluePotionCount.count <= 0 && !won;
-
-            if (isVictory)
+            else
             {
-                if (!win)
-                {
-                    win = true;
-                    GameObject targetPlayer = GameObject.FindWithTag("Player");
-                    PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
-                    playerManager.AddMoney(10 + (int)timer.GetMovesLeft() * 5);
-                    level.PassLevel();
-                }
-                canLose.value = false;
-                WinGame.Raise();
+                CheckLoseCondition();
             }
-            else if (hasMatched && playerMadeAMove)
+
+            if (hasMatched && playerMadeAMove)
             {
                 playerMadeAMove = false;
                 timer.DecreaseMove();
@@ -1440,7 +1461,7 @@ public class PotionBoard : MonoBehaviour
     private IEnumerator ResolveCascadingMatches()
     {
         bool hasMoreMatches = true;
-        cascadeComboCount = 0; // Resetar o contador no início de cada sequência de combos em cascata
+        cascadeComboCount = 0; 
 
         while (hasMoreMatches)
         {
@@ -1448,17 +1469,15 @@ public class PotionBoard : MonoBehaviour
             hasMoreMatches = CheckBoard(false);
             if (hasMoreMatches)
             {
-                cascadeComboCount++; // Incrementar o contador de combos em cascata
+                cascadeComboCount++; 
                 Debug.Log($"Cascading match #{cascadeComboCount} detected");
 
                 CheckBoard(true);
                 yield return new WaitUntil(() => AreAllPotionsSettled());
 
-                // Verificar se atingiu 3 ou mais combos em cascata
-                if (cascadeComboCount >= 3)
+                if (cascadeComboCount >= 2)
                 {
-                    // Escolher aleatoriamente um sprite de combo (índices 1, 2 ou 3)
-                    int randomSpriteIndex = Random.Range(1, 4); // Índices 1, 2, 3
+                    int randomSpriteIndex = Random.Range(1, 4); 
                     yield return StartCoroutine(ShowComboMessage(comboMessageSprites[randomSpriteIndex]));
                 }
             }
@@ -1663,7 +1682,6 @@ public class PotionBoard : MonoBehaviour
 
             float duration = 0.8f;
             float height = 2f;
-
             float delayBetweenPotions = 0.08f;
 
             List<Coroutine> animationCoroutines = new List<Coroutine>();
@@ -1695,21 +1713,31 @@ public class PotionBoard : MonoBehaviour
                 yield return coroutine;
             }
 
-            if (violetPotionCount.count + greenPotionCount.count + orangePotionCount.count + redPotionCount.count + bluePotionCount.count <= 0 && !won)
+            UpdateUIVisibility();
+            RepositionCountUIs();
+        }
+
+        // Verificação de vitória e derrota após todas as animações
+        bool isVictory = violetPotionCount.count + greenPotionCount.count + orangePotionCount.count +
+                         redPotionCount.count + bluePotionCount.count <= 0 && !won;
+        if (isVictory)
+        {
+            if (!win)
             {
-                if (!win)
-                {
-                    win = true;
-
-                    GameObject targetPlayer = GameObject.FindWithTag("Player");
-                    PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
-                    playerManager.AddMoney(10 + (int)timer.GetMovesLeft() * 5);
-
-                    level.PassLevel();
-                }
-                canLose.value = false;
-                WinGame.Raise();
+                win = true;
+                GameObject targetPlayer = GameObject.FindWithTag("Player");
+                PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
+                playerManager.AddMoney(10 + (int)timer.GetMovesLeft() * 5);
+                level.PassLevel();
             }
+            canLose.value = false;
+            won = true;
+            WinGame.Raise();
+        }
+        else if (!won && !hasLost && timer.GetMovesLeft() <= 0)
+        {
+            Debug.Log("Checking lose condition after animations");
+            CheckLoseCondition();
         }
     }
 
