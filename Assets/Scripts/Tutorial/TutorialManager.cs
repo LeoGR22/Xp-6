@@ -355,9 +355,12 @@ public class TutorialManager : MonoBehaviour
     }
     public void OpenCongrats()
     {
-        congratsMenu.SetActive(true);
-        congratsMenu.transform.localScale = Vector3.zero;
-        congratsMenu.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+        if (levelData.level >= 13)
+        {
+            congratsMenu.SetActive(true);
+            congratsMenu.transform.localScale = Vector3.zero;
+            congratsMenu.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+        }
     }
 
     public void ClosePlay()

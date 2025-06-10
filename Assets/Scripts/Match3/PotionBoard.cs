@@ -8,7 +8,6 @@ using static UnityEngine.Rendering.DebugUI.Table;
 using Random = UnityEngine.Random;
 using CandyCoded.HapticFeedback;
 using DG.Tweening;
-
 public class PotionBoard : MonoBehaviour
 {
     private int width = 4;
@@ -33,9 +32,9 @@ public class PotionBoard : MonoBehaviour
 
     public GameObject explosionVFXPrefab;
 
-    [SerializeField] private Sprite[] backgroundSprites; 
-    [SerializeField] private float extraMargin = 0.1f; 
-    [SerializeField] private float backgroundScale = 0.8f; 
+    [SerializeField] private Sprite[] backgroundSprites;
+    [SerializeField] private float extraMargin = 0.1f;
+    [SerializeField] private float backgroundScale = 0.8f;
     private List<GameObject> backgroundTiles = new List<GameObject>();
 
     public GameObject centerTilePrefab;
@@ -47,13 +46,14 @@ public class PotionBoard : MonoBehaviour
     private List<GameObject> tilesToDestroy = new();
 
     private Dictionary<ItemType, Color> potionColors = new Dictionary<ItemType, Color>
-    {
-        { ItemType.Violet, new Color(0.67f, 0.39f, 0.86f) },
-        { ItemType.Green, new Color(0.82f, 0.71f, 0.55f) },
-        { ItemType.Red, new Color(0.86f, 0.39f, 0.39f) },
-        { ItemType.Orange, new Color(0.94f, 0.63f, 0.31f) },
-        { ItemType.Blue, new Color(0.39f, 0.58f, 0.93f) }
-    };
+
+{
+    { ItemType.Violet, new Color(0.67f, 0.39f, 0.86f) },
+    { ItemType.Green, new Color(0.82f, 0.71f, 0.55f) },
+    { ItemType.Red, new Color(0.86f, 0.39f, 0.39f) },
+    { ItemType.Orange, new Color(0.94f, 0.63f, 0.31f) },
+    { ItemType.Blue, new Color(0.39f, 0.58f, 0.93f) }
+};
 
     [SerializeField] private Potion selectedPotion;
     [SerializeField] private bool isProcessingMove;
@@ -104,8 +104,8 @@ public class PotionBoard : MonoBehaviour
     private Timer timer;
 
     [SerializeField] private GameObject comboMessagePrefab;
-    [SerializeField] private Sprite[] comboMessageSprites; 
-    private int cascadeComboCount = 0; 
+    [SerializeField] private Sprite[] comboMessageSprites;
+    private int cascadeComboCount = 0;
 
     // Controle de inatividade e animação
     private float lastMoveTime;
@@ -157,15 +157,15 @@ public class PotionBoard : MonoBehaviour
                 height = 3,
                 tiles = new TutorialTile[]
                 {
-                    new TutorialTile { x = 0, y = 0, potionType = ItemType.Violet, isUsable = true },
-                    new TutorialTile { x = 1, y = 0, potionType = ItemType.Blue, isUsable = true },
-                    new TutorialTile { x = 2, y = 0, potionType = ItemType.Red, isUsable = true },
-                    new TutorialTile { x = 0, y = 1, potionType = ItemType.Red, isUsable = true },
-                    new TutorialTile { x = 1, y = 1, potionType = ItemType.Red, isUsable = true },
-                    new TutorialTile { x = 2, y = 1, potionType = ItemType.Blue, isUsable = true },
-                    new TutorialTile { x = 0, y = 2, potionType = ItemType.Orange, isUsable = true },
-                    new TutorialTile { x = 1, y = 2, potionType = ItemType.Green, isUsable = true },
-                    new TutorialTile { x = 2, y = 2, potionType = ItemType.Violet, isUsable = true }
+            new TutorialTile { x = 0, y = 0, potionType = ItemType.Violet, isUsable = true },
+            new TutorialTile { x = 1, y = 0, potionType = ItemType.Blue, isUsable = true },
+            new TutorialTile { x = 2, y = 0, potionType = ItemType.Red, isUsable = true },
+            new TutorialTile { x = 0, y = 1, potionType = ItemType.Red, isUsable = true },
+            new TutorialTile { x = 1, y = 1, potionType = ItemType.Red, isUsable = true },
+            new TutorialTile { x = 2, y = 1, potionType = ItemType.Blue, isUsable = true },
+            new TutorialTile { x = 0, y = 2, potionType = ItemType.Orange, isUsable = true },
+            new TutorialTile { x = 1, y = 2, potionType = ItemType.Green, isUsable = true },
+            new TutorialTile { x = 2, y = 2, potionType = ItemType.Violet, isUsable = true }
                 }
             };
         }
@@ -303,7 +303,7 @@ public class PotionBoard : MonoBehaviour
                         playerMadeAMove = true;
                         SelectPotion(clickedPotion);
                         SelectPotion(targetPotion);
-                        clickedPotion = null; 
+                        clickedPotion = null;
                     }
                 }
             }
@@ -317,6 +317,31 @@ public class PotionBoard : MonoBehaviour
 
     private void CheckLoseCondition()
     {
+        // Verifica se há animações em andamento
+        if (isAnimatingPotions)
+        {
+            Debug.Log("CheckLoseCondition: Animações em andamento, adiando verificação de derrota.");
+            return;
+        }
+
+        bool isVictory = violetPotionCount.count + greenPotionCount.count + orangePotionCount.count +
+                         redPotionCount.count + bluePotionCount.count <= 0 && !won;
+        if (isVictory)
+        {
+            if (!win)
+            {
+                win = true;
+                GameObject targetPlayer = GameObject.FindWithTag("Player");
+                PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
+                playerManager.AddMoney(10 + (int)timer.GetMovesLeft() * 5);
+                level.PassLevel();
+            }
+            canLose.value = false;
+            won = true;
+            WinGame.Raise();
+            return;
+        }
+
         Debug.Log($"CheckLoseCondition: MovesLeft={timer.GetMovesLeft()}, HasPossibleMoves={HasPossibleMoves()}");
         if (!hasLost && !won)
         {
@@ -683,6 +708,7 @@ public class PotionBoard : MonoBehaviour
         }
     }
 
+    private bool isAnimatingPotions = false;
     private bool CheckBoard(bool _takeAction)
     {
         checkBoardCallCount++;
@@ -831,7 +857,8 @@ public class PotionBoard : MonoBehaviour
             }
             else
             {
-                CheckLoseCondition();
+                if (!isAnimatingPotions)
+                    CheckLoseCondition();
             }
 
             if (hasMatched && playerMadeAMove)
@@ -1461,7 +1488,7 @@ public class PotionBoard : MonoBehaviour
     private IEnumerator ResolveCascadingMatches()
     {
         bool hasMoreMatches = true;
-        cascadeComboCount = 0; 
+        cascadeComboCount = 0;
 
         while (hasMoreMatches)
         {
@@ -1469,7 +1496,7 @@ public class PotionBoard : MonoBehaviour
             hasMoreMatches = CheckBoard(false);
             if (hasMoreMatches)
             {
-                cascadeComboCount++; 
+                cascadeComboCount++;
                 Debug.Log($"Cascading match #{cascadeComboCount} detected");
 
                 CheckBoard(true);
@@ -1477,7 +1504,7 @@ public class PotionBoard : MonoBehaviour
 
                 if (cascadeComboCount >= 2)
                 {
-                    int randomSpriteIndex = Random.Range(1, 4); 
+                    int randomSpriteIndex = Random.Range(1, 4);
                     yield return StartCoroutine(ShowComboMessage(comboMessageSprites[randomSpriteIndex]));
                 }
             }
@@ -1525,8 +1552,8 @@ public class PotionBoard : MonoBehaviour
         messageGO.transform.SetParent(potionParent.transform, false);
 
         spriteRenderer.sprite = messageSprite;
-        spriteRenderer.color = new Color(1f, 1f, 1f, 0f); 
-        messageGO.transform.localScale = Vector3.one * (0.5f / 3f); 
+        spriteRenderer.color = new Color(1f, 1f, 1f, 0f);
+        messageGO.transform.localScale = Vector3.one * (0.5f / 3f);
 
         float fadeInDuration = 0.3f;
         float scaleDuration = 0.5f;
@@ -1534,11 +1561,11 @@ public class PotionBoard : MonoBehaviour
         float fadeOutDuration = 0.3f;
 
         Sequence sequence = DOTween.Sequence();
-        sequence.Append(spriteRenderer.DOFade(1f, fadeInDuration)); 
-        sequence.Join(messageGO.transform.DOScale(0.3334f, scaleDuration).SetEase(Ease.OutBack)); 
-        sequence.AppendInterval(displayDuration); 
-        sequence.Append(spriteRenderer.DOFade(0f, fadeOutDuration)); 
-        sequence.Join(messageGO.transform.DOScale(0.1667f, fadeOutDuration)); 
+        sequence.Append(spriteRenderer.DOFade(1f, fadeInDuration));
+        sequence.Join(messageGO.transform.DOScale(0.3334f, scaleDuration).SetEase(Ease.OutBack));
+        sequence.AppendInterval(displayDuration);
+        sequence.Append(spriteRenderer.DOFade(0f, fadeOutDuration));
+        sequence.Join(messageGO.transform.DOScale(0.1667f, fadeOutDuration));
 
         yield return sequence.WaitForCompletion();
 
@@ -1560,6 +1587,7 @@ public class PotionBoard : MonoBehaviour
 
     private IEnumerator AnimatePotionToUI(List<(Potion potion, ItemType type)> potionsToAnimate, Dictionary<ItemType, int> potionsToReduce)
     {
+        isAnimatingPotions = true;
         Dictionary<ItemType, List<Potion>> potionsByType = new Dictionary<ItemType, List<Potion>>();
         foreach (var (potion, type) in potionsToAnimate)
         {
@@ -1739,6 +1767,8 @@ public class PotionBoard : MonoBehaviour
             Debug.Log("Checking lose condition after animations");
             CheckLoseCondition();
         }
+
+        isAnimatingPotions = false;
     }
 
     private IEnumerator AnimateSinglePotion(GameObject clone, Vector3 startPosition, Vector3 targetPosition, float duration, float height, ItemType type, int potionIndex, Dictionary<ItemType, int> potionsToReduce)
@@ -1803,7 +1833,8 @@ public class PotionBoard : MonoBehaviour
 
         Destroy(clone);
     }
-private void ClearAllGlowEffects()
+
+    private void ClearAllGlowEffects()
     {
         foreach (var ps in activeGlowEffects)
         {
@@ -2003,14 +2034,13 @@ private void ClearAllGlowEffects()
     {
         won = state;
     }
-}
 
+}
 public class MatchResult
 {
     public List<Potion> connectedPotions;
     public MatchDirection direction;
 }
-
 public enum MatchDirection
 {
     Vertical,
@@ -2020,3 +2050,4 @@ public enum MatchDirection
     Super,
     None
 }
+

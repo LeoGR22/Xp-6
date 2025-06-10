@@ -143,6 +143,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2040913268}
     - target: {fileID: 3528050720107831178, guid: 94f0a510d69e78d4ab341b7a5690e211, type: 3}
+      propertyPath: levelData
+      value: 
+      objectReference: {fileID: 11400000, guid: 4f692ce5ff66d0348a3a57f5fad771dd, type: 2}
+    - target: {fileID: 3528050720107831178, guid: 94f0a510d69e78d4ab341b7a5690e211, type: 3}
       propertyPath: handSprite
       value: 
       objectReference: {fileID: 333033271}
@@ -4179,8 +4183,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1089899776}
-  - {fileID: 237711721}
   - {fileID: 1743099837}
+  - {fileID: 237711721}
   - {fileID: 1388012614}
   - {fileID: 1264381584}
   - {fileID: 307415775}
