@@ -349,7 +349,7 @@ public class PotionBoard : MonoBehaviour
             if (timer.GetMovesLeft() <= 0 && !HasPossibleMoves() && canLose.value)
             {
                 hasLost = true;
-                LoseGame.Raise();
+                timer.CheckLose();
             }
         }
     }
