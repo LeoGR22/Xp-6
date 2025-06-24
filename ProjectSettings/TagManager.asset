@@ -11,6 +11,15 @@ TagManager:
   - Cup
   - Candle
   - WallDecor
+  - Violet
+  - Green
+  - Red
+  - Orange
+  - Blue
+  - Board
+  - Tutorial
+  - Headset
+  - Mic
   layers:
   - Default
   - TransparentFX

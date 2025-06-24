@@ -7,39 +7,52 @@ using UnityEngine.Events;
 using static UnityEngine.Rendering.DebugUI.Table;
 using Random = UnityEngine.Random;
 using CandyCoded.HapticFeedback;
+using DG.Tweening;
 public class PotionBoard : MonoBehaviour
 {
-    // Tamanho do tabuleiro
     private int width = 4;
     private int height = 4;
     public BoardSizeData widthData;
     public BoardSizeData heightData;
 
-    // SetLevel
+    public BooleanSO tutorialSO;
+    private GameObject tutorialGO;
+
+    public BooleanSO canMove;
+
     SetLevel level;
     bool win;
 
-    // Variáveis para centralizar o tabuleiro de acordo com seu tamanho
     private float spacingX;
     private float spacingY;
 
-    // Cria uma lista com os prefabs desejados
     public GameObject[] potionPrefabs;
-
     public List<GameObject> potionsToDestroy = new();
     public GameObject potionParent;
 
-    // Prefab do VFX de explosão (branco)
-    public GameObject explosionVFXPrefab; // Atribua no Inspector
+    public GameObject explosionVFXPrefab;
 
-    // Mapeamento de cores por ItemType (meio-termo entre vibrante e pastel)
+    [SerializeField] private Sprite[] backgroundSprites;
+    [SerializeField] private float extraMargin = 0.1f;
+    [SerializeField] private float backgroundScale = 0.8f;
+    private List<GameObject> backgroundTiles = new List<GameObject>();
+
+    public GameObject centerTilePrefab;
+    public GameObject topLeftTilePrefab;
+    public GameObject topRightTilePrefab;
+    public GameObject bottomLeftTilePrefab;
+    public GameObject bottomRightTilePrefab;
+    public GameObject tileParent;
+    private List<GameObject> tilesToDestroy = new();
+
     private Dictionary<ItemType, Color> potionColors = new Dictionary<ItemType, Color>
+
 {
-    { ItemType.Violet, new Color(0.67f, 0.39f, 0.86f) }, // Roxo meio-termo
-    { ItemType.Green, new Color(0.82f, 0.71f, 0.55f) },  // Verde meio-termo
-    { ItemType.Red, new Color(0.86f, 0.39f, 0.39f) },    // Vermelho meio-termo
-    { ItemType.Orange, new Color(0.94f, 0.63f, 0.31f) }, // Laranja meio-termo
-    { ItemType.Blue, new Color(0.39f, 0.58f, 0.93f) }    // Azul meio-termo (NOVA ENTRADA)
+    { ItemType.Violet, new Color(0.67f, 0.39f, 0.86f) },
+    { ItemType.Green, new Color(0.82f, 0.71f, 0.55f) },
+    { ItemType.Red, new Color(0.86f, 0.39f, 0.39f) },
+    { ItemType.Orange, new Color(0.94f, 0.63f, 0.31f) },
+    { ItemType.Blue, new Color(0.39f, 0.58f, 0.93f) }
 };
 
     [SerializeField] private Potion selectedPotion;
@@ -48,12 +61,10 @@ public class PotionBoard : MonoBehaviour
     public Node[,] potionBoard;
     public GameObject potionBoardGO;
 
-    // Cria um array da Classe ArrayLayout
     public ArrayLayout arrayLayout;
 
     public static PotionBoard Instance;
 
-    // Variáveis que armazenam o toque na tela mobile e definem as poções selecionadas
     private Vector2 startTouchPosition;
     private Vector2 endTouchPosition;
     Potion clickedPotion = null;
@@ -61,14 +72,24 @@ public class PotionBoard : MonoBehaviour
 
     private bool playerMadeAMove = false;
 
-    // Variáveis para armazenar os potions coletados
     public ObjectiveBoardData violetPotionCount;
     public ObjectiveBoardData greenPotionCount;
     public ObjectiveBoardData redPotionCount;
     public ObjectiveBoardData orangePotionCount;
     public ObjectiveBoardData bluePotionCount;
 
-    // Referências aos GameObjects da UI que mostram as contagens
+    [SerializeField] private float finalPotionScale = 0.7f;
+    [SerializeField] private float worldSpacing = 0.9f;
+    [SerializeField] private float uiSpacing = 50f;
+    [SerializeField] private float worldCenterX = 0f;
+    [SerializeField] private float uiCenterX = 0f;
+
+    private GameObject violetSymbolGO;
+    private GameObject greenSymbolGO;
+    private GameObject redSymbolGO;
+    private GameObject orangeSymbolGO;
+    private GameObject blueSymbolGO;
+
     public GameObject violetCountUI;
     public GameObject greenCountUI;
     public GameObject redCountUI;
@@ -78,94 +99,262 @@ public class PotionBoard : MonoBehaviour
     public GameEvent WinGame;
     public GameEvent LoseGame;
     public BooleanSO canLose;
+    private bool won = false;
 
-    // Define qual tipo de condição de derrota
     private Timer timer;
+
+    [SerializeField] private GameObject comboMessagePrefab;
+    [SerializeField] private Sprite[] comboMessageSprites;
+    private int cascadeComboCount = 0;
+
+    // Controle de inatividade e animação
+    private float lastMoveTime;
+    private bool isShaking;
+    private readonly float inactivityThreshold = 5f;
+    private Coroutine shakeCoroutine;
+    private List<(List<Potion> matchPotions, int x1, int y1, int x2, int y2)> possibleMatches;
+    private (List<Potion> matchPotions, int x1, int y1, int x2, int y2)? selectedMatch;
+
+    private static int checkBoardCallCount = 0;
+    private HashSet<Potion> processedPotions = new HashSet<Potion>();
+
+    [SerializeField] private GameObject glowVFXPrefab;
+
+    private List<ParticleSystem> activeGlowEffects = new List<ParticleSystem>();
+
+    // Tutorial
+    private bool isTutorialLevel;
+    [SerializeField] private TutorialBoardLayout tutorialLayout;
+
+    [System.Serializable]
+    public class TutorialBoardLayout
+    {
+        public int width;
+        public int height;
+        public TutorialTile[] tiles;
+    }
+
+    [System.Serializable]
+    public class TutorialTile
+    {
+        public int x;
+        public int y;
+        public ItemType potionType;
+        public bool isUsable;
+    }
 
     private void Awake()
     {
         Instance = this;
+
+        isTutorialLevel = tutorialSO.value;
+
+        if (isTutorialLevel)
+        {
+            tutorialLayout = new TutorialBoardLayout
+            {
+                width = 3,
+                height = 3,
+                tiles = new TutorialTile[]
+                {
+            new TutorialTile { x = 0, y = 0, potionType = ItemType.Violet, isUsable = true },
+            new TutorialTile { x = 1, y = 0, potionType = ItemType.Blue, isUsable = true },
+            new TutorialTile { x = 2, y = 0, potionType = ItemType.Red, isUsable = true },
+            new TutorialTile { x = 0, y = 1, potionType = ItemType.Red, isUsable = true },
+            new TutorialTile { x = 1, y = 1, potionType = ItemType.Red, isUsable = true },
+            new TutorialTile { x = 2, y = 1, potionType = ItemType.Blue, isUsable = true },
+            new TutorialTile { x = 0, y = 2, potionType = ItemType.Orange, isUsable = true },
+            new TutorialTile { x = 1, y = 2, potionType = ItemType.Green, isUsable = true },
+            new TutorialTile { x = 2, y = 2, potionType = ItemType.Violet, isUsable = true }
+                }
+            };
+        }
     }
 
     void Start()
     {
         win = false;
-        width = widthData.GetSize();
-        height = heightData.GetSize();
         level = FindObjectOfType<SetLevel>();
         timer = FindObjectOfType<Timer>();
 
+        lastMoveTime = Time.time;
+        possibleMatches = new List<(List<Potion> matchPotions, int x1, int y1, int x2, int y2)>();
+        selectedMatch = null;
         InitializeBoard();
         AssignCountUIs();
+
+        violetSymbolGO = GameObject.FindGameObjectWithTag("Violet");
+        greenSymbolGO = GameObject.FindGameObjectWithTag("Green");
+        redSymbolGO = GameObject.FindGameObjectWithTag("Red");
+        orangeSymbolGO = GameObject.FindGameObjectWithTag("Orange");
+        blueSymbolGO = GameObject.FindGameObjectWithTag("Blue");
+        tutorialGO = GameObject.FindGameObjectWithTag("Tutorial");
+
+        if (isTutorialLevel)
+        {
+            timer.ChangeMoves(3);
+
+            redPotionCount.count = 3;
+            violetPotionCount.count = 0;
+            greenPotionCount.count = 0;
+            orangePotionCount.count = 0;
+            bluePotionCount.count = 0;
+        }
+
+        UpdateUIVisibility();
+        RepositionCountUIs();
+
         CheckBoard(true);
     }
 
+    private bool hasLost = false;
+
     private void Update()
     {
-        CheckUserActions();
+        if (canMove.value)
+        {
+            bool isVictory = violetPotionCount.count + greenPotionCount.count + orangePotionCount.count +
+                             redPotionCount.count + bluePotionCount.count <= 0 && !won;
+            if (isVictory)
+            {
+                if (!win)
+                {
+                    win = true;
+                    GameObject targetPlayer = GameObject.FindWithTag("Player");
+                    PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
+                    playerManager.AddMoney(10 + (int)timer.GetMovesLeft() * 5);
+                    level.PassLevel();
+                }
+                canLose.value = false;
+                won = true;
+                WinGame.Raise();
+
+                return;
+            }
+
+            if (!won && timer.GetMovesLeft() > 0)
+            {
+                CheckUserActions();
+                if (!isShaking && Time.time - lastMoveTime > inactivityThreshold && AreAllPotionsSettled())
+                {
+                    if (shakeCoroutine != null)
+                    {
+                        StopCoroutine(shakeCoroutine);
+                        shakeCoroutine = null;
+                    }
+                    shakeCoroutine = StartCoroutine(ShakePossibleMatch());
+                }
+            }
+        }
     }
 
     private void CheckUserActions()
     {
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        if (Input.touchCount > 0)
         {
-            startTouchPosition = Input.GetTouch(0).position;
+            Touch touch = Input.GetTouch(0);
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
-
-            if (hit.collider != null && hit.collider.gameObject.GetComponent<Potion>())
+            if (touch.phase == TouchPhase.Began)
             {
-                if (isProcessingMove) return;
+                startTouchPosition = touch.position;
 
-                clickedPotion = hit.collider.gameObject.GetComponent<Potion>();
-                Debug.Log("Poção clicada: " + clickedPotion.gameObject);
+                Ray ray = Camera.main.ScreenPointToRay(touch.position);
+                RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
 
-                SelectPotion(clickedPotion);
-            }
-        }
-        else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
-        {
-            endTouchPosition = Input.GetTouch(0).position;
-
-            if (Mathf.Abs(endTouchPosition.x - startTouchPosition.x) > Mathf.Abs(endTouchPosition.y - startTouchPosition.y))
-            {
-                if (endTouchPosition.x > startTouchPosition.x)
+                if (hit.collider != null && hit.collider.gameObject.GetComponent<Potion>())
                 {
-                    targetPotion = GetPotionAt(clickedPotion.xIndex + 1, clickedPotion.yIndex);
-                    playerMadeAMove = true;
-                    SelectPotion(targetPotion);
-                    Debug.Log("Swipe para direita");
-                }
-                else
-                {
-                    targetPotion = GetPotionAt(clickedPotion.xIndex - 1, clickedPotion.yIndex);
-                    playerMadeAMove = true;
-                    SelectPotion(targetPotion);
-                    Debug.Log("Swipe para esquerda");
+                    if (isProcessingMove) return;
+
+                    clickedPotion = hit.collider.gameObject.GetComponent<Potion>();
                 }
             }
-            else
+            else if (touch.phase == TouchPhase.Moved && clickedPotion != null)
             {
-                if (endTouchPosition.y > startTouchPosition.y)
+                Vector2 currentTouchPosition = touch.position;
+                Vector2 delta = currentTouchPosition - startTouchPosition;
+                float swipeThreshold = 50f;
+
+                if (delta.magnitude > swipeThreshold)
                 {
-                    targetPotion = GetPotionAt(clickedPotion.xIndex, clickedPotion.yIndex + 1);
-                    playerMadeAMove = true;
-                    SelectPotion(targetPotion);
-                    Debug.Log("Swipe para cima");
+                    if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
+                    {
+                        if (delta.x > 0)
+                        {
+                            targetPotion = GetPotionAt(clickedPotion.xIndex + 1, clickedPotion.yIndex);
+                        }
+                        else
+                        {
+                            targetPotion = GetPotionAt(clickedPotion.xIndex - 1, clickedPotion.yIndex);
+                        }
+                    }
+                    else
+                    {
+                        if (delta.y > 0)
+                        {
+                            targetPotion = GetPotionAt(clickedPotion.xIndex, clickedPotion.yIndex + 1);
+                        }
+                        else
+                        {
+                            targetPotion = GetPotionAt(clickedPotion.xIndex, clickedPotion.yIndex - 1);
+                        }
+                    }
+
+                    if (targetPotion != null)
+                    {
+                        playerMadeAMove = true;
+                        SelectPotion(clickedPotion);
+                        SelectPotion(targetPotion);
+                        clickedPotion = null;
+                    }
                 }
-                else
-                {
-                    targetPotion = GetPotionAt(clickedPotion.xIndex, clickedPotion.yIndex - 1);
-                    playerMadeAMove = true;
-                    SelectPotion(targetPotion);
-                    Debug.Log("Swipe para baixo");
-                }
+            }
+            else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+            {
+                clickedPotion = null;
+                targetPotion = null;
             }
         }
     }
 
-    // Método para obter a poção na posição especificada
+    private void CheckLoseCondition()
+    {
+        // Verifica se há animações em andamento
+        if (isAnimatingPotions)
+        {
+            Debug.Log("CheckLoseCondition: Animações em andamento, adiando verificação de derrota.");
+            return;
+        }
+
+        bool isVictory = violetPotionCount.count + greenPotionCount.count + orangePotionCount.count +
+                         redPotionCount.count + bluePotionCount.count <= 0 && !won;
+        if (isVictory)
+        {
+            if (!win)
+            {
+                win = true;
+                GameObject targetPlayer = GameObject.FindWithTag("Player");
+                PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
+                playerManager.AddMoney(10 + (int)timer.GetMovesLeft() * 5);
+                level.PassLevel();
+            }
+            canLose.value = false;
+            won = true;
+            WinGame.Raise();
+            return;
+        }
+
+        Debug.Log($"CheckLoseCondition: MovesLeft={timer.GetMovesLeft()}, HasPossibleMoves={HasPossibleMoves()}");
+        if (!hasLost && !won)
+        {
+            timer.CheckLose();
+            if (timer.GetMovesLeft() <= 0 && !HasPossibleMoves() && canLose.value)
+            {
+                hasLost = true;
+                timer.CheckLose();
+            }
+        }
+    }
+
     private Potion GetPotionAt(int xIndex, int yIndex)
     {
         if (xIndex >= 0 && xIndex < width && yIndex >= 0 && yIndex < height)
@@ -175,50 +364,309 @@ public class PotionBoard : MonoBehaviour
                 return potionBoard[xIndex, yIndex].potion.GetComponent<Potion>();
             }
         }
-        return null; // Retorna nulo se a posição estiver fora dos limites ou não houver poção
+        return null;
     }
 
     void InitializeBoard()
     {
-        bool validBoard = false;
+        win = false;
 
-        while (!validBoard)
+        if (isTutorialLevel && tutorialLayout != null)
         {
-            DestroyPotions();
-            potionBoard = new Node[width, height];
+            width = tutorialLayout.width;
+            height = tutorialLayout.height;
+        }
+        else
+        {
+            width = widthData.GetSize();
+            height = heightData.GetSize();
+        }
 
-            spacingX = (float)(width - 1) / 2;
-            spacingY = (float)((height - 1) / 2) + .75f;
+        level = FindObjectOfType<SetLevel>();
+        timer = FindObjectOfType<Timer>();
 
+        lastMoveTime = Time.time;
+        possibleMatches = new List<(List<Potion> matchPotions, int x1, int y1, int x2, int y2)>();
+        selectedMatch = null;
+
+        DestroyPotions();
+        DestroyTiles();
+        potionBoard = new Node[width, height];
+
+        spacingX = (float)(width - 1) / 2;
+        spacingY = (float)((height - 1) / 2) + .75f;
+
+        CreateVisualBoard();
+
+        if (isTutorialLevel && tutorialLayout != null)
+        {
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
                     Vector2 position = new Vector2(x - spacingX, y - spacingY);
-                    if (arrayLayout.rows[y].row[x])
+                    TutorialTile tile = tutorialLayout.tiles.FirstOrDefault(t => t.x == x && t.y == y);
+
+                    if (tile == null || !tile.isUsable)
                     {
                         potionBoard[x, y] = new Node(false, null);
                     }
                     else
                     {
-                        int randomIndex = Random.Range(0, potionPrefabs.Length);
-                        GameObject potion = Instantiate(potionPrefabs[randomIndex], position, Quaternion.identity);
+                        GameObject potionPrefab = potionPrefabs.FirstOrDefault(p => p.GetComponent<Potion>().potionType == tile.potionType);
+                        if (potionPrefab == null)
+                        {
+                            Debug.LogError($"Nenhum prefab encontrado para o tipo {tile.potionType} em ({x},{y})");
+                            potionBoard[x, y] = new Node(false, null);
+                            continue;
+                        }
+
+                        GameObject potion = Instantiate(potionPrefab, position, Quaternion.identity);
                         potion.transform.SetParent(potionParent.transform);
+                        potion.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+                        SpriteRenderer potionRenderer = potion.GetComponent<SpriteRenderer>();
+                        if (potionRenderer != null)
+                        {
+                            potionRenderer.sortingOrder = 3;
+                        }
                         potion.GetComponent<Potion>().SetIndicies(x, y);
                         potionBoard[x, y] = new Node(true, potion);
                         potionsToDestroy.Add(potion);
                     }
                 }
             }
-
-            // Ensure no initial matches and at least one move exists
-            validBoard = !CheckBoard(false) && HasPossibleMoves();
         }
+        else
+        {
+            bool validBoard = false;
+            while (!validBoard)
+            {
+                DestroyPotions();
+                DestroyTiles();
+                potionBoard = new Node[width, height];
+
+                spacingX = (float)(width - 1) / 2;
+                spacingY = (float)((height - 1) / 2) + .75f;
+
+                CreateVisualBoard();
+
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        Vector2 position = new Vector2(x - spacingX, y - spacingY);
+                        if (arrayLayout.rows[y].row[x])
+                        {
+                            potionBoard[x, y] = new Node(false, null);
+                        }
+                        else
+                        {
+                            int randomIndex = Random.Range(0, potionPrefabs.Length);
+                            GameObject potion = Instantiate(potionPrefabs[randomIndex], position, Quaternion.identity);
+                            potion.transform.SetParent(potionParent.transform);
+                            potion.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+                            SpriteRenderer potionRenderer = potion.GetComponent<SpriteRenderer>();
+                            if (potionRenderer != null)
+                            {
+                                potionRenderer.sortingOrder = 3;
+                            }
+                            potion.GetComponent<Potion>().SetIndicies(x, y);
+                            potionBoard[x, y] = new Node(true, potion);
+                            potionsToDestroy.Add(potion);
+                        }
+                    }
+                }
+
+                validBoard = !CheckBoard(false) && HasPossibleMoves();
+            }
+        }
+    }
+
+    private void UpdateUIVisibility()
+    {
+        if (violetSymbolGO != null)
+            violetSymbolGO.SetActive(violetPotionCount.count > 0);
+        if (greenSymbolGO != null)
+            greenSymbolGO.SetActive(greenPotionCount.count > 0);
+        if (redSymbolGO != null)
+            redSymbolGO.SetActive(redPotionCount.count > 0);
+        if (orangeSymbolGO != null)
+            orangeSymbolGO.SetActive(orangePotionCount.count > 0);
+        if (blueSymbolGO != null)
+            blueSymbolGO.SetActive(bluePotionCount.count > 0);
+
+        if (violetCountUI != null)
+            violetCountUI.SetActive(violetPotionCount.count > 0);
+        if (greenCountUI != null)
+            greenCountUI.SetActive(greenPotionCount.count > 0);
+        if (redCountUI != null)
+            redCountUI.SetActive(redPotionCount.count > 0);
+        if (orangeCountUI != null)
+            orangeCountUI.SetActive(orangePotionCount.count > 0);
+        if (blueCountUI != null)
+            blueCountUI.SetActive(bluePotionCount.count > 0);
+    }
+
+    private void RepositionCountUIs()
+    {
+        List<GameObject> symbolGOs = new List<GameObject> { violetSymbolGO, greenSymbolGO, redSymbolGO, orangeSymbolGO, blueSymbolGO };
+        List<GameObject> countUIs = new List<GameObject> { violetCountUI, greenCountUI, redCountUI, orangeCountUI, blueCountUI };
+        List<GameObject> activeSymbolGOs = symbolGOs.Where(go => go != null && go.activeSelf).ToList();
+        List<GameObject> activeCountUIs = countUIs.Where(ui => ui != null && ui.activeSelf).ToList();
+
+        if (activeSymbolGOs.Count == 0 || activeCountUIs.Count == 0)
+        {
+            Debug.LogWarning("Nenhum símbolo ou UI ativo encontrado.");
+            return;
+        }
+
+        float worldYPosition = symbolGOs.FirstOrDefault(go => go != null)?.transform.position.y ?? 0f;
+
+        float worldTotalWidth = (activeSymbolGOs.Count - 1) * worldSpacing;
+        float worldStartX = worldCenterX - (worldTotalWidth / 2f);
+
+        float uiTotalWidth = (activeCountUIs.Count - 1) * uiSpacing;
+        float uiStartX = uiCenterX - (uiTotalWidth / 2f);
+
+        for (int i = 0; i < activeSymbolGOs.Count; i++)
+        {
+            if (activeSymbolGOs[i] != null)
+            {
+                Vector3 newWorldPos = new Vector3(worldStartX + (i * worldSpacing), worldYPosition, activeSymbolGOs[i].transform.position.z);
+                activeSymbolGOs[i].transform.position = newWorldPos;
+                Debug.Log($"Reposicionando {activeSymbolGOs[i].name} para {newWorldPos}");
+            }
+        }
+
+        for (int i = 0; i < activeCountUIs.Count; i++)
+        {
+            if (activeCountUIs[i] != null)
+            {
+                RectTransform uiRect = activeCountUIs[i].GetComponent<RectTransform>();
+                if (uiRect != null)
+                {
+                    float currentY = uiRect.anchoredPosition.y;
+                    float newX = uiStartX + (i * uiSpacing);
+                    Vector2 newCanvasPos = new Vector2(newX, currentY);
+                    uiRect.anchoredPosition = newCanvasPos;
+                    Debug.Log($"Reposicionando {activeCountUIs[i].name} no Canvas para anchoredPosition: {newCanvasPos}");
+                }
+                else
+                {
+                    Debug.LogWarning($"RectTransform não encontrado em {activeCountUIs[i].name}.");
+                }
+            }
+        }
+    }
+
+    private void CreateVisualBoard()
+    {
+        tilesToDestroy.Clear();
+        backgroundTiles.Clear(); // Não usaremos mais backgroundTiles separadamente, mas mantemos a limpeza por segurança
+
+        // Loop para criar os tiles do tabuleiro
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (isTutorialLevel && tutorialLayout != null)
+                {
+                    TutorialTile tutorialTile = tutorialLayout.tiles.FirstOrDefault(t => t.x == x && t.y == y);
+                    if (tutorialTile == null || !tutorialTile.isUsable) continue;
+                }
+                else if (arrayLayout.rows[y].row[x]) continue;
+
+                Vector2 position = new Vector2(x - spacingX, y - spacingY);
+                GameObject tilePrefab;
+
+                // Selecionar o prefab do tile
+                if (x == 0 && y == 0)
+                    tilePrefab = bottomLeftTilePrefab;
+                else if (x == 0 && y == height - 1)
+                    tilePrefab = topLeftTilePrefab;
+                else if (x == width - 1 && y == 0)
+                    tilePrefab = bottomRightTilePrefab;
+                else if (x == width - 1 && y == height - 1)
+                    tilePrefab = topRightTilePrefab;
+                else
+                    tilePrefab = centerTilePrefab;
+
+                // Instanciar o tile
+                GameObject tile = Instantiate(tilePrefab, position, Quaternion.identity);
+                tile.transform.SetParent(tileParent.transform, false);
+
+                SpriteRenderer tileRenderer = tile.GetComponent<SpriteRenderer>();
+                if (tileRenderer != null)
+                {
+                    tileRenderer.sortingOrder = 1; // Tiles acima do fundo
+                }
+
+                // Adicionar sprite de fundo como filho do tile
+                if (backgroundSprites != null && backgroundSprites.Length >= 9)
+                {
+                    Sprite spriteToUse;
+                    // Determinar qual sprite usar com base na posição
+                    if (x == 0 && y == 0)
+                        spriteToUse = backgroundSprites[0]; // Canto inferior esquerdo
+                    else if (x == width - 1 && y == 0)
+                        spriteToUse = backgroundSprites[2]; // Canto inferior direito
+                    else if (x == 0 && y == height - 1)
+                        spriteToUse = backgroundSprites[3]; // Canto superior esquerdo
+                    else if (x == width - 1 && y == height - 1)
+                        spriteToUse = backgroundSprites[4]; // Canto superior direito
+                    else if (x == 0)
+                        spriteToUse = backgroundSprites[1]; // Borda esquerda
+                    else if (x == width - 1)
+                        spriteToUse = backgroundSprites[5]; // Borda direita
+                    else if (y == 0)
+                        spriteToUse = backgroundSprites[6]; // Borda inferior
+                    else if (y == height - 1)
+                        spriteToUse = backgroundSprites[7]; // Borda superior
+                    else
+                        spriteToUse = backgroundSprites[8]; // Centro
+
+                    // Criar GameObject filho para o sprite de fundo
+                    GameObject bgTile = new GameObject($"BackgroundTile_{x}_{y}");
+                    bgTile.transform.SetParent(tile.transform, false); // Filho do tile
+                    bgTile.transform.localPosition = Vector3.zero; // Centralizado no tile
+                    SpriteRenderer bgRenderer = bgTile.AddComponent<SpriteRenderer>();
+                    bgRenderer.sprite = spriteToUse;
+                    bgRenderer.sortingOrder = 0; // Fundo abaixo do tile
+
+                    // Aplicar escala e margem
+                    float bgScale = backgroundScale + extraMargin; // A margem aumenta o tamanho do fundo
+                    bgTile.transform.localScale = new Vector3(bgScale, bgScale, 1f);
+                }
+                else
+                {
+                    Debug.LogWarning("Array de sprites de fundo incompleto ou não atribuído. Necessário 9 sprites.");
+                }
+
+                tilesToDestroy.Add(tile);
+            }
+        }
+    }
+
+    private void DestroyTiles()
+    {
+        if (tilesToDestroy != null)
+        {
+            foreach (GameObject tile in tilesToDestroy)
+            {
+                if (tile != null)
+                {
+                    Destroy(tile); // Destroi o tile e seus filhos (incluindo o sprite de fundo)
+                }
+            }
+            tilesToDestroy.Clear();
+        }
+
+        // backgroundTiles não é mais necessário, mas mantemos a limpeza por segurança
+        backgroundTiles.Clear();
     }
 
     private void AssignCountUIs()
     {
-        // Busca todos os objetos com o componente CountLabel
         CountLabel[] countLabels = FindObjectsOfType<CountLabel>();
 
         foreach (CountLabel countLabel in countLabels)
@@ -241,18 +689,8 @@ public class PotionBoard : MonoBehaviour
                 case "Blue":
                     blueCountUI = countLabel.gameObject;
                     break;
-                default:
-                    Debug.LogWarning($"CountLabel com nome desconhecido: {labelName}");
-                    break;
             }
         }
-
-        // Verifica se todos os GameObjects foram atribuídos
-        if (violetCountUI == null) Debug.LogError("violetCountUI não foi atribuído!");
-        if (greenCountUI == null) Debug.LogError("greenCountUI não foi atribuído!");
-        if (redCountUI == null) Debug.LogError("redCountUI não foi atribuído!");
-        if (orangeCountUI == null) Debug.LogError("orangeCountUI não foi atribuído!");
-        if (blueCountUI == null) Debug.LogError("blueCountUI não foi atribuído!");
     }
 
     public void DestroyPotions()
@@ -267,19 +705,22 @@ public class PotionBoard : MonoBehaviour
                 }
             }
             potionsToDestroy.Clear();
+            DestroyTiles();
         }
     }
 
-    public bool CheckBoard(bool _takeAction)
+    private bool isAnimatingPotions = false;
+    private bool CheckBoard(bool _takeAction)
     {
-        Debug.Log("Checking Board");
+        checkBoardCallCount++;
+        Debug.Log($"CheckBoard call count: {checkBoardCallCount}, takeAction: {_takeAction}");
+
         bool hasMatched = false;
 
         List<Potion> potionsToRemove = new();
-        HashSet<Potion> potionsToRemoveSet = new HashSet<Potion>(); // Para evitar duplicatas
-        Dictionary<ItemType, List<Potion>> potionsByTypeInMatch = new Dictionary<ItemType, List<Potion>>(); // Para rastrear poções por tipo em cada match
+        HashSet<Potion> potionsToRemoveSet = new HashSet<Potion>();
+        Dictionary<ItemType, List<Potion>> potionsByTypeInMatch = new Dictionary<ItemType, List<Potion>>();
 
-        // Reseta isMatched para todas as poções
         foreach (Node nodePotion in potionBoard)
         {
             if (nodePotion.potion != null)
@@ -288,7 +729,6 @@ public class PotionBoard : MonoBehaviour
             }
         }
 
-        // Verifica matches
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -296,6 +736,11 @@ public class PotionBoard : MonoBehaviour
                 if (potionBoard[x, y].isUsable && potionBoard[x, y].potion != null)
                 {
                     Potion potion = potionBoard[x, y].potion.GetComponent<Potion>();
+
+                    if (processedPotions.Contains(potion) || potion.isMatched)
+                    {
+                        continue;
+                    }
 
                     if (!potion.isMatched)
                     {
@@ -305,15 +750,13 @@ public class PotionBoard : MonoBehaviour
                         {
                             MatchResult superMatchPotions = SuperMatch(matchedPotions);
 
-                            // Processa as poções do match
                             foreach (Potion pot in superMatchPotions.connectedPotions)
                             {
-                                if (!potionsToRemoveSet.Contains(pot))
+                                if (!potionsToRemoveSet.Contains(pot) && !processedPotions.Contains(pot))
                                 {
                                     potionsToRemove.Add(pot);
                                     potionsToRemoveSet.Add(pot);
 
-                                    // Adiciona à lista de poções por tipo
                                     ItemType type = pot.potionType;
                                     if (!potionsByTypeInMatch.ContainsKey(type))
                                     {
@@ -323,7 +766,6 @@ public class PotionBoard : MonoBehaviour
                                 }
                             }
 
-                            // Marca as poções como matched
                             foreach (Potion pot in superMatchPotions.connectedPotions)
                             {
                                 pot.isMatched = true;
@@ -338,108 +780,86 @@ public class PotionBoard : MonoBehaviour
 
         if (_takeAction)
         {
-            // Lista para rastrear quais poções serão animadas para a UI
-            List<(Potion potion, ItemType type)> potionsToAnimate = new List<(Potion, ItemType)>();
+            if (tutorialSO.value)
+            {
+                tutorialGO.GetComponent<TutorialManager>().Next();
+            }
 
-            // Processa as poções por tipo e atualiza contadores
+            List<(Potion potion, ItemType type)> potionsToAnimate = new();
+            Dictionary<ItemType, int> potionsToReduce = new();
+
             foreach (var kvp in potionsByTypeInMatch)
             {
                 ItemType type = kvp.Key;
                 List<Potion> potionsOfType = kvp.Value;
-                int matchSize = potionsOfType.Count; // Tamanho do match para esse tipo
+                int matchSize = potionsOfType.Count;
 
                 AudioManager.Instance.PlaySFX("Match");
                 HapticFeedback.LightFeedback();
 
-                // Log para depuração
-                Debug.Log($"Processing match of {matchSize} potions of type {type}");
-
-                // Verifica se o match é relevante para os objetivos
                 bool isRelevantForObjective = false;
                 switch (type)
                 {
                     case ItemType.Violet:
                         if (violetPotionCount != null && violetPotionCount.count > 0)
                         {
-                            int previousCount = violetPotionCount.count;
-                            violetPotionCount.count = Mathf.Max(0, violetPotionCount.count - matchSize);
-                            Debug.Log($"Violet count: {previousCount} -> {violetPotionCount.count} (reduced by {matchSize})");
+                            potionsToReduce[type] = matchSize;
                             isRelevantForObjective = true;
                         }
                         break;
                     case ItemType.Green:
                         if (greenPotionCount != null && greenPotionCount.count > 0)
                         {
-                            int previousCount = greenPotionCount.count;
-                            greenPotionCount.count = Mathf.Max(0, greenPotionCount.count - matchSize);
-                            Debug.Log($"Green count: {previousCount} -> {greenPotionCount.count} (reduced by {matchSize})");
+                            potionsToReduce[type] = matchSize;
                             isRelevantForObjective = true;
                         }
                         break;
                     case ItemType.Red:
                         if (redPotionCount != null && redPotionCount.count > 0)
                         {
-                            int previousCount = redPotionCount.count;
-                            redPotionCount.count = Mathf.Max(0, redPotionCount.count - matchSize);
-                            Debug.Log($"Red count: {previousCount} -> {redPotionCount.count} (reduced by {matchSize})");
+                            potionsToReduce[type] = matchSize;
                             isRelevantForObjective = true;
                         }
                         break;
                     case ItemType.Orange:
                         if (orangePotionCount != null && orangePotionCount.count > 0)
                         {
-                            int previousCount = orangePotionCount.count;
-                            orangePotionCount.count = Mathf.Max(0, orangePotionCount.count - matchSize);
-                            Debug.Log($"Orange count: {previousCount} -> {orangePotionCount.count} (reduced by {matchSize})");
+                            potionsToReduce[type] = matchSize;
                             isRelevantForObjective = true;
                         }
                         break;
-                    case ItemType.Blue: // ALTERAÇÃO: Adicionado suporte para poção azul
+                    case ItemType.Blue:
                         if (bluePotionCount != null && bluePotionCount.count > 0)
                         {
-                            int previousCount = bluePotionCount.count;
-                            bluePotionCount.count = Mathf.Max(0, bluePotionCount.count - matchSize);
-                            Debug.Log($"Blue count: {previousCount} -> {bluePotionCount.count} (reduced by {matchSize})");
+                            potionsToReduce[type] = matchSize;
                             isRelevantForObjective = true;
                         }
                         break;
                 }
 
-                // Adiciona as poções do match à lista de animação SOMENTE se for relevante
                 if (isRelevantForObjective)
                 {
                     foreach (Potion potion in potionsOfType)
                     {
-                        if (potion != null)
+                        if (potion != null && !processedPotions.Contains(potion))
                         {
                             potionsToAnimate.Add((potion, type));
+                            processedPotions.Add(potion);
                         }
                     }
                 }
             }
 
-            // Inicia a animação para as poções que contribuíram para a pontuação
             if (potionsToAnimate.Count > 0)
             {
-                Debug.Log($"Starting animation for {potionsToAnimate.Count} potions");
-                StartCoroutine(AnimatePotionToUI(potionsToAnimate));
+                string potionTypes = string.Join(", ", potionsToAnimate.Select(p => p.type.ToString()));
+                Debug.Log($"Starting animation for {potionsToAnimate.Count} potions: [{potionTypes}]");
+                StartCoroutine(AnimatePotionToUI(potionsToAnimate, potionsToReduce));
             }
-
-            // Verifica condição de vitória (ALTERAÇÃO: Inclui bluePotionCount)
-            if (violetPotionCount.count + greenPotionCount.count + orangePotionCount.count + redPotionCount.count + bluePotionCount.count <= 0)
+            else
             {
-                if (!win)
-                {
-                    win = true;
-
-                    GameObject targetPlayer = GameObject.FindWithTag("Player");
-                    PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
-                    playerManager.AddMoney((int)timer.GetMovesLeft() * 5);
-
-                    level.PassLevel();
-                }
-                canLose.value = false;
-                WinGame.Raise();
+                if (!isAnimatingPotions)
+                    CheckLoseCondition();
             }
 
             if (hasMatched && playerMadeAMove)
@@ -450,7 +870,6 @@ public class PotionBoard : MonoBehaviour
 
             if (potionsToRemove.Count > 0)
             {
-                Debug.Log($"Removing {potionsToRemove.Count} potions");
                 RemoveAndRefill(potionsToRemove);
             }
         }
@@ -460,13 +879,11 @@ public class PotionBoard : MonoBehaviour
 
     private void RemoveAndRefill(List<Potion> _potionsToRemove)
     {
-        // Inicia a coroutine para animar e destruir as poções
         StartCoroutine(AnimateAndRemovePotions(_potionsToRemove));
     }
 
     private IEnumerator AnimateAndRemovePotions(List<Potion> _potionsToRemove)
     {
-        // Calcula o ponto central do grupo de poções
         Vector3 centerPoint = Vector3.zero;
         int validPotionCount = 0;
         Potion firstValidPotion = null;
@@ -479,25 +896,22 @@ public class PotionBoard : MonoBehaviour
                 validPotionCount++;
                 if (firstValidPotion == null)
                 {
-                    firstValidPotion = potion; // Guarda a primeira poção válida
+                    firstValidPotion = potion;
                 }
             }
         }
 
-        // Evita divisão por zero
         if (validPotionCount > 0)
         {
             centerPoint /= validPotionCount;
         }
         else
         {
-            // Se não houver poções válidas, prossegue sem animação
             StartCoroutine(RefillBoardSimultaneously());
             yield break;
         }
 
-        // Anima todas as poções para o centro
-        float animationDuration = 0.2f; // Duração do efeito (ajustável)
+        float animationDuration = 0.2f;
         foreach (Potion potion in _potionsToRemove)
         {
             if (potion != null && potion.gameObject != null)
@@ -506,58 +920,58 @@ public class PotionBoard : MonoBehaviour
             }
         }
 
-        // Aguarda até que todas as poções terminem de se mover para o centro
         yield return new WaitUntil(() => AreAllPotionsSettled());
 
-        // Instancia o VFX de explosão no ponto central com a cor correspondente (apenas uma vez por grupo)
         if (explosionVFXPrefab != null && validPotionCount > 0 && firstValidPotion != null)
         {
             GameObject vfx = Instantiate(explosionVFXPrefab, centerPoint, Quaternion.identity);
-            ParticleSystem particleSystem = vfx.GetComponent<ParticleSystem>();
-            if (particleSystem != null)
+            Color potionColor = potionColors[firstValidPotion.potionType]; // Obtém a cor da poção
+
+            // Obtém todos os ParticleSystem (raiz e filhos)
+            ParticleSystem[] particleSystems = vfx.GetComponentsInChildren<ParticleSystem>(true);
+            foreach (ParticleSystem particleSystem in particleSystems)
             {
-                var main = particleSystem.main;
-                main.startColor = potionColors[firstValidPotion.potionType];
-                vfx.transform.localScale *= 1.5f;
-                var emission = particleSystem.emission;
-                emission.rateOverTimeMultiplier *= 1.5f;
+                if (particleSystem != null)
+                {
+                    var main = particleSystem.main;
+                    main.startColor = potionColor; // Define a cor para cada sistema de partículas
+                }
             }
-            Debug.Log($"Explosion VFX instantiated at {centerPoint} for {validPotionCount} potions of type {firstValidPotion.potionType}");
+
+            // Aplica configurações adicionais ao ParticleSystem principal
+            ParticleSystem mainParticleSystem = vfx.GetComponent<ParticleSystem>();
+            if (mainParticleSystem != null)
+            {
+                vfx.transform.localScale *= 1.5f;
+                var emission = mainParticleSystem.emission;
+                emission.rateOverTimeMultiplier *= 1.5f;
+                ParticleSystemRenderer renderer = vfx.GetComponent<ParticleSystemRenderer>();
+                if (renderer != null)
+                {
+                    renderer.sortingOrder = 2;
+                }
+            }
         }
 
-        // Destroi as poções marcadas para remoção e limpa o tabuleiro
         foreach (Potion potion in _potionsToRemove)
         {
             if (potion != null && potion.gameObject != null)
             {
                 int _xIndex = potion.xIndex;
                 int _yIndex = potion.yIndex;
-                // Verifica se os índices estão dentro dos limites
                 if (_xIndex >= 0 && _xIndex < width && _yIndex >= 0 && _yIndex < height)
                 {
-                    // Limpa a referência no tabuleiro antes de destruir
                     if (potionBoard[_xIndex, _yIndex].potion == potion.gameObject)
                     {
                         potionBoard[_xIndex, _yIndex] = new Node(true, null);
                     }
-                    else
-                    {
-                        Debug.LogWarning($"Mismatch at ({_xIndex}, {_yIndex}): Expected potion {potion.gameObject}, but found {potionBoard[_xIndex, _yIndex].potion}");
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"Invalid indices for potion {potion.gameObject}: ({_xIndex}, {_yIndex})");
                 }
                 Destroy(potion.gameObject);
-                Debug.Log($"Destroyed potion at ({_xIndex}, {_yIndex})");
             }
         }
 
-        // Limpa a lista potionsToDestroy para evitar referências a objetos destruídos
         potionsToDestroy.RemoveAll(p => _potionsToRemove.Contains(p.GetComponent<Potion>()));
 
-        // Inicia a coroutine para preencher simultaneamente em paralelo
         StartCoroutine(RefillBoardSimultaneously());
     }
 
@@ -570,7 +984,6 @@ public class PotionBoard : MonoBehaviour
             hasEmptySpaces = false;
             List<int> columnsToRefill = new List<int>();
 
-            // Identifica colunas com pelo menos um espaço vazio
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
@@ -579,7 +992,6 @@ public class PotionBoard : MonoBehaviour
                     {
                         columnsToRefill.Add(x);
                         hasEmptySpaces = true;
-                        Debug.Log($"Found empty space at ({x}, {y})");
                         break;
                     }
                 }
@@ -587,27 +999,22 @@ public class PotionBoard : MonoBehaviour
 
             if (hasEmptySpaces)
             {
-                // Processa uma poção por coluna simultaneamente
                 foreach (int x in columnsToRefill)
                 {
                     RefillColumnSingleStep(x);
                 }
 
-                // Aguarda todas as poções terminarem de se mover
                 yield return new WaitUntil(() => AreAllPotionsSettled());
-                // Adiciona um pequeno atraso para efeito visual
                 yield return new WaitForSeconds(0.05f);
             }
         }
 
-        // Após preencher todas as colunas, verifica o tabuleiro novamente
         yield return StartCoroutine(ResolveCascadingMatches());
         yield return StartCoroutine(TryShuffleWithDelay());
     }
 
     private void RefillColumnSingleStep(int x)
     {
-        // Encontra o menor índice y vazio na coluna
         int lowestEmptyY = -1;
         for (int y = 0; y < height; y++)
         {
@@ -618,9 +1025,8 @@ public class PotionBoard : MonoBehaviour
             }
         }
 
-        if (lowestEmptyY == -1) return; // Coluna não tem espaços vazios
+        if (lowestEmptyY == -1) return;
 
-        // Procura a primeira poção acima do espaço vazio
         int yOffset = 1;
         while (lowestEmptyY + yOffset < height && potionBoard[x, lowestEmptyY + yOffset].potion == null)
         {
@@ -629,7 +1035,6 @@ public class PotionBoard : MonoBehaviour
 
         if (lowestEmptyY + yOffset < height && potionBoard[x, lowestEmptyY + yOffset].potion != null)
         {
-            // Move a poção de cima para o espaço vazio
             Potion potionAbove = potionBoard[x, lowestEmptyY + yOffset].potion.GetComponent<Potion>();
             Vector3 targetPos = new Vector3(x - spacingX, lowestEmptyY - spacingY, potionAbove.transform.position.z);
             potionAbove.MoveToTarget(targetPos);
@@ -639,7 +1044,6 @@ public class PotionBoard : MonoBehaviour
         }
         else
         {
-            // Instancia uma nova poção no topo para o espaço vazio
             SpawnPotionAtTop(x, lowestEmptyY);
         }
     }
@@ -649,6 +1053,12 @@ public class PotionBoard : MonoBehaviour
         int randomIndex = Random.Range(0, potionPrefabs.Length);
         GameObject newPotion = Instantiate(potionPrefabs[randomIndex], new Vector2(x - spacingX, height - spacingY), Quaternion.identity);
         newPotion.transform.SetParent(potionParent.transform);
+        newPotion.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+        SpriteRenderer potionRenderer = newPotion.GetComponent<SpriteRenderer>();
+        if (potionRenderer != null)
+        {
+            potionRenderer.sortingOrder = 3;
+        }
         Potion potionComponent = newPotion.GetComponent<Potion>();
         potionComponent.SetIndicies(x, targetY);
         potionBoard[x, targetY] = new Node(true, newPotion);
@@ -658,6 +1068,7 @@ public class PotionBoard : MonoBehaviour
 
     public bool HasPossibleMoves()
     {
+        possibleMatches = new List<(List<Potion> matchPotions, int x1, int y1, int x2, int y2)>();
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -666,16 +1077,15 @@ public class PotionBoard : MonoBehaviour
                 {
                     Potion currentPotion = potionBoard[x, y].potion.GetComponent<Potion>();
                     ItemType potionType = currentPotion.potionType;
-                    if (CheckPotentialMatch(x, y, potionType))
+                    var (hasMatch, matchPotions, x1, y1, x2, y2) = CheckPotentialMatch(x, y, potionType);
+                    if (hasMatch)
                     {
-                        Debug.Log($"Possible move at ({x}, {y}) for {potionType}");
-                        return true;
+                        possibleMatches.Add((matchPotions, x1, y1, x2, y2));
                     }
                 }
             }
         }
-        Debug.Log("No possible moves found on the board.");
-        return false;
+        return possibleMatches.Count > 0;
     }
 
     private void TryShuffleBoardIfNoMoves()
@@ -690,15 +1100,10 @@ public class PotionBoard : MonoBehaviour
                 ShuffleBoard();
                 attempts++;
             } while (!HasPossibleMoves() && attempts < maxAttempts);
-
-            if (attempts >= maxAttempts)
-            {
-                Debug.LogWarning("Não foi possível gerar um tabuleiro com jogadas possíveis após várias tentativas.");
-            }
         }
     }
 
-    private bool CheckPotentialMatch(int x, int y, ItemType potionType)
+    private (bool hasMatch, List<Potion> matchPotions, int x1, int y1, int x2, int y2) CheckPotentialMatch(int x, int y, ItemType potionType)
     {
         Vector2Int[] directions = { new(1, 0), new(-1, 0), new(0, 1), new(0, -1) };
         foreach (var dir in directions)
@@ -707,17 +1112,42 @@ public class PotionBoard : MonoBehaviour
             int newY = y + dir.y;
             if (newX >= 0 && newX < width && newY >= 0 && newY < height && potionBoard[newX, newY].isUsable && potionBoard[newX, newY].potion != null)
             {
-                Potion target = potionBoard[newX, newY].potion.GetComponent<Potion>();
                 SwapForCheck(x, y, newX, newY);
-                bool hasMatch = CheckBoard(false);
+
+                List<Potion> matchPotions = new List<Potion>();
+                bool hasMatch = false;
+
+                Potion movedPotion = potionBoard[newX, newY].potion?.GetComponent<Potion>();
+                if (movedPotion != null)
+                {
+                    MatchResult matchResult = IsConnected(movedPotion);
+                    if (matchResult.connectedPotions.Count >= 3)
+                    {
+                        matchPotions.AddRange(matchResult.connectedPotions);
+                        hasMatch = true;
+                    }
+                }
+
+                movedPotion = potionBoard[x, y].potion?.GetComponent<Potion>();
+                if (movedPotion != null)
+                {
+                    MatchResult matchResult = IsConnected(movedPotion);
+                    if (matchResult.connectedPotions.Count >= 3)
+                    {
+                        matchPotions.AddRange(matchResult.connectedPotions.Where(p => !matchPotions.Contains(p)));
+                        hasMatch = true;
+                    }
+                }
+
                 SwapForCheck(newX, newY, x, y);
+
                 if (hasMatch)
                 {
-                    return true;
+                    return (true, matchPotions, x, y, newX, newY);
                 }
             }
         }
-        return false;
+        return (false, new List<Potion>(), x, y, -1, -1);
     }
 
     private void SwapForCheck(int x1, int y1, int x2, int y2)
@@ -732,8 +1162,6 @@ public class PotionBoard : MonoBehaviour
 
     public void ShuffleBoard()
     {
-        Debug.Log("Nenhum movimento possível. Embaralhando o tabuleiro...");
-
         List<Potion> allPotions = new List<Potion>();
         for (int x = 0; x < width; x++)
         {
@@ -810,7 +1238,6 @@ public class PotionBoard : MonoBehaviour
 
                 if (extraConnectedPotions.Count >= 2)
                 {
-                    Debug.Log("Super Horizontal Match");
                     uniquePotions.UnionWith(extraConnectedPotions);
                     return new MatchResult
                     {
@@ -837,7 +1264,6 @@ public class PotionBoard : MonoBehaviour
 
                 if (extraConnectedPotions.Count >= 2)
                 {
-                    Debug.Log("Super Vertical Match");
                     uniquePotions.UnionWith(extraConnectedPotions);
                     return new MatchResult
                     {
@@ -866,53 +1292,39 @@ public class PotionBoard : MonoBehaviour
 
         connectedPotions.Add(potion);
 
-        // Check right
         CheckDirection(potion, new Vector2Int(1, 0), connectedPotions);
-        // Check left
         CheckDirection(potion, new Vector2Int(-1, 0), connectedPotions);
-        // Match with 3 potions (Horizontal)
         if (connectedPotions.Count == 3)
         {
-            Debug.Log("Simple Horizontal Match with " + connectedPotions[0].potionType + " potion");
             return new MatchResult
             {
                 connectedPotions = connectedPotions,
                 direction = MatchDirection.Horizontal
             };
         }
-        // Match with more than 3 potions (Long Horizontal Match)
         else if (connectedPotions.Count > 3)
         {
-            Debug.Log("Long Horizontal Match with " + connectedPotions[0].potionType + " potion");
             return new MatchResult
             {
                 connectedPotions = connectedPotions,
                 direction = MatchDirection.LongHorizontal
             };
         }
-        // Clear out the connected potions
         connectedPotions.Clear();
-        // Readd our initial potion
         connectedPotions.Add(potion);
 
-        // Check up
         CheckDirection(potion, new Vector2Int(0, 1), connectedPotions);
-        // Check down
         CheckDirection(potion, new Vector2Int(0, -1), connectedPotions);
-        // Match with 3 potions (Vertical)
         if (connectedPotions.Count == 3)
         {
-            Debug.Log("Simple Vertical Match with " + connectedPotions[0].potionType + " potion");
             return new MatchResult
             {
                 connectedPotions = connectedPotions,
                 direction = MatchDirection.Vertical
             };
         }
-        // Match with more than 3 potions (Long Vertical Match)
         else if (connectedPotions.Count > 3)
         {
-            Debug.Log("Long Vertical Match with " + connectedPotions[0].potionType + " potion");
             return new MatchResult
             {
                 connectedPotions = connectedPotions,
@@ -929,25 +1341,23 @@ public class PotionBoard : MonoBehaviour
         }
     }
 
-    void CheckDirection(Potion pot, Vector2Int direction, List<Potion> connectedPotions)
+    void CheckDirection(Potion pot, Vector2Int misery, List<Potion> connectedPotions)
     {
         ItemType potionType = pot.potionType;
-        int x = pot.xIndex + direction.x;
-        int y = pot.yIndex + direction.y;
+        int x = pot.xIndex + misery.x;
+        int y = pot.yIndex + misery.y;
 
-        // Verifica se está dentro dos limites do board/tabuleiro
         while (x >= 0 && x < width && y >= 0 && y < height)
         {
             if (potionBoard[x, y].isUsable && potionBoard[x, y].potion != null)
             {
                 Potion neighbourPotion = potionBoard[x, y].potion.GetComponent<Potion>();
 
-                // Confere se a poção vizinha também não deu match
                 if (!neighbourPotion.isMatched && neighbourPotion.potionType == potionType)
                 {
                     connectedPotions.Add(neighbourPotion);
-                    x += direction.x;
-                    y += direction.y;
+                    x += misery.x;
+                    y += misery.y;
                 }
                 else
                 {
@@ -982,26 +1392,25 @@ public class PotionBoard : MonoBehaviour
 
     #region Swapping Potions
 
-    // Select potion
     private void SelectPotion(Potion _potion)
     {
+        if (_potion == null) return;
+
         if (selectedPotion == null)
         {
-            Debug.Log(_potion);
             selectedPotion = _potion;
         }
         else if (selectedPotion == _potion)
         {
             selectedPotion = null;
         }
-        else if (selectedPotion != _potion)
+        else
         {
             SwapPotion(selectedPotion, _potion);
             selectedPotion = null;
         }
     }
 
-    // Swap potion - logic
     private void SwapPotion(Potion _currentPotion, Potion _targetPotion)
     {
         if (!IsAdjacent(_currentPotion, _targetPotion))
@@ -1011,11 +1420,21 @@ public class PotionBoard : MonoBehaviour
 
         AudioManager.Instance.PlaySFX("Swipe");
 
+        lastMoveTime = Time.time;
+        selectedMatch = null;
+
+        if (shakeCoroutine != null)
+        {
+            StopCoroutine(shakeCoroutine);
+            isShaking = false;
+            shakeCoroutine = null;
+        }
+
+        ClearAllGlowEffects();
         DoSwap(_currentPotion, _targetPotion);
         StartCoroutine(ProcessMatches(_currentPotion, _targetPotion));
     }
 
-    // Do swap
     private void DoSwap(Potion _currentPotion, Potion _targetPotion)
     {
         GameObject temp = potionBoard[_currentPotion.xIndex, _currentPotion.yIndex].potion;
@@ -1023,7 +1442,6 @@ public class PotionBoard : MonoBehaviour
         potionBoard[_currentPotion.xIndex, _currentPotion.yIndex].potion = potionBoard[_targetPotion.xIndex, _targetPotion.yIndex].potion;
         potionBoard[_targetPotion.xIndex, _targetPotion.yIndex].potion = temp;
 
-        // Update indices
         int tempXIndex = _currentPotion.xIndex;
         int tempYIndex = _currentPotion.yIndex;
         _currentPotion.xIndex = _targetPotion.xIndex;
@@ -1039,11 +1457,12 @@ public class PotionBoard : MonoBehaviour
     {
         isProcessingMove = true;
 
-        // Inicia a animação da troca
+        Debug.Log("ProcessMatches: Checking board after swap");
+        processedPotions.Clear();
+
         _currentPotion.MoveToTarget(potionBoard[_targetPotion.xIndex, _targetPotion.yIndex].potion.transform.position);
         _targetPotion.MoveToTarget(potionBoard[_currentPotion.xIndex, _currentPotion.yIndex].potion.transform.position);
 
-        // Espera até que a troca termine
         while (_currentPotion.isMoving || _targetPotion.isMoving)
             yield return null;
 
@@ -1051,7 +1470,6 @@ public class PotionBoard : MonoBehaviour
 
         if (!hasMatch)
         {
-            // Reverte a troca
             DoSwap(_currentPotion, _targetPotion);
             _currentPotion.MoveToTarget(potionBoard[_targetPotion.xIndex, _targetPotion.yIndex].potion.transform.position);
             _targetPotion.MoveToTarget(potionBoard[_currentPotion.xIndex, _currentPotion.yIndex].potion.transform.position);
@@ -1063,7 +1481,6 @@ public class PotionBoard : MonoBehaviour
 
         yield return StartCoroutine(ResolveCascadingMatches());
 
-        // Verifica se há jogadas possíveis e embaralha se necessário
         yield return StartCoroutine(TryShuffleWithDelay());
 
         isProcessingMove = false;
@@ -1072,51 +1489,90 @@ public class PotionBoard : MonoBehaviour
     private IEnumerator ResolveCascadingMatches()
     {
         bool hasMoreMatches = true;
+        cascadeComboCount = 0;
 
         while (hasMoreMatches)
         {
+            Debug.Log("ResolveCascadingMatches: Checking for cascading matches");
             hasMoreMatches = CheckBoard(false);
             if (hasMoreMatches)
             {
-                CheckBoard(true); // Isso já chama RemoveAndRefill, que lida com o VFX
-                yield return new WaitUntil(() => AreAllPotionsSettled()); // Espera todas as poções pararem
+                cascadeComboCount++;
+                Debug.Log($"Cascading match #{cascadeComboCount} detected");
+
+                CheckBoard(true);
+                yield return new WaitUntil(() => AreAllPotionsSettled());
+
+                if (cascadeComboCount >= 2)
+                {
+                    int randomSpriteIndex = Random.Range(1, 4);
+                    yield return StartCoroutine(ShowComboMessage(comboMessageSprites[randomSpriteIndex]));
+                }
             }
         }
+        processedPotions.Clear();
     }
 
     private IEnumerator TryShuffleWithDelay()
     {
-        yield return new WaitUntil(() => AreAllPotionsSettled()); // Garante que o tabuleiro está estável
+        yield return new WaitUntil(() => AreAllPotionsSettled());
 
-        if (!HasPossibleMoves())
+        if (!HasPossibleMoves() && !isTutorialLevel)
         {
-            Debug.Log("No moves detected after settling.");
             int maxAttempts = 100;
             int attempts = 0;
 
             do
             {
                 ShuffleBoard();
-                yield return new WaitUntil(() => AreAllPotionsSettled()); // Espera o shuffle terminar
+                yield return StartCoroutine(ShowComboMessage(comboMessageSprites[0])); // Exibir sprite de Reshuffle
+                yield return new WaitUntil(() => AreAllPotionsSettled());
                 attempts++;
             } while (!HasPossibleMoves() && attempts < maxAttempts);
-
-            if (attempts >= maxAttempts)
-            {
-                Debug.LogWarning("Failed to generate a solvable board after max attempts.");
-            }
-            else
-            {
-                Debug.Log("Board shuffled successfully!");
-            }
-        }
-        else
-        {
-            Debug.Log("Moves available; no shuffle needed.");
         }
     }
 
-    // IsAdjacent
+    private IEnumerator ShowComboMessage(Sprite messageSprite)
+    {
+        if (comboMessagePrefab == null || messageSprite == null)
+        {
+            Debug.LogWarning("Combo message prefab ou sprite não configurado!");
+            yield break;
+        }
+
+        GameObject messageGO = Instantiate(comboMessagePrefab, new Vector3(0f, 0f, -1f), Quaternion.identity);
+        SpriteRenderer spriteRenderer = messageGO.GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer == null)
+        {
+            Debug.LogError("Prefab deve conter SpriteRenderer!");
+            Destroy(messageGO);
+            yield break;
+        }
+
+        messageGO.transform.SetParent(potionParent.transform, false);
+
+        spriteRenderer.sprite = messageSprite;
+        spriteRenderer.color = new Color(1f, 1f, 1f, 0f);
+        messageGO.transform.localScale = Vector3.one * (0.5f / 3f);
+
+        float fadeInDuration = 0.3f;
+        float scaleDuration = 0.5f;
+        float displayDuration = 1f;
+        float fadeOutDuration = 0.3f;
+
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(spriteRenderer.DOFade(1f, fadeInDuration));
+        sequence.Join(messageGO.transform.DOScale(0.3334f, scaleDuration).SetEase(Ease.OutBack));
+        sequence.AppendInterval(displayDuration);
+        sequence.Append(spriteRenderer.DOFade(0f, fadeOutDuration));
+        sequence.Join(messageGO.transform.DOScale(0.1667f, fadeOutDuration));
+
+        yield return sequence.WaitForCompletion();
+
+        Destroy(messageGO);
+    }
+
     private bool IsAdjacent(Potion _currentPotion, Potion _targetPotion)
     {
         if (_targetPotion != null)
@@ -1130,13 +1586,9 @@ public class PotionBoard : MonoBehaviour
     }
     #endregion
 
-    // Animação em parábola para a UI
-    private IEnumerator AnimatePotionToUI(List<(Potion potion, ItemType type)> potionsToAnimate)
+    private IEnumerator AnimatePotionToUI(List<(Potion potion, ItemType type)> potionsToAnimate, Dictionary<ItemType, int> potionsToReduce)
     {
-        // Loga a quantidade de poções que serão animadas
-        Debug.Log($"Total de peças para animação em parábola: {potionsToAnimate.Count}");
-
-        // Agrupa poções por tipo para calcular o ponto central por tipo
+        isAnimatingPotions = true;
         Dictionary<ItemType, List<Potion>> potionsByType = new Dictionary<ItemType, List<Potion>>();
         foreach (var (potion, type) in potionsToAnimate)
         {
@@ -1147,13 +1599,11 @@ public class PotionBoard : MonoBehaviour
             potionsByType[type].Add(potion);
         }
 
-        // Itera por tipo para processar animações
         foreach (var kvp in potionsByType)
         {
             ItemType type = kvp.Key;
             List<Potion> potions = kvp.Value;
 
-            // Calcula o ponto central do grupo de poções desse tipo
             Vector3 centerPoint = Vector3.zero;
             int validPotionCount = 0;
             foreach (Potion potion in potions)
@@ -1170,10 +1620,9 @@ public class PotionBoard : MonoBehaviour
             }
             else
             {
-                continue; // Pula se não houver poções válidas
+                continue;
             }
 
-            // Determina a posição do marcador da UI com base no tipo (ALTERAÇÃO: Adicionado ItemType.Blue)
             GameObject targetUI = null;
             switch (type)
             {
@@ -1196,42 +1645,33 @@ public class PotionBoard : MonoBehaviour
 
             if (targetUI == null)
             {
-                Debug.LogWarning($"Target UI for {type} is null.");
                 continue;
             }
 
-            // Converte a posição da UI (espaço de tela) para espaço do mundo
             Vector3 targetPosition = Camera.main.ScreenToWorldPoint(targetUI.transform.position);
-            targetPosition.z = centerPoint.z; // Mantém o Z do centro
+            targetPosition.z = centerPoint.z;
 
-            // Lista para armazenar clones e posições iniciais
             List<GameObject> potionClones = new List<GameObject>();
             List<Vector3> startPositions = new List<Vector3>();
 
-            // Cria clones para todas as poções do grupo
             for (int i = 0; i < potions.Count; i++)
             {
                 Potion potion = potions[i];
                 if (potion == null || potion.gameObject == null)
                 {
-                    Debug.LogWarning("Potion to animate is null or destroyed.");
                     continue;
                 }
 
-                Debug.Log($"Preparing animation for potion {i + 1} of type {type} from position {potion.transform.position}");
-
-                // Clona a poção para a animação
                 GameObject potionClone = Instantiate(potion.gameObject, potion.transform.position, Quaternion.identity);
                 potionClone.transform.SetParent(potionParent.transform);
+                potionClone.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
 
-                // Configura o sortingOrder para garantir que o clone apareça na frente
                 SpriteRenderer cloneRenderer = potionClone.GetComponent<SpriteRenderer>();
                 if (cloneRenderer != null)
                 {
-                    cloneRenderer.sortingOrder = 100 + i; // Incrementa para evitar sobreposição
+                    cloneRenderer.sortingOrder = 4;
                 }
 
-                // Desativa interações no clone
                 Potion clonePotion = potionClone.GetComponent<Potion>();
                 if (clonePotion != null)
                 {
@@ -1244,7 +1684,6 @@ public class PotionBoard : MonoBehaviour
                 startPositions.Add(potionClone.transform.position);
             }
 
-            // Move todos os clones para o centro simultaneamente
             float convergeDuration = 0.2f;
             float elapsedConverge = 0f;
             while (elapsedConverge < convergeDuration)
@@ -1261,89 +1700,413 @@ public class PotionBoard : MonoBehaviour
                 yield return null;
             }
 
-            // Garante que todos os clones estejam no centro
             for (int i = 0; i < potionClones.Count; i++)
             {
                 if (potionClones[i] != null)
                 {
                     potionClones[i].transform.position = centerPoint;
-                    startPositions[i] = centerPoint; // Atualiza a posição inicial para a parábola
+                    startPositions[i] = centerPoint;
                 }
             }
 
-            // Anima cada clone em parábola com um delay mínimo
-            float duration = 0.8f; // Duração da animação
-            float height = 2f;     // Altura máxima da parábola
+            float duration = 0.8f;
+            float height = 2f;
+            float delayBetweenPotions = 0.08f;
 
-            float delayBetweenPotions = 0.08f; // Delay mínimo para as poções "seguirem" uma à outra
-
-            // Lista para rastrear as coroutines de animação
             List<Coroutine> animationCoroutines = new List<Coroutine>();
 
-            // Inicia a animação de cada poção com um pequeno delay
             for (int i = 0; i < potionClones.Count; i++)
             {
                 if (potionClones[i] == null) continue;
 
-                // Inicia a animação como uma coroutine separada
                 Coroutine animationCoroutine = StartCoroutine(AnimateSinglePotion(
                     potionClones[i],
                     startPositions[i],
                     targetPosition,
                     duration,
-                    height + i * 0.2f, // Varia altura por poção
+                    height + i * 0.2f,
                     type,
-                    i + 1
+                    i + 1,
+                    potionsToReduce
                 ));
                 animationCoroutines.Add(animationCoroutine);
 
-                // Adiciona o delay antes de iniciar a próxima poção
                 if (i < potionClones.Count - 1)
                 {
                     yield return new WaitForSeconds(delayBetweenPotions);
                 }
             }
 
-            // Aguarda todas as animações terminarem
             foreach (var coroutine in animationCoroutines)
             {
                 yield return coroutine;
             }
+
+            //UpdateUIVisibility();
+            RepositionCountUIs();
         }
+
+        // Verificação de vitória e derrota após todas as animações
+        bool isVictory = violetPotionCount.count + greenPotionCount.count + orangePotionCount.count +
+                         redPotionCount.count + bluePotionCount.count <= 0 && !won;
+        if (isVictory)
+        {
+            if (!win)
+            {
+                win = true;
+                GameObject targetPlayer = GameObject.FindWithTag("Player");
+                PlayerManager playerManager = targetPlayer.GetComponent<PlayerManager>();
+                playerManager.AddMoney(10 + (int)timer.GetMovesLeft() * 5);
+                level.PassLevel();
+            }
+            canLose.value = false;
+            won = true;
+            WinGame.Raise();
+        }
+        else if (!won && !hasLost && timer.GetMovesLeft() <= 0)
+        {
+            Debug.Log("Checking lose condition after animations");
+            CheckLoseCondition();
+        }
+
+        isAnimatingPotions = false;
     }
 
-    // Método auxiliar para animar uma única poção
-    private IEnumerator AnimateSinglePotion(GameObject clone, Vector3 startPosition, Vector3 targetPosition, float duration, float height, ItemType type, int potionIndex)
+    private IEnumerator AnimateSinglePotion(GameObject clone, Vector3 startPosition, Vector3 targetPosition, float duration, float height, ItemType type, int potionIndex, Dictionary<ItemType, int> potionsToReduce)
     {
         float elapsedTime = 0f;
+        float initialScale = 0.8f; // Escala inicial da poção
 
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
             float t = elapsedTime / duration;
 
-            // Interpolação linear para X e Y
+            // Posição com trajetória parabólica
             float x = Mathf.Lerp(startPosition.x, targetPosition.x, t);
             float y = Mathf.Lerp(startPosition.y, targetPosition.y, t);
-
-            // Adiciona a altura da parábola
             float parabola = height * Mathf.Sin(t * Mathf.PI);
             y += parabola;
 
-            clone.transform.position = new Vector3(x, y, startPosition.z);
+            // Escala diminuindo gradualmente
+            float scale = Mathf.Lerp(initialScale, finalPotionScale, t);
+            clone.transform.localScale = new Vector3(scale, scale, scale);
 
-            // Reduz a escala conforme se aproxima do alvo
-            float scale = Mathf.Lerp(1f, 0.5f, t);
-            clone.transform.localScale = Vector3.one * scale;
+            clone.transform.position = new Vector3(x, y, startPosition.z);
 
             yield return null;
         }
 
-        // Garante que o clone chegue ao alvo
+        // Posição e escala finais
         clone.transform.position = targetPosition;
-        clone.transform.localScale = Vector3.one * 0.5f;
-        Debug.Log($"Finished animating potion {potionIndex} of type {type} to UI.");
+        clone.transform.localScale = new Vector3(finalPotionScale, finalPotionScale, finalPotionScale);
+
+        AudioManager.Instance.PlaySFX("Collect");
+
+        // Redução da contagem de objetivos
+        if (potionsToReduce.ContainsKey(type) && potionsToReduce[type] > 0)
+        {
+            switch (type)
+            {
+                case ItemType.Violet:
+                    violetPotionCount.count = Mathf.Max(0, violetPotionCount.count - 1);
+                    Debug.Log($"Reducing Violet count to {violetPotionCount.count} for potion {potionIndex} in AnimateSinglePotion");
+                    break;
+                case ItemType.Green:
+                    greenPotionCount.count = Mathf.Max(0, greenPotionCount.count - 1);
+                    Debug.Log($"Reducing Green count to {greenPotionCount.count} for potion {potionIndex} in AnimateSinglePotion");
+                    break;
+                case ItemType.Red:
+                    redPotionCount.count = Mathf.Max(0, redPotionCount.count - 1);
+                    Debug.Log($"Reducing Red count to {redPotionCount.count} for potion {potionIndex} in AnimateSinglePotion");
+                    break;
+                case ItemType.Orange:
+                    orangePotionCount.count = Mathf.Max(0, orangePotionCount.count - 1);
+                    Debug.Log($"Reducing Orange count to {orangePotionCount.count} for potion {potionIndex} in AnimateSinglePotion");
+                    break;
+                case ItemType.Blue:
+                    bluePotionCount.count = Mathf.Max(0, bluePotionCount.count - 1);
+                    Debug.Log($"Reducing Blue count to {bluePotionCount.count} for potion {potionIndex} in AnimateSinglePotion");
+                    break;
+            }
+            potionsToReduce[type]--;
+        }
+
         Destroy(clone);
+    }
+
+    private void ClearAllGlowEffects()
+    {
+        foreach (var ps in activeGlowEffects)
+        {
+            if (ps != null && ps.gameObject != null)
+            {
+                Destroy(ps.gameObject);
+            }
+        }
+        activeGlowEffects.Clear();
+    }
+
+    private IEnumerator ShakePossibleMatch()
+    {
+        if (isShaking)
+        {
+            Debug.Log($"ShakePossibleMatch já está rodando, ignorando nova chamada (Time: {Time.time})");
+            yield break;
+        }
+
+        isShaking = true;
+        Debug.Log($"Iniciando ShakePossibleMatch (Time: {Time.time})");
+
+        if (selectedMatch.HasValue)
+        {
+            var match = selectedMatch.Value;
+            if (match.matchPotions == null || match.matchPotions.Any(p => p == null || p.gameObject == null))
+            {
+                Debug.Log("Selected match contém poções inválidas. Resetando selectedMatch.");
+                selectedMatch = null;
+            }
+            else
+            {
+                bool isValid = true;
+                foreach (var potion in match.matchPotions)
+                {
+                    if (potion.xIndex < 0 || potion.xIndex >= width || potion.yIndex < 0 || potion.yIndex >= height ||
+                        potionBoard[potion.xIndex, potion.yIndex].potion != potion.gameObject)
+                    {
+                        isValid = false;
+                        break;
+                    }
+                }
+                if (!isValid)
+                {
+                    Debug.Log("Selected match não está mais válido. Resetando selectedMatch.");
+                    selectedMatch = null;
+                }
+            }
+        }
+
+        if (selectedMatch == null)
+        {
+            if (!HasPossibleMoves())
+            {
+                Debug.Log("No possible moves available for animation.");
+                isShaking = false;
+                shakeCoroutine = null;
+                yield break;
+            }
+
+            if (isTutorialLevel)
+            {
+                // No modo tutorial, selecione um movimento específico (exemplo: definido no tutorialLayout ou TutorialManager)
+                (List<Potion> matchPotions, int x1, int y1, int x2, int y2)? tutorialMatch = GetTutorialMatch();
+                if (tutorialMatch.HasValue)
+                {
+                    selectedMatch = tutorialMatch;
+                }
+                else
+                {
+                    Debug.LogWarning("Nenhum movimento válido encontrado para o tutorial.");
+                    isShaking = false;
+                    shakeCoroutine = null;
+                    yield break;
+                }
+            }
+            else
+            {
+                int randomIndex = Random.Range(0, possibleMatches.Count);
+                selectedMatch = possibleMatches[randomIndex];
+            }
+        }
+
+        List<Potion> matchPotions = selectedMatch.Value.matchPotions;
+
+        if (matchPotions == null || matchPotions.Any(p => p == null || p.gameObject == null))
+        {
+            Debug.LogWarning("One or more match potions are null or destroyed. Resetting selectedMatch.");
+            selectedMatch = null;
+            isShaking = false;
+            shakeCoroutine = null;
+            yield break;
+        }
+
+        Debug.Log($"Animating {matchPotions.Count} potions for match at ({selectedMatch.Value.x1}, {selectedMatch.Value.y1}) to ({selectedMatch.Value.x2}, {selectedMatch.Value.y2}) (Time: {Time.time})");
+
+        Dictionary<Potion, Vector3> originalPositions = new Dictionary<Potion, Vector3>();
+        Dictionary<Potion, Vector3> originalScales = new Dictionary<Potion, Vector3>();
+
+        foreach (Potion potion in matchPotions)
+        {
+            if (potion != null && potion.gameObject != null)
+            {
+                originalPositions[potion] = potion.transform.position;
+                originalScales[potion] = new Vector3(0.8f, 0.8f, 0.8f);
+
+                if (glowVFXPrefab != null)
+                {
+                    GameObject vfx = Instantiate(glowVFXPrefab, potion.transform.position, Quaternion.identity, potion.transform);
+                    ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
+                    if (ps != null)
+                    {
+                        var main = ps.main;
+                        main.startColor = potionColors[potion.potionType];
+                        ParticleSystemRenderer renderer = vfx.GetComponent<ParticleSystemRenderer>();
+                        if (renderer != null)
+                        {
+                            renderer.sortingOrder = 2;
+                        }
+                        activeGlowEffects.Add(ps);
+                    }
+                }
+            }
+        }
+
+        float bounceFrequency = 1.2f;
+        float scaleMagnitude = 0.05f;
+        float heightMagnitude = 0.07f;
+        float fadeInDuration = 0.2f;
+        float elapsed = 0f;
+        bool fadeInCompleted = false;
+
+        while (isShaking)
+        {
+            elapsed += Time.deltaTime;
+
+            float fadeInFactor = fadeInCompleted ? 1f : Mathf.Clamp01(elapsed / fadeInDuration);
+            if (elapsed >= fadeInDuration)
+            {
+                fadeInCompleted = true;
+            }
+
+            foreach (Potion potion in matchPotions)
+            {
+                if (potion != null && potion.gameObject != null)
+                {
+                    float bounce = Mathf.Abs(Mathf.Sin(Time.time * bounceFrequency * Mathf.PI)) * heightMagnitude;
+                    float scale = 0.8f + Mathf.Abs(Mathf.Sin(Time.time * bounceFrequency * Mathf.PI)) * scaleMagnitude;
+
+                    bounce *= fadeInFactor;
+                    scale = 0.8f + (scale - 0.8f) * fadeInFactor;
+
+                    Vector3 originalPos = originalPositions[potion];
+                    potion.transform.position = new Vector3(originalPos.x, originalPos.y + bounce, originalPos.z);
+                    potion.transform.localScale = new Vector3(scale, scale, scale);
+                }
+            }
+
+            foreach (var ps in activeGlowEffects)
+            {
+                if (ps != null)
+                {
+                    var emission = ps.emission;
+                    emission.rateOverTimeMultiplier = 10f * fadeInFactor;
+                }
+            }
+
+            yield return null;
+        }
+
+        float fadeOutDuration = 0.2f;
+        float fadeOutElapsed = 0f;
+        while (fadeOutElapsed < fadeOutDuration)
+        {
+            fadeOutElapsed += Time.deltaTime;
+            float t = fadeOutElapsed / fadeOutDuration;
+
+            foreach (Potion potion in matchPotions)
+            {
+                if (potion != null && potion.gameObject != null)
+                {
+                    potion.transform.position = Vector3.Lerp(potion.transform.position, originalPositions[potion], t);
+                    potion.transform.localScale = Vector3.Lerp(potion.transform.localScale, originalScales[potion], t);
+                }
+            }
+
+            foreach (var ps in activeGlowEffects)
+            {
+                if (ps != null)
+                {
+                    var emission = ps.emission;
+                    emission.rateOverTimeMultiplier = 10f * (1f - t);
+                }
+            }
+
+            yield return null;
+        }
+
+        foreach (Potion potion in matchPotions)
+        {
+            if (potion != null && potion.gameObject != null)
+            {
+                potion.transform.position = originalPositions[potion];
+                potion.transform.localScale = originalScales[potion];
+            }
+        }
+
+        ClearAllGlowEffects();
+
+        Debug.Log($"Finalizando ShakePossibleMatch (Time: {Time.time})");
+        isShaking = false;
+        shakeCoroutine = null;
+    }
+
+    private (List<Potion> matchPotions, int x1, int y1, int x2, int y2)? GetTutorialMatch()
+    {
+        if (!HasPossibleMoves())
+        {
+            return null;
+        }
+
+        int x1 = 0, y1 = 1; 
+        int x2 = 0, y2 = 0; 
+
+        if (x1 >= 0 && x1 < width && y1 >= 0 && y1 < height &&
+            x2 >= 0 && x2 < width && y2 >= 0 && y2 < height &&
+            potionBoard[x1, y1].isUsable && potionBoard[x1, y1].potion != null &&
+            potionBoard[x2, y2].isUsable && potionBoard[x2, y2].potion != null)
+        {
+            SwapForCheck(x1, y1, x2, y2);
+            List<Potion> matchPotions = new List<Potion>();
+
+            Potion movedPotion = potionBoard[x2, y2].potion?.GetComponent<Potion>();
+            if (movedPotion != null)
+            {
+                MatchResult matchResult = IsConnected(movedPotion);
+                if (matchResult.connectedPotions.Count >= 3)
+                {
+                    matchPotions.AddRange(matchResult.connectedPotions);
+                }
+            }
+
+            movedPotion = potionBoard[x1, y1].potion?.GetComponent<Potion>();
+            if (movedPotion != null)
+            {
+                MatchResult matchResult = IsConnected(movedPotion);
+                if (matchResult.connectedPotions.Count >= 3)
+                {
+                    matchPotions.AddRange(matchResult.connectedPotions.Where(p => !matchPotions.Contains(p)));
+                }
+            }
+
+            SwapForCheck(x2, y2, x1, y1);
+
+            if (matchPotions.Count >= 3)
+            {
+                return (matchPotions, x1, y1, x2, y2);
+            }
+        }
+
+        if (possibleMatches.Count > 0)
+        {
+            return possibleMatches[0];
+        }
+
+        return null;
+    }
+
+    public void WinGameBool(bool state)
+    {
+        won = state;
     }
 
 }

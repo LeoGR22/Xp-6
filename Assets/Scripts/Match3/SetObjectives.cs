@@ -26,7 +26,6 @@ public class SetObjectives : MonoBehaviour
     {
         violetObjective.count = count;
     }
-
     public void SetBlue(int count)
     {
         blueObjective.count = count;

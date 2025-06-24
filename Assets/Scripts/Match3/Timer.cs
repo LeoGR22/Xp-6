@@ -16,6 +16,8 @@ public class Timer : MonoBehaviour
     public UnityEvent loseGame;
     public BooleanSO canLose;
 
+    private bool pauseTimer = false;
+
     void Start()
     {
         canLose.value = true;
@@ -24,13 +26,20 @@ public class Timer : MonoBehaviour
 
     void Update()
     {
-        timerText.text = time.ToString("F0");
-        if (timerBool.value == true)
+        if (!pauseTimer)
         {
-            DecrementTimer();
+            timerText.text = time.ToString("F0");
+            if (timerBool.value == true)
+            {
+                DecrementTimer();
+            }
         }
     }
 
+    public void ChangeMoves(int num)
+    {
+        time = num;
+    }
 
     void DecrementTimer()
     {
@@ -45,8 +54,20 @@ public class Timer : MonoBehaviour
     public void DecreaseMove()
     {
         time -= 1f;
+    }
+    public void Reset()
+    {
+        hasTriggeredLose = false;
+        canLose.value = true;
+        time = timeData.value;
+        pauseTimer = false;
+    }
 
-        if (time <= 0f && canLose.value == true)
+    private bool hasTriggeredLose = false; 
+
+    public void CheckLose()
+    {
+        if (time <= 0f && canLose.value && !hasTriggeredLose)
         {
             Lose();
         }
@@ -54,7 +75,13 @@ public class Timer : MonoBehaviour
 
     void Lose()
     {
+        hasTriggeredLose = true;
         loseGame.Invoke();
+    }
+
+    public void PauseTimer()
+    {
+        pauseTimer = true;
     }
 
     public float GetMovesLeft()

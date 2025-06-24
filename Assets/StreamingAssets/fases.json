@@ -1,45 +1,117 @@
 {
   "levels" : [
     {
+      "Level" : 0,
+      "Tipo" : "Jogadas",
+      "Timer" : 3,
+      "Altura" : 3,
+      "Largura" : 3,
+      "Green" : 0,
+      "Orange" : 0,
+      "Red" : 3,
+      "Violet" : 0,
+      "Blue" : 0
+    },
+    {
       "Level" : 1,
       "Tipo" : "Jogadas",
       "Timer" : 20,
       "Altura" : 4,
       "Largura" : 4,
-      "Green" : 20,
+      "Green" : 0,
       "Orange" : 0,
       "Red" : 0,
-      "Violet" : 0,
+      "Violet" : 10,
       "Blue" : 0
     },
     {
       "Level" : 2,
       "Tipo" : "Jogadas",
-      "Timer" : 25,
-      "Altura" : 5,
-      "Largura" : 5,
+      "Timer" : 20,
+      "Altura" : 4,
+      "Largura" : 4,
       "Green" : 0,
-      "Orange" : 15,
-      "Red" : 15,
+      "Orange" : 7,
+      "Red" : 7,
       "Violet" : 0,
       "Blue" : 0
     },
     {
       "Level" : 3,
       "Tipo" : "Jogadas",
-      "Timer" : 30,
+      "Timer" : 15,
+      "Altura" : 5,
+      "Largura" : 4,
+      "Green" : 10,
+      "Orange" : 0,
+      "Red" : 0,
+      "Violet" : 0,
+      "Blue" : 14
+    },
+    {
+      "Level" : 4,
+      "Tipo" : "Jogadas",
+      "Timer" : 20,
+      "Altura" : 5,
+      "Largura" : 4,
+      "Green" : 20,
+      "Orange" : 0,
+      "Red" : 10,
+      "Violet" : 0,
+      "Blue" : 0
+    },
+    {
+      "Level" : 5,
+      "Tipo" : "Jogadas",
+      "Timer" : 22,
+      "Altura" : 5,
+      "Largura" : 5,
+      "Green" : 0,
+      "Orange" : 20,
+      "Red" : 0,
+      "Violet" : 14,
+      "Blue" : 0
+    },
+    {
+      "Level" : 6,
+      "Tipo" : "Jogadas",
+      "Timer" : 22,
+      "Altura" : 5,
+      "Largura" : 5,
+      "Green" : 0,
+      "Orange" : 22,
+      "Red" : 18,
+      "Violet" : 0,
+      "Blue" : 0
+    },
+    {
+      "Level" : 7,
+      "Tipo" : "Jogadas",
+      "Timer" : 22,
       "Altura" : 6,
       "Largura" : 6,
       "Green" : 0,
       "Orange" : 20,
       "Red" : 0,
-      "Violet" : 25,
+      "Violet" : 20,
       "Blue" : 10
     },
     {
-      "Level" : 4,
+      "Level" : 8,
       "Tipo" : "Jogadas",
-      "Timer" : 36,
+      "Timer" : 25,
+      "Altura" : 7,
+      "Largura" : 6,
+      "Green" : 10,
+      "Orange" : 10,
+      "Red" : 0,
+      "Violet" : 25,
+      "Blue" : 15
+    },
+    {
+      "Level" : 9,
+      "Tipo" : "Jogadas",
+      "Timer" : 30,
       "Altura" : 7,
       "Largura" : 6,
       "Green" : 20,
@@ -49,16 +121,40 @@
       "Blue" : 5
     },
     {
-      "Level" : 5,
+      "Level" : 10,
       "Tipo" : "Jogadas",
-      "Timer" : 44,
+      "Timer" : 26,
       "Altura" : 8,
       "Largura" : 6,
       "Green" : 35,
       "Orange" : 30,
       "Red" : 20,
-      "Violet" : 15,
-      "Blue" : 10
+      "Violet" : 0,
+      "Blue" : 0
+    },
+    {
+      "Level" : 11,
+      "Tipo" : "Jogadas",
+      "Timer" : 30,
+      "Altura" : 8,
+      "Largura" : 6,
+      "Green" : 10,
+      "Orange" : 0,
+      "Red" : 30,
+      "Violet" : 25,
+      "Blue" : 30
+    },
+    {
+      "Level" : 12,
+      "Tipo" : "Jogadas",
+      "Timer" : 30,
+      "Altura" : 8,
+      "Largura" : 6,
+      "Green" : 30,
+      "Orange" : 20,
+      "Red" : 30,
+      "Violet" : 30,
+      "Blue" : 0
     }
   ]
 }
