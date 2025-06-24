@@ -29,10 +29,7 @@ public static class SaveSystem
 
         if (File.Exists(path))
         {
-            string json = File.ReadAllText(path);
-            PlayerData data = JsonUtility.FromJson<PlayerData>(json);
-            Debug.Log($"Save carregado: {json}");
-            return data;
+            return null;
         }
         else
         {
