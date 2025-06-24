@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewMoneySO", menuName = "MoneySO")]
@@ -15,5 +13,10 @@ public class PlayerMoneySO : ScriptableObject
     public int GetMoney()
     {
         return value;
+    }
+
+    public void SetMoney(int newValue)
+    {
+        value = Mathf.Max(0, newValue);
     }
 }

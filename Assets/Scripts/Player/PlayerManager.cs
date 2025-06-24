@@ -10,13 +10,17 @@ public class PlayerManager : MonoBehaviour
     [Header("Scriptable Objects")]
     [SerializeField] private PlayerItensSO playerItemSO;
     [SerializeField] private PlayerMoneySO playerMoneySO;
+    [SerializeField] private FloatSO tutorialPart;
     [SerializeField] private ItensSO itensSO;
+    [SerializeField] private LevelData levelData;
+    [SerializeField] private BooleanSO tutorialSO;
 
     [Header("UI Elements")]
     [SerializeField] private GameObject buyConfirmationUI;
     [SerializeField] private TMP_Text coinText;
     [SerializeField] private Button fullScreenButton;
     [SerializeField] private Sprite openBoxSprite;
+    [SerializeField] private TMP_Text levelText;
 
     [Header("Animation Settings")]
     [SerializeField] private GameObject effectPrefab;
@@ -33,6 +37,7 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
+        // Corrigido para incluir apenas as categorias válidas
         textureApplicators.Add("Monitor", sprite => ApplyTextureToTaggedObject("Monitor", sprite));
         textureApplicators.Add("Keyboard", sprite => ApplyTextureToTaggedObject("Keyboard", sprite));
         textureApplicators.Add("Mouse", sprite => ApplyTextureToTaggedObject("Mouse", sprite));
@@ -42,10 +47,30 @@ public class PlayerManager : MonoBehaviour
         textureApplicators.Add("WallDecor", sprite => ApplyTextureToTaggedObject("WallDecor", sprite));
         textureApplicators.Add("Mic", sprite => ApplyTextureToTaggedObject("Mic", sprite));
         textureApplicators.Add("Headset", sprite => ApplyTextureToTaggedObject("Headset", sprite));
+
+        if (PlayerPrefs.GetInt("FirstRun", 1) == 1)
+        {
+            Debug.Log("Nova instalação detectada. Limpando save e inicializando valores padrão.");
+            SaveSystem.ClearSave(); // Exclui qualquer save residual
+            PlayerPrefs.SetInt("FirstRun", 0);
+            PlayerPrefs.Save();
+
+            // Reseta ScriptableObjects para valores padrão
+            playerMoneySO.SetMoney(0);
+            levelData.ChangeLevel(0);
+            tutorialSO.ChangeBool(true);
+            tutorialPart.SetFloat(1f);
+            playerItemSO.ResetAllItems();
+            //itensSO.ResetAllItems();
+        }
     }
 
     private void Start()
     {
+        Application.targetFrameRate = (int)targetFrameRate;
+
+        LoadPlayer();
+
         ApplyAllTextures();
         UpdateCoinText();
         SetBuyConfirmationActive(false);
@@ -53,8 +78,167 @@ public class PlayerManager : MonoBehaviour
         {
             fullScreenButton.gameObject.SetActive(false);
         }
+        foreach (PriceManager priceManager in FindObjectsOfType<PriceManager>())
+        {
+            priceManager.RefreshButtonState();
+            Debug.Log("Atualizando PriceManager no Start do PlayerManager.");
+        }
     }
 
+    public void SavePlayer()
+    {
+        SaveSystem.SavePlayer(this);
+        Debug.Log($"Jogador salvo em: {Application.persistentDataPath}/player.json");
+    }
+
+    public void LoadPlayer()
+    {
+        PlayerData data = SaveSystem.LoadPlayer(this);
+        if (data != null)
+        {
+            playerMoneySO.SetMoney(data.money);
+            Debug.Log($"Dinheiro carregado: {data.money}");
+
+            if(levelText != null)
+            {
+                levelText.text = data.level.ToString();
+            }
+
+            if (levelData != null)
+            {
+                levelData.ChangeLevel(data.level);
+                Debug.Log($"Nível carregado: {data.level}");
+            }
+
+            if (tutorialSO != null)
+            {
+                tutorialSO.ChangeBool(data.isTutorial);
+                Debug.Log($"Tutorial carregado: {data.isTutorial}");
+            }
+
+            if (data.ownedItems != null)
+            {
+                playerItemSO.ResetAllItems();
+                foreach (var category in data.ownedItems)
+                {
+                    Debug.Log($"Carregando categoria {category.category}: {string.Join(", ", category.sprites)}");
+                    foreach (var spriteName in category.sprites)
+                    {
+                        if (!string.IsNullOrEmpty(spriteName))
+                        {
+                            ItensSO.ItemData itemData = itensSO.GetItemDataFromSpriteName(spriteName);
+                            if (itemData != null)
+                            {
+                                playerItemSO.AddPlayerItemTexture(category.category, itemData.sprite);
+                                Debug.Log($"Item adicionado: {spriteName} em {category.category}");
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"Item {spriteName} não encontrado no ItensSO.");
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (data.currentItems != null)
+            {
+                foreach (var category in data.currentItems)
+                {
+                    if (!string.IsNullOrEmpty(category.sprite))
+                    {
+                        ItensSO.ItemData itemData = itensSO.GetItemDataFromSpriteName(category.sprite);
+                        if (itemData != null)
+                        {
+                            playerItemSO.SetCurrentSprite(category.category, itemData.sprite);
+                            Debug.Log($"Sprite atual definido: {category.sprite} em {category.category}");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Sprite atual {category.sprite} não encontrado no ItensSO.");
+                        }
+                    }
+                }
+            }
+
+            ApplyAllTextures();
+            UpdateCoinText();
+
+            foreach (PriceManager priceManager in FindObjectsOfType<PriceManager>())
+            {
+                priceManager.RefreshButtonState();
+                Debug.Log("Atualizando PriceManager após LoadPlayer.");
+            }
+
+            Debug.Log($"Estado final (Monitor): Possuídos={string.Join(", ", GetSpriteNames(playerItemSO.playerMonitorSprites))}, Atual={playerItemSO.currentMonitor?.name}");
+        }
+    }
+
+    public int GetMoney()
+    {
+        return playerMoneySO.GetMoney();
+    }
+
+    public int GetLevel()
+    {
+        return levelData != null ? (int)levelData.GetLevel() : 0;
+    }
+
+    public bool GetTutorialState()
+    {
+        return tutorialSO != null ? tutorialSO.value : false;
+    }
+
+    public float GetTutorialPart()
+    {
+        return tutorialPart.GetFloat();
+    }
+
+    public Dictionary<string, string[]> GetOwnedItems()
+    {
+        var ownedItems = new Dictionary<string, string[]>();
+        ownedItems.Add("Monitor", GetSpriteNames(playerItemSO.playerMonitorSprites));
+        Debug.Log($"Itens possuídos (Monitor): {string.Join(", ", GetSpriteNames(playerItemSO.playerMonitorSprites))}");
+        ownedItems.Add("Keyboard", GetSpriteNames(playerItemSO.playerKeyboardSprites));
+        Debug.Log($"Itens possuídos (Keyboard): {string.Join(", ", GetSpriteNames(playerItemSO.playerKeyboardSprites))}");
+        ownedItems.Add("Mouse", GetSpriteNames(playerItemSO.playerMouseSprites));
+        ownedItems.Add("Mousepad", GetSpriteNames(playerItemSO.playerMousepadSprites));
+        ownedItems.Add("Cup", GetSpriteNames(playerItemSO.playerCupSprites));
+        ownedItems.Add("Candle", GetSpriteNames(playerItemSO.playerCandleSprites));
+        ownedItems.Add("WallDecor", GetSpriteNames(playerItemSO.playerWallDecorSprites));
+        ownedItems.Add("Mic", GetSpriteNames(playerItemSO.playerMicSprites));
+        ownedItems.Add("Headset", GetSpriteNames(playerItemSO.playerHeadsetSprites));
+        return ownedItems;
+    }
+
+    public Dictionary<string, string> GetCurrentItems()
+    {
+        var currentItems = new Dictionary<string, string>();
+        currentItems.Add("Monitor", playerItemSO.currentMonitor?.name);
+        currentItems.Add("Keyboard", playerItemSO.currentKeyboard?.name);
+        currentItems.Add("Mouse", playerItemSO.currentMouse?.name);
+        currentItems.Add("Mousepad", playerItemSO.currentMousepad?.name);
+        currentItems.Add("Cup", playerItemSO.currentCup?.name);
+        currentItems.Add("Candle", playerItemSO.currentCandle?.name);
+        currentItems.Add("WallDecor", playerItemSO.currentWallDecor?.name);
+        currentItems.Add("Mic", playerItemSO.currentMic?.name);
+        currentItems.Add("Headset", playerItemSO.currentHeadset?.name);
+        return currentItems;
+    }
+
+    private string[] GetSpriteNames(Sprite[] sprites)
+    {
+        if (sprites == null)
+            return new string[0];
+        string[] names = new string[sprites.Length];
+        for (int i = 0; i < sprites.Length; i++)
+        {
+            names[i] = sprites[i]?.name;
+        }
+        return names;
+    }
+
+    // Métodos existentes do PlayerManager
     public void VerifyItem(string itemName, Sprite sprite)
     {
         if (playerItemSO.IsSpriteInCategory(itemName, sprite))
@@ -114,13 +298,21 @@ public class PlayerManager : MonoBehaviour
         foreach (PriceManager priceManager in FindObjectsOfType<PriceManager>())
         {
             priceManager.RefreshButtonState();
+            Debug.Log($"Atualizando PriceManager para {itemName}, Sprite={sprite.name}");
         }
+
+        SavePlayer();
+
+        LoadPlayer();
+        Debug.Log($"Item salvo: Categoria={itemName}, Sprite={sprite.name}, Possuídos (Monitor): {string.Join(", ", GetSpriteNames(playerItemSO.playerMonitorSprites))}");
     }
+
 
     public void AddMoney(int amount)
     {
         playerMoneySO.ChangeMoney(amount);
         UpdateCoinText();
+        //SavePlayer();
     }
 
     public void ChangeCurrentSprite(string itemName, Sprite sprite)
@@ -193,7 +385,6 @@ public class PlayerManager : MonoBehaviour
             yield break;
         }
 
-        // Salvar o sprite inicial da caixa
         Sprite initialBoxSprite = boxImage.sprite;
 
         box.SetActive(true);
@@ -212,7 +403,6 @@ public class PlayerManager : MonoBehaviour
 
         Sequence sequence = DOTween.Sequence();
 
-        // Fase 1: Crescimento inicial (0.5s)
         sequence.Append(boxTransform.DOScale(Vector3.one, 0.5f)
             .SetEase(Ease.InOutSine)
             .OnUpdate(() =>
@@ -227,7 +417,6 @@ public class PlayerManager : MonoBehaviour
                 boxTransform.localRotation = Quaternion.Euler(0f, 0f, swayAngle);
             }));
 
-        // Fase 2: Dois ciclos de pulsação (0.4s cada)
         for (int i = 0; i < 2; i++)
         {
             float maxScale = 1.05f + (i * 0.05f);
@@ -261,7 +450,6 @@ public class PlayerManager : MonoBehaviour
 
         yield return sequence.WaitForCompletion();
 
-        // Ativa o botão de tela cheia
         if (fullScreenButton != null)
         {
             fullScreenButton.gameObject.SetActive(true);
@@ -272,27 +460,23 @@ public class PlayerManager : MonoBehaviour
             yield break;
         }
 
-        // Animação de idle (pulsação leve e rotação)
         Sequence idleSequence = DOTween.Sequence();
-        idleSequence.SetLoops(-1); // Loop infinito até o clique
+        idleSequence.SetLoops(-1);
         idleSequence.Append(boxTransform.DOScale(1.05f, 0.5f).SetEase(Ease.InOutSine));
         idleSequence.Append(boxTransform.DOScale(1f, 0.5f).SetEase(Ease.InOutSine));
         idleSequence.Join(boxTransform.DORotate(new Vector3(0f, 0f, 3f), 0.5f).SetEase(Ease.InOutSine));
         idleSequence.Append(boxTransform.DORotate(new Vector3(0f, 0f, -3f), 1f).SetEase(Ease.InOutSine));
         idleSequence.Append(boxTransform.DORotate(new Vector3(0f, 0f, 0f), 0.5f).SetEase(Ease.InOutSine));
 
-        // Espera o clique do jogador
         bool clicked = false;
         fullScreenButton.onClick.AddListener(() => clicked = true);
         yield return new WaitUntil(() => clicked);
         fullScreenButton.onClick.RemoveAllListeners();
         fullScreenButton.gameObject.SetActive(false);
 
-        // Para a animação de idle
         idleSequence.Kill();
         AudioManager.Instance.PlaySFX("OpenBox");
 
-        // Troca para o sprite da caixa aberta
         if (openBoxSprite != null)
         {
             boxImage.sprite = openBoxSprite;
@@ -302,7 +486,6 @@ public class PlayerManager : MonoBehaviour
             Debug.LogWarning("Sprite da caixa aberta não atribuído no PlayerManager.");
         }
 
-        // Fase 3: Crescimento final (0.8s)
         sequence = DOTween.Sequence();
         sequence.Append(boxTransform.DOScale(1.3f, 0.8f)
             .SetEase(Ease.InOutCubic)
@@ -332,7 +515,6 @@ public class PlayerManager : MonoBehaviour
         gameAnimator.SetTrigger("OpenBox");
         boxCanvas.sortingOrder = originalSortingOrder;
 
-        // Restaurar o sprite inicial da caixa antes de desativá-la
         boxImage.sprite = initialBoxSprite;
 
         box.SetActive(false);
@@ -369,7 +551,7 @@ public class PlayerManager : MonoBehaviour
     public void ResetAllItems()
     {
         playerItemSO.ResetAllItems();
-        itensSO.ResetAllItems();
+        //itensSO.ResetAllItems();
         ApplyAllTextures();
         UpdateCoinText();
         Debug.Log("All items reset in PlayerManager.");

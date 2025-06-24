@@ -228,13 +228,14 @@ public class PotionBoard : MonoBehaviour
                 canLose.value = false;
                 won = true;
                 WinGame.Raise();
+
                 return;
             }
 
             if (!won && timer.GetMovesLeft() > 0)
             {
                 CheckUserActions();
-                if (!isShaking && Time.time - lastMoveTime > inactivityThreshold && AreAllPotionsSettled() && !isTutorialLevel)
+                if (!isShaking && Time.time - lastMoveTime > inactivityThreshold && AreAllPotionsSettled())
                 {
                     if (shakeCoroutine != null)
                     {
@@ -1741,7 +1742,7 @@ public class PotionBoard : MonoBehaviour
                 yield return coroutine;
             }
 
-            UpdateUIVisibility();
+            //UpdateUIVisibility();
             RepositionCountUIs();
         }
 
@@ -1885,7 +1886,7 @@ public class PotionBoard : MonoBehaviour
             }
         }
 
-        if (selectedMatch == null && !isTutorialLevel)
+        if (selectedMatch == null)
         {
             if (!HasPossibleMoves())
             {
@@ -1895,8 +1896,27 @@ public class PotionBoard : MonoBehaviour
                 yield break;
             }
 
-            int randomIndex = Random.Range(0, possibleMatches.Count);
-            selectedMatch = possibleMatches[randomIndex];
+            if (isTutorialLevel)
+            {
+                // No modo tutorial, selecione um movimento específico (exemplo: definido no tutorialLayout ou TutorialManager)
+                (List<Potion> matchPotions, int x1, int y1, int x2, int y2)? tutorialMatch = GetTutorialMatch();
+                if (tutorialMatch.HasValue)
+                {
+                    selectedMatch = tutorialMatch;
+                }
+                else
+                {
+                    Debug.LogWarning("Nenhum movimento válido encontrado para o tutorial.");
+                    isShaking = false;
+                    shakeCoroutine = null;
+                    yield break;
+                }
+            }
+            else
+            {
+                int randomIndex = Random.Range(0, possibleMatches.Count);
+                selectedMatch = possibleMatches[randomIndex];
+            }
         }
 
         List<Potion> matchPotions = selectedMatch.Value.matchPotions;
@@ -2028,6 +2048,60 @@ public class PotionBoard : MonoBehaviour
         Debug.Log($"Finalizando ShakePossibleMatch (Time: {Time.time})");
         isShaking = false;
         shakeCoroutine = null;
+    }
+
+    private (List<Potion> matchPotions, int x1, int y1, int x2, int y2)? GetTutorialMatch()
+    {
+        if (!HasPossibleMoves())
+        {
+            return null;
+        }
+
+        int x1 = 0, y1 = 1; 
+        int x2 = 0, y2 = 0; 
+
+        if (x1 >= 0 && x1 < width && y1 >= 0 && y1 < height &&
+            x2 >= 0 && x2 < width && y2 >= 0 && y2 < height &&
+            potionBoard[x1, y1].isUsable && potionBoard[x1, y1].potion != null &&
+            potionBoard[x2, y2].isUsable && potionBoard[x2, y2].potion != null)
+        {
+            SwapForCheck(x1, y1, x2, y2);
+            List<Potion> matchPotions = new List<Potion>();
+
+            Potion movedPotion = potionBoard[x2, y2].potion?.GetComponent<Potion>();
+            if (movedPotion != null)
+            {
+                MatchResult matchResult = IsConnected(movedPotion);
+                if (matchResult.connectedPotions.Count >= 3)
+                {
+                    matchPotions.AddRange(matchResult.connectedPotions);
+                }
+            }
+
+            movedPotion = potionBoard[x1, y1].potion?.GetComponent<Potion>();
+            if (movedPotion != null)
+            {
+                MatchResult matchResult = IsConnected(movedPotion);
+                if (matchResult.connectedPotions.Count >= 3)
+                {
+                    matchPotions.AddRange(matchResult.connectedPotions.Where(p => !matchPotions.Contains(p)));
+                }
+            }
+
+            SwapForCheck(x2, y2, x1, y1);
+
+            if (matchPotions.Count >= 3)
+            {
+                return (matchPotions, x1, y1, x2, y2);
+            }
+        }
+
+        if (possibleMatches.Count > 0)
+        {
+            return possibleMatches[0];
+        }
+
+        return null;
     }
 
     public void WinGameBool(bool state)

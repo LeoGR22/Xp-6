@@ -10,6 +10,9 @@ public class SetLevel : MonoBehaviour
     {
         Debug.Log("PassLevel chamado!");
         levelData.level += 1;
+        PlayerManager playerManager = FindObjectOfType<PlayerManager>();
+        playerManager.SavePlayer();
+        print("SALVOUUUUUUUUUUU");
     }
 
     public int GetLevel()

@@ -7,8 +7,8 @@ public class ItensSO : ScriptableObject
     [System.Serializable]
     public class ItemData
     {
-        public Sprite sprite; 
-        public int price; 
+        public Sprite sprite;
+        public int price;
     }
 
     [Header("Item Categories")]
@@ -20,11 +20,11 @@ public class ItensSO : ScriptableObject
     public List<ItemData> candles;
     public List<ItemData> wallDecors;
     public List<ItemData> mics;
-    public List<ItemData> headsets; 
+    public List<ItemData> headsets;
 
     private readonly List<List<ItemData>> itemCategories = new List<List<ItemData>>();
-    private readonly Dictionary<Sprite, int> priceCache = new Dictionary<Sprite, int>();
-    private readonly Dictionary<Sprite, ItemData> itemDataCache = new Dictionary<Sprite, ItemData>();
+    private readonly Dictionary<string, int> priceCache = new Dictionary<string, int>();
+    private readonly Dictionary<string, ItemData> itemDataCache = new Dictionary<string, ItemData>();
 
     private void OnEnable()
     {
@@ -50,38 +50,51 @@ public class ItensSO : ScriptableObject
                 {
                     if (item != null && item.sprite != null)
                     {
-                        priceCache[item.sprite] = item.price;
-                        itemDataCache[item.sprite] = item;
+                        priceCache[item.sprite.name] = item.price;
+                        itemDataCache[item.sprite.name] = item;
                     }
                 }
             }
         }
     }
 
-    public int GetPriceFromSprite(Sprite targetSprite)
+    public int GetPriceFromSpriteName(string spriteName)
     {
-        if (targetSprite == null) return 0;
+        if (string.IsNullOrEmpty(spriteName))
+            return 0;
 
-        if (priceCache.TryGetValue(targetSprite, out int price))
+        if (priceCache.TryGetValue(spriteName, out int price))
         {
             return price;
         }
 
-        Debug.LogWarning($"Sprite {targetSprite.name} não encontrado em nenhuma categoria.");
+        Debug.LogWarning($"Sprite {spriteName} não encontrado em nenhuma categoria.");
         return 0;
     }
 
-    public ItemData GetItemDataFromSprite(Sprite targetSprite)
+    public ItemData GetItemDataFromSpriteName(string spriteName)
     {
-        if (targetSprite == null) return null;
+        if (string.IsNullOrEmpty(spriteName))
+            return null;
 
-        if (itemDataCache.TryGetValue(targetSprite, out ItemData itemData))
+        if (itemDataCache.TryGetValue(spriteName, out ItemData itemData))
         {
             return itemData;
         }
 
-        Debug.LogWarning($"Sprite {targetSprite.name} não encontrado em nenhuma categoria.");
+        Debug.LogWarning($"Sprite {spriteName} não encontrado em nenhuma categoria.");
         return null;
+    }
+
+    // Mantém compatibilidade com métodos existentes
+    public int GetPriceFromSprite(Sprite targetSprite)
+    {
+        return targetSprite != null ? GetPriceFromSpriteName(targetSprite.name) : 0;
+    }
+
+    public ItemData GetItemDataFromSprite(Sprite targetSprite)
+    {
+        return targetSprite != null ? GetItemDataFromSpriteName(targetSprite.name) : null;
     }
 
     public ItemData[] GetVariantsFromSprite(Sprite targetSprite)

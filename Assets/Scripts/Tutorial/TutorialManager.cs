@@ -24,6 +24,9 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Button playButton;
     [SerializeField] private FloatSO tutoPart;
     [SerializeField] private LevelData levelData;
+    [SerializeField] private PlayerManager player;
+
+    [SerializeField] public GameObject settingsMenu;
 
     private int currentStep = 0;
     private bool canClick = true;
@@ -31,6 +34,8 @@ public class TutorialManager : MonoBehaviour
 
     private void Start()
     {
+        player.LoadPlayer();
+
         nextButton.onClick.AddListener(OnNextButtonClicked);
 
         if (playButton != null)
@@ -142,6 +147,8 @@ public class TutorialManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.7f);
         ChangeText("Now here!");
+
+        //tutoPart.value = 2;
     }
 
     IEnumerator TutorialSequence2()
@@ -230,6 +237,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         ChangeText("Now lets go Back to the setup!");
         tutoPart.value = 3;
+        player.SavePlayer();
     }
 
     IEnumerator TutorialSequence3()
@@ -311,6 +319,7 @@ public class TutorialManager : MonoBehaviour
         gameAnim.SetTrigger("Tuto");
         isTuto.value = false;
         nextButton.gameObject.SetActive(false);
+        player.SavePlayer();
 
         yield return new WaitForSeconds(5f);
         tutorialGO.SetActive(false);
@@ -337,7 +346,9 @@ public class TutorialManager : MonoBehaviour
         {
             gameAnim.SetTrigger("Tuto");
             tutoPart.value = 2;
-        }else if (levelData.level >= 13)
+            player.SavePlayer();
+        }
+        else if (levelData.level >= 13)
         {
             OpenCongrats();
         }
@@ -353,6 +364,17 @@ public class TutorialManager : MonoBehaviour
         playMenu.transform.localScale = Vector3.zero;
         playMenu.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
     }
+
+    public void OpenSettings()
+    {
+        if (!isTuto.value)
+        {
+            settingsMenu.SetActive(true);
+            settingsMenu.transform.localScale = Vector3.zero;
+            settingsMenu.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+        }
+    }
+
     public void OpenCongrats()
     {
         if (levelData.level >= 13)

@@ -17,16 +17,14 @@ public class Score : MonoBehaviour
     [SerializeField] private TextMeshPro orangeCount;
     [SerializeField] private TextMeshPro blueCount;
 
-    [SerializeField] private Sprite checkmarkSprite; // Sprite de checkmark único pra todos
+    [SerializeField] private Sprite checkmarkSprite; 
 
-    // Flags pra rastrear se cada objetivo foi completado
     private bool violetCompleted = false;
     private bool greenCompleted = false;
     private bool redCompleted = false;
     private bool orangeCompleted = false;
     private bool blueCompleted = false;
 
-    // Referências pros GameObjects filhos com SpriteRenderer
     private GameObject violetCheckmark;
     private GameObject greenCheckmark;
     private GameObject redCheckmark;
@@ -44,9 +42,8 @@ public class Score : MonoBehaviour
 
     private void UpdateObjective(ObjectiveBoardData data, TextMeshPro textMesh, ref bool isCompleted, ref GameObject checkmarkObject)
     {
-        if (isCompleted || textMesh == null) return; // Pula se já completou ou textMesh é nulo
+        if (isCompleted || textMesh == null) return; 
 
-        // Pega o MeshRenderer do GameObject do TextMeshPro
         MeshRenderer textMeshRenderer = textMesh.gameObject.GetComponent<MeshRenderer>();
         if (textMeshRenderer == null)
         {
@@ -56,15 +53,13 @@ public class Score : MonoBehaviour
 
         if (data.count > 0)
         {
-            // Mostra o texto com o contador
             textMesh.text = data.count.ToString();
-            if (checkmarkObject != null) checkmarkObject.SetActive(false); // Desativa o checkmark se existir
+            if (checkmarkObject != null) checkmarkObject.SetActive(false); 
         }
         else
         {
-            // Contador zerou, vira checkmark
             isCompleted = true;
-            textMesh.enabled = false; // Desativa o TextMeshPro
+            textMesh.enabled = false; 
 
             if (checkmarkSprite == null)
             {
@@ -72,22 +67,21 @@ public class Score : MonoBehaviour
                 return;
             }
 
-            // Cria ou ativa o GameObject filho com o SpriteRenderer
             if (checkmarkObject == null)
             {
                 checkmarkObject = new GameObject(textMesh.gameObject.name + "_Checkmark");
                 checkmarkObject.transform.SetParent(textMesh.transform);
-                checkmarkObject.transform.localPosition = new Vector3(-.77f, 0.1f, 0f); // Offset pra esquerda
-                checkmarkObject.transform.localScale = new Vector3(0.3f, 0.3f, 1f); // Escala menor
+                checkmarkObject.transform.localPosition = new Vector3(-.77f, 0.1f, 0f); 
+                checkmarkObject.transform.localScale = new Vector3(0.3f, 0.3f, 1f); 
 
                 SpriteRenderer spriteRenderer = checkmarkObject.AddComponent<SpriteRenderer>();
                 spriteRenderer.sprite = checkmarkSprite;
-                spriteRenderer.sortingOrder = textMeshRenderer.sortingOrder; // Usa o sortingOrder do MeshRenderer
-                spriteRenderer.sortingLayerName = textMeshRenderer.sortingLayerName; // Usa o sortingLayerName do MeshRenderer
+                spriteRenderer.sortingOrder = textMeshRenderer.sortingOrder + 1; 
+                spriteRenderer.sortingLayerName = textMeshRenderer.sortingLayerName; 
             }
             else
             {
-                checkmarkObject.SetActive(true); // Ativa o checkmark se já existe
+                checkmarkObject.SetActive(true); 
             }
         }
     }

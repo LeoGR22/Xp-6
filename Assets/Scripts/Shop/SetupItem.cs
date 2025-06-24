@@ -6,7 +6,7 @@ public class SetupItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 {
     [SerializeField] private string itemType;
     [SerializeField] private PlayerItensSO playerItensSO;
-    [SerializeField] private PlayerManager playerManager; // Adicionado pra chamar VerifyItem
+    [SerializeField] private PlayerManager playerManager; 
     [SerializeField] private Slider slider;
 
     private bool isTouching;

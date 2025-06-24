@@ -5,18 +5,20 @@ public class FollowWorldObjectUIOverlay : MonoBehaviour
     public Transform target;
     public Vector3 worldOffset;
     public Camera worldCamera;
+    public bool onlyAffectY = false;
 
     private RectTransform rectTransform;
 
     void Start()
     {
         rectTransform = GetComponent<RectTransform>();
-    }
 
-    void Update()
-    {
         Vector3 worldPos = target.position + worldOffset;
         Vector3 screenPos = worldCamera.WorldToScreenPoint(worldPos);
-        rectTransform.position = screenPos;
+
+        if (onlyAffectY)
+            rectTransform.position = new Vector3(rectTransform.position.x, screenPos.y, rectTransform.position.z);
+        else
+            rectTransform.position = screenPos;
     }
 }
